@@ -103,7 +103,7 @@ function openDeleteDocumentDialog($node) {
  * @param $node
  */
 function openEditCatalogDialog($node) {
-    var $then =  $("#addDocumentModal");
+    var $then =  $("#updateDocumentModal");
     var doc_id = parseInt($node ? $node.id : 0);
     var text = $node ? $node.text.split("<small")[0] : '';
     var parentId = $node && $node.parent !== '#' ? $node.parent : 0;

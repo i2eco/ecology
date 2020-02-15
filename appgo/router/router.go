@@ -45,15 +45,16 @@ func webGrp(r *gin.Engine) {
 		tplGrp.GET("/logout", core.Handle(account.Logout))
 		tplGrp.GET("/note", core.Handle(account.Note))
 		tplGrp.GET("/login/:oauth", core.Handle(account.OauthHtml))
-		tplGrp.GET("/find_password", core.Handle(account.FindPasswordHtml))
+		tplGrp.GET("/account/find_password", core.Handle(account.FindPasswordHtml))
 
 		tplGrp.GET("/book", core.Handle(book.Index))
 		tplGrp.GET("/book/:key/setting", core.Handle(book.Setting))
 		tplGrp.GET("/book/:key/dashboard", core.Handle(book.Dashboard))
 		tplGrp.GET("/book/:key/users", core.Handle(book.Users))
 
-		tplGrp.GET("/books/:key", core.Handle(document.Index))
-		tplGrp.GET("/read/:key/:id", core.Handle(document.ReadHtml))
+		//tplGrp.GET("/books/:key", core.Handle(document.Index))
+		tplGrp.GET("/books/:key/:id", core.Handle(document.ReadHtml))
+		tplGrp.GET("/books/:key", core.Handle(document.ReadHtml))
 		tplGrp.GET("/document/content/:key", core.Handle(document.Edit))
 		tplGrp.GET("/document/content/:key/:id", core.Handle(document.Edit))
 		tplGrp.GET("/rank", core.Handle(rank.Index))
@@ -96,7 +97,7 @@ func webGrp(r *gin.Engine) {
 	apiGrp := r.Group("/api/web", mdw.LoginRequired())
 	{
 		apiGrp.POST("/login", core.Handle(account.LoginApi))
-		apiGrp.POST("/bind", core.Handle(account.BindApi))
+		apiGrp.POST("/account/bind", core.Handle(account.BindApi))
 		apiGrp.POST("/find_password", core.Handle(account.FindPasswordApi))
 		apiGrp.GET("/valid_email", core.Handle(account.ValidEmail))
 
@@ -125,14 +126,18 @@ func webGrp(r *gin.Engine) {
 		apiGrp.POST("/book/users/change", core.Handle(bookMember.ChangeRole))
 		apiGrp.POST("/book/users/delete", core.Handle(bookMember.RemoveMember))
 
-		apiGrp.GET("/read/:key/:id", core.Handle(document.ReadApi))
+		apiGrp.GET("/books/:key/:id", core.Handle(document.ReadApi))
+
 		apiGrp.GET("/document/content/:key/:id", core.Handle(document.ContentGet))
 		apiGrp.POST("/document/content/:key/:id", core.Handle(document.ContentPost))
+		apiGrp.POST("/document/create/:key", core.Handle(document.CreateApi))
+		apiGrp.POST("/document/update/:key", core.Handle(document.UpdateApi))
 
-		apiGrp.POST("/u/follow/:uid", core.Handle(user.SetFollow))
-		apiGrp.POST("/u/sign", core.Handle(user.SignToday))
+		apiGrp.GET("/u/follow/:uid", core.Handle(user.SetFollow))
+		apiGrp.GET("/u/sign", core.Handle(user.SignToday))
 
 		apiGrp.POST("/manager/category", core.Handle(manager.CategoryApi))
+		apiGrp.POST("/setting/password", core.Handle(setting.PasswordUpdate))
 
 	}
 

@@ -4,7 +4,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -80,18 +79,13 @@ func LoginApi(c *core.Context) {
 //用户注册.[移除用户注册，直接叫用户绑定]
 //注意：如果用户输入的账号密码跟现有的账号密码相一致，则表示绑定账号，否则表示注册新账号。
 func BindApi(c *core.Context) {
-
+	var req ReqBind
+	err := c.Bind(&req)
+	if err != nil {
+		c.JSONErr(code.AccountBindErr1, err)
+		return
+	}
 	options := dao.Global.AllOptions()
-	var err error
-	account := c.GetString("account")
-	nickname := strings.TrimSpace(c.GetString("nickname"))
-	password1 := c.GetString("password1")
-	password2 := c.GetString("password2")
-	email := c.GetString("email")
-	oauthType := c.GetString("oauth")
-	oauthId := c.GetString("id")
-	avatar := c.GetString("avatar") //用户头像
-	isbind := c.GetInt("isbind")
 
 	ibind := func(oauthType string, oauthId, memberId interface{}) (err error) {
 		//注册成功，绑定用户
@@ -106,7 +100,7 @@ func BindApi(c *core.Context) {
 		return
 	}
 
-	if oauthType != "email" {
+	if req.OauthType != "email" {
 		//if auth, ok := this.GetSession("auth").(string); !ok || fmt.Sprintf("%v-%v", oauthType, oauthId) != auth {
 		//	c.JSONErr(6005,errors.New("绑定信息有误，授权类型不符"))
 		//	return
@@ -121,63 +115,63 @@ func BindApi(c *core.Context) {
 
 	member := mysql.NewMember()
 
-	if isbind == 1 {
-		if member, err = dao.Member.Login(account, password1); err != nil || member.MemberId == 0 {
-			c.JSONErr(1, errors.New("绑定用户失败，用户名或密码不正确"))
+	if req.IsBind == 1 {
+		if member, err = dao.Member.Login(req.Account, req.Password1); err != nil || member.MemberId == 0 {
+			c.JSONErr(code.AccountBindErr2, err)
 			return
 		}
 	} else {
-		if password1 != password2 {
-			c.JSONErr(6003, errors.New("登录密码与确认密码不一致"))
+		if req.Password1 != req.Password2 {
+			c.JSONErr(code.AccountBindErr3, err)
 			return
 		}
 
-		if ok, err := regexp.MatchString(conf.RegexpAccount, account); account == "" || !ok || err != nil {
-			c.JSONErrStr(6001, "用户名只能由英文字母数字组成，且在3-50个字符")
+		if ok, err := regexp.MatchString(conf.RegexpAccount, req.Account); req.Account == "" || !ok || err != nil {
+			c.JSONErr(code.AccountBindErr4, err)
 			return
 		}
-		if l := strings.Count(password1, ""); password1 == "" || l > 50 || l < 6 {
-			c.JSONErrStr(6002, "密码必须在6-50个字符之间")
+		if l := strings.Count(req.Password1, ""); req.Password1 == "" || l > 50 || l < 6 {
+			c.JSONErr(code.AccountBindErr5, err)
 			return
 		}
 
-		if ok, err := regexp.MatchString(conf.RegexpEmail, email); !ok || err != nil || email == "" {
-			c.JSONErrStr(6004, "邮箱格式不正确")
+		if ok, err := regexp.MatchString(conf.RegexpEmail, req.Email); !ok || err != nil || req.Email == "" {
+			c.JSONErr(code.AccountBindErr6, err)
 			return
 		}
-		if l := strings.Count(nickname, "") - 1; l < 2 || l > 20 {
-			c.JSONErrStr(6005, "用户昵称限制在2-20个字符")
+		if l := strings.Count(req.Nickname, "") - 1; l < 2 || l > 20 {
+			c.JSONErr(code.AccountBindErr7, err)
 			return
 		}
 
 		//出错或者用户不存在，则重新注册用户，否则直接登录
-		member.Account = account
-		member.Nickname = nickname
-		member.Password = password1
+		member.Account = req.Account
+		member.Nickname = req.Nickname
+		member.Password = req.Password1
 		member.Role = conf.MemberGeneralRole
 		member.Avatar = conf.GetDefaultAvatar()
 		member.CreateAt = 0
-		member.Email = email
+		member.Email = req.Email
 		member.Status = 0
-		if len(avatar) > 0 {
-			member.Avatar = avatar
+		if len(req.Avatar) > 0 {
+			member.Avatar = req.Avatar
 		}
 		if err := dao.Member.CreateX(c.Context, member); err != nil {
-			c.JSONErr(6006, err)
+			c.JSONErr(code.AccountBindErr8, err)
 			return
 		}
 	}
 	if err = loginByMemberId(c, member.MemberId); err != nil {
-		c.JSONErr(code.MsgErr, err)
+		c.JSONErr(code.AccountBindErr9, err)
 		return
 	}
 
-	if err = ibind(oauthType, oauthId, member.MemberId); err != nil {
-		c.JSONErrStr(code.MsgErr, "登录失败")
+	if err = ibind(req.OauthType, req.OauthId, member.MemberId); err != nil {
+		c.JSONErr(code.AccountBindErr10, err)
 		return
 	}
 
-	if oauthType == "email" {
+	if req.OauthType == "email" {
 		c.JSONOK("注册成功")
 		return
 	}

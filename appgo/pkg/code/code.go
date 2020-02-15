@@ -59,7 +59,18 @@ const (
 	UploadCoverErr7  = 30007
 	UploadCoverErr8  = 30008
 	UploadCoverErr9  = 30009
-	UploadCoverErr10 = 300010
+	UploadCoverErr10 = 30010
+
+	AccountBindErr1  = 40001
+	AccountBindErr2  = 40002
+	AccountBindErr3  = 40003
+	AccountBindErr4  = 40004
+	AccountBindErr5  = 40005
+	AccountBindErr6  = 40006
+	AccountBindErr7  = 40007
+	AccountBindErr8  = 40008
+	AccountBindErr9  = 40009
+	AccountBindErr10 = 40010
 )
 
 var CodeMap = map[int]string{
@@ -81,4 +92,12 @@ var CodeMap = map[int]string{
 	BookReleaseErr1: "书的标识符存在问题",
 	UploadCoverErr1: "参数错误",
 	UploadCoverErr2: "",
+
+	AccountBindErr1: "参数错误",
+	AccountBindErr2: "绑定用户失败，用户名或密码不正确",
+	AccountBindErr3: "登录密码与确认密码不一致",
+	AccountBindErr4: "用户名只能由英文字母数字组成，且在3-50个字符",
+	AccountBindErr5: "密码必须在6-50个字符之间",
+	AccountBindErr6: "邮箱格式不正确",
+	AccountBindErr7: "用户昵称限制在2-20个字符",
 }

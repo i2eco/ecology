@@ -122,7 +122,7 @@ func (c *Context) JSONCode(Code int, data ...interface{}) {
 func (c *Context) JSONOK(result ...interface{}) {
 	j := new(JSONResult)
 	j.Code = 0
-	j.Message = "ok"
+	j.Message = "成功"
 	if len(result) > 0 {
 		j.Data = result[0]
 	} else {

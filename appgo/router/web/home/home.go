@@ -17,15 +17,14 @@ import (
 func Index(c *core.Context) {
 	//tab
 	var (
-		tab       string
 		cid       int //分类，如果只是一级分类，则忽略，二级分类，则根据二级分类查找内容
 		urlPrefix = "/"
 		cate      mysql.Category
 		lang      = c.GetString("lang")
 		tabName   = map[string]string{"recommend": "站长推荐", "latest": "最新发布", "popular": "热门书籍"}
 	)
-
-	tab = strings.ToLower(c.GetString("tab"))
+	tab, _ := c.GetQuery("tab")
+	tab = strings.ToLower(tab)
 	switch tab {
 	case "recommend", "popular", "latest":
 	default:

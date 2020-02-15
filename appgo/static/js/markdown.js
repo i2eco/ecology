@@ -345,7 +345,7 @@ $(function () {
         success : function (res) {
             if(res.code === 0){
                 var identify=res.data.identify||res.data.doc_id;
-                var data = { "id" : res.data.doc_id,'parent' : res.data.parent_id === 0 ? '#' : res.data.parent_id ,"text" : res.data.doc_name+'<small class="text-danger">('+identify+')</small>',"identify" : res.data.identify,"version" : res.data.version};
+                var data = { "id" : res.data.documentId,'parent' : res.data.parentId === 0 ? '#' : res.data.parentId ,"text" : res.data.documentName+'<small class="text-danger">('+identify+')</small>',"identify" : res.data.identify,"version" : res.data.version};
 
                 var node = window.treeCatalog.get_node(data.id);
                 if(node){
@@ -363,6 +363,39 @@ $(function () {
                 showError(res.msg,"#add-error-message")
             }
             $("#btnSaveDocument").button("reset");
+        }
+    });
+
+    $("#updateDocumentForm").ajaxForm({
+        beforeSubmit : function () {
+            var doc_name = $.trim($("#updateDocumentName").val());
+            if (doc_name === ""){
+                return showError("目录名称不能为空","#update-error-message")
+            }
+            $("#updateBtnSaveDocument").button("loading");
+            return true;
+        },
+        success : function (res) {
+            if(res.code === 0){
+                var identify=res.data.identify||res.data.doc_id;
+                var data = { "id" : res.data.documentId,'parent' : res.data.parentId === 0 ? '#' : res.data.parentId ,"text" : res.data.documentName+'<small class="text-danger">('+identify+')</small>',"identify" : res.data.identify,"version" : res.data.version};
+
+                var node = window.treeCatalog.get_node(data.id);
+                if(node){
+                    window.treeCatalog.rename_node({"id":data.id},data.text);
+
+                }else {
+                    window.treeCatalog.create_node(data.parent, data);
+                    window.treeCatalog.deselect_all();
+                    window.treeCatalog.select_node(data);
+                }
+                pushDocumentCategory(data);
+                $("#markdown-save").removeClass('change').addClass('disabled');
+                $("#updateDocumentModal").modal('hide');
+            }else{
+                showError(res.msg,"#add-error-message")
+            }
+            $("#updateBtnSaveDocument").button("reset");
         }
     });
 

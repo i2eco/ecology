@@ -1,6 +1,7 @@
 package mdw
 
 import (
+	"github.com/spf13/viper"
 	"strings"
 
 	"github.com/goecology/ecology/appgo/dao"
@@ -25,6 +26,7 @@ func TplRequired() gin.HandlerFunc {
 		}
 		tpl.Data["Member"] = DefaultContextUser(c)
 		tpl.Data["BaseUrl"] = BaseUrl(c)
+		tpl.Data["BaiduTongji"] = viper.GetString("app.baidutongji")
 		tpl.Data["Version"] = utils.Version
 		isMobile := utils.IsMobile(c.Request.UserAgent())
 		tpl.Data["IsMobile"] = isMobile

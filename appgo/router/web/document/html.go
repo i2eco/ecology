@@ -194,10 +194,9 @@ func indexWithPassword(c *core.Context) {
 func ReadHtml(c *core.Context) {
 	identify := c.Param("key")
 	id := c.Param("id")
-
 	token, _ := c.GetQuery("token")
 
-	if identify == "" || id == "" {
+	if identify == "" {
 		c.Html404()
 		return
 	}
@@ -209,21 +208,47 @@ func ReadHtml(c *core.Context) {
 
 	bookResult := isReadable(c, identify, token)
 
-	var err error
-
 	doc := mysql.NewDocument()
-	if docId, _ := strconv.Atoi(id); docId > 0 {
-		doc, err = dao.Document.Find(docId) //文档id
+	var err error
+	var docId int
+	// 编辑的文档
+	if id != "" {
+		if docId, _ = strconv.Atoi(id); docId > 0 {
+			doc, err = dao.Document.Find(docId) //文档id
+			if err != nil {
+				mus.Logger.Error("read doc find int doc id error", zap.Int("docId", docId), zap.Error(err))
+				c.Html404()
+				return
+			}
+		} else {
+			//此处的id是字符串，标识文档标识，根据文档标识和文档所属的书的id作为key去查询
+			doc, err = dao.Document.FindByBookIdAndDocIdentify(bookResult.BookId, id) //文档标识
+			if err != nil {
+				mus.Logger.Error("read doc find string doc id error", zap.String("docId", id), zap.Error(err))
+				c.Html404()
+				return
+			}
+		}
+
+		// 查找第一篇文章
+	} else {
+		trees, err := dao.Document.FindDocumentTree(bookResult.BookId, 0, true)
 		if err != nil {
 			mus.Logger.Error(err.Error())
 			c.Html404()
 			return
 		}
-	} else {
-		//此处的id是字符串，标识文档标识，根据文档标识和文档所属的书的id作为key去查询
-		doc, err = dao.Document.FindByBookIdAndDocIdentify(bookResult.BookId, id) //文档标识
+
+		// 取第一篇文章
+		if len(trees) == 0 {
+			mus.Logger.Error("trees length is 0")
+			c.Html404()
+			return
+		}
+		docId = trees[0].DocumentId
+		doc, err = dao.Document.Find(docId) //文档id
 		if err != nil {
-			// todo log
+			mus.Logger.Error("read doc find int doc id error2", zap.Int("docId", docId), zap.Error(err))
 			c.Html404()
 			return
 		}
@@ -274,14 +299,14 @@ func ReadHtml(c *core.Context) {
 	}
 
 	//文档阅读人次+1
-	if err := mysql.SetIncreAndDecre(mysql.Document{}.TableName(), "vcnt",
+	if err := dao.SetIncreAndDecre(mysql.Document{}.TableName(), "vcnt",
 		fmt.Sprintf("document_id=%v", doc.DocumentId),
 		true, 1,
 	); err != nil {
 		mus.Logger.Error(err.Error())
 	}
 	//项目阅读人次+1
-	if err := mysql.SetIncreAndDecre(mysql.Book{}.TableName(), "vcnt",
+	if err := dao.SetIncreAndDecre(mysql.Book{}.TableName(), "vcnt",
 		fmt.Sprintf("book_id=%v", doc.BookId),
 		true, 1,
 	); err != nil {

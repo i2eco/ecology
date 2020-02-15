@@ -25,7 +25,7 @@ type Sign struct {
 	CreatedAt time.Time `gorm:"not null;"json:"createdAt"`
 }
 
-func TableName() string {
+func (Sign) TableName() string {
 	return "sign"
 }
 

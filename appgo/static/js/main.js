@@ -113,12 +113,12 @@ $(function () {
             if(cur.hasClass("cursor-pointer")){
                 $.get(cur.attr("data-url"),{score:cur.attr("data-val")},function (ret) {
                     ret=parseJson(ret);
-                    if(ret.errcode==0){
-                        alertTips("success",ret.message,3000,"");
+                    if(ret.code===0){
+                        alertTips("success",ret.msg,3000,"");
                         cur.removeClass("cursor-pointer").attr("data-toggle","").attr("data-original-title","");
                         $(".tooltip").remove();
                     }else{
-                        alertTips("error",ret.message,3000,"");
+                        alertTips("error",ret.msg,3000,"");
                     }
                 });
             }
@@ -156,8 +156,8 @@ $(function () {
         var _url=$(this).attr("href"),_this=$(this);
         $.get(_url,function (ret) {
             ret=parseJson(ret);
-            if(ret.errcode==0){//操作成功
-                alertTips("success",ret.message,3000,"");
+            if(ret.code===0){//操作成功
+                alertTips("success",ret.msg,3000,"");
                 if (ret.data.IsCancel){//取消收藏
                     _this.find("span").text("收藏");
                     _this.find(".fa-heart").addClass("fa-heart-o").removeClass("fa-heart");
@@ -166,7 +166,7 @@ $(function () {
                     _this.find(".fa-heart-o").addClass("fa-heart").removeClass("fa-heart-o");
                 }
             }else{
-                alertTips("danger",ret.message,3000,"");
+                alertTips("danger",ret.msg,3000,"");
             }
         })
     });
@@ -181,15 +181,15 @@ $(function () {
         var _url=$(this).attr("href"),_this=$(this);
         $.get(_url,function (ret) {
             ret=parseJson(ret);
-            if(ret.errcode==0){//操作成功
+            if(ret.code===0){//操作成功
                 var parent = _this.parents(".rm-ajax-get")
                 if (parent && parent.length>0){
                     parent.remove()
                 }else{
-                    alertTips("success",ret.message,3000,location.href);
+                    alertTips("success",ret.msg,3000,location.href);
                 }
             }else{
-                alertTips("danger",ret.message,3000,"");
+                alertTips("danger",ret.msg,3000,"");
             }
         })
     });
@@ -207,21 +207,21 @@ $(function () {
                 l--;
             }
         });
-        if (!_url || _url==undefined){
+        if (!_url || _url===undefined){
             _url=location.href;
         }
         if (l>0) return false;
-        if (method=="post") {
+        if (method==="post") {
             if (form.attr("enctype")=="multipart/form-data"){
                 form.attr("target","notarget");
                 form.submit();
             }else{
                 $.post(action,data,function(ret){
                     ret=parseJson(ret);
-                    if (ret.errcode==0) {
-                        alertTips("success",ret.message,2000,_url);
+                    if (ret.code===0) {
+                        alertTips("success",ret.msg,2000,_url);
                     } else{
-                        alertTips("error",ret.message,3000,"");
+                        alertTips("error",ret.msg,3000,"");
                     }
                 });
                 _this.removeClass("disabled");
@@ -230,10 +230,10 @@ $(function () {
         } else{
             $.get(action,data,function(ret){
                 ret=parseJson(ret);
-                if (ret.errcode==0) {
-                    alertTips("success",ret.message,2000,_url);
+                if (ret.code===0) {
+                    alertTips("success",ret.msg,2000,_url);
                 } else{
-                    alertTips("error",ret.message,3000,"");
+                    alertTips("error",ret.msg,3000,"");
                 }
             });
         }

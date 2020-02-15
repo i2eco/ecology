@@ -43,7 +43,7 @@ func init() {
 	}
 }
 func Create(isClear bool) error {
-	db := mmysql.Caller("egoshop")
+	db := mmysql.Caller("ecology")
 	if isClear {
 		db.DropTable(Models...)
 	}
@@ -61,7 +61,7 @@ func Create(isClear bool) error {
 }
 
 func Mock() error {
-	db := mmysql.Caller("egoshop")
+	db := mmysql.Caller("ecology")
 	options := []mysql.Option{
 		{
 			OptionValue: "true",
@@ -235,11 +235,11 @@ func Mock() error {
 		Password:                   hash,
 		AuthMethod:                 "local",
 		Description:                "",
-		Email:                      "",
+		Email:                      "ecology@163.com",
 		Phone:                      "",
 		Avatar:                     "",
-		Role:                       0,
-		RoleName:                   "",
+		Role:                       1,
+		RoleName:                   "管理员",
 		Status:                     0,
 		CreateTime:                 time.Now(),
 		CreateAt:                   0,

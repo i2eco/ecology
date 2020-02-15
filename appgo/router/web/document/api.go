@@ -147,11 +147,89 @@ doc_identify:
 */
 
 func CreateApi(c *core.Context) {
-	identify := c.PostForm("identify")        //书籍项目标识
-	docIdentify := c.PostForm("doc_identify") //新建的文档标识
+	identify := c.PostForm("identify") //书籍项目标识
 	docName := c.PostForm("doc_name")
 	parentId, _ := strconv.Atoi(c.PostForm("parent_id"))
+
+	if identify == "" {
+		c.JSONCode(code.MsgErr)
+		return
+	}
+	if docName == "" {
+		c.JSONCode(code.MsgErr)
+		return
+	}
+
+	currentMember := c.Member()
+	docIdentify := fmt.Sprintf("date-%v", time.Now().Format("2006.01.02.15.04.05"))
+
+	bookId := 0
+	//如果是超级管理员则不判断权限
+	if currentMember.IsAdministrator() {
+		book, err := dao.Book.FindByFieldFirst("identify", identify)
+		if err != nil {
+			c.JSONErr(code.MsgErr, err)
+			return
+		}
+		bookId = book.BookId
+	} else {
+		bookResult, err := dao.Book.ResultFindByIdentify(identify, currentMember.MemberId)
+
+		if err != nil || bookResult.RoleId == conf.Conf.Info.BookObserver {
+			c.JSONCode(code.MsgErr)
+			return
+		}
+		bookId = bookResult.BookId
+	}
+
+	if parentId > 0 {
+		doc, err := dao.Document.Find(parentId)
+		if err != nil || doc.BookId != bookId {
+			c.JSONCode(code.MsgErr)
+			return
+		}
+	}
+	var document mysql.Document
+
+	document.MemberId = currentMember.MemberId
+	document.BookId = bookId
+	if docIdentify != "" {
+		document.Identify = docIdentify
+	}
+	document.Version = time.Now().Unix()
+	document.DocumentName = docName
+	document.ParentId = parentId
+
+	docIdInt64, err := dao.Document.InsertOrUpdate(mus.Db, &document)
+	if err != nil {
+		c.JSONErr(code.MsgErr, err)
+		return
+	}
+
+	if dao.DocumentStore.GetFiledById(docIdInt64, "markdown") == "" {
+		//因为创建和更新文档基本信息都调用的这个接口，先判断markdown是否有内容，没有内容则添加默认内容
+		if err := dao.DocumentStore.InsertOrUpdate(mus.Db, &mysql.DocumentStore{DocumentId: int(docIdInt64), Markdown: "[TOC]\n\r\n\r"}); err != nil {
+			c.JSONErr(code.MsgErr, err)
+			return
+		}
+	}
+	c.JSONOK(document)
+}
+
+func UpdateApi(c *core.Context) {
 	docId, _ := strconv.Atoi(c.PostForm("doc_id"))
+	docIdentify := c.PostForm("doc_identify") //新建的文档标识
+
+	if docIdentify == "" {
+		c.JSONCode(code.MsgErr)
+		return
+	}
+
+	identify := c.PostForm("identify") //书籍项目标识
+
+	docName := c.PostForm("doc_name")
+	parentId, _ := strconv.Atoi(c.PostForm("parent_id"))
+
 	bookIdentify := strings.TrimSpace(c.Param("key"))
 
 	if identify == "" {
@@ -164,37 +242,33 @@ func CreateApi(c *core.Context) {
 	}
 
 	currentMember := c.Member()
-	if docIdentify != "" {
 
-		if ok, err := regexp.MatchString(`^[a-zA-Z0-9_\-\.]*$`, docIdentify); !ok || err != nil {
-			c.JSONCode(code.MsgErr)
-			return
-		}
-		if num, _ := strconv.Atoi(docIdentify); docIdentify == "0" || strconv.Itoa(num) == docIdentify { //不能是纯数字
-			c.JSONCode(code.MsgErr)
-			return
-		}
+	if ok, err := regexp.MatchString(`^[a-zA-Z0-9_\-\.]*$`, docIdentify); !ok || err != nil {
+		c.JSONCode(code.MsgErr)
+		return
+	}
+	if num, _ := strconv.Atoi(docIdentify); docIdentify == "0" || strconv.Itoa(num) == docIdentify { //不能是纯数字
+		c.JSONCode(code.MsgErr)
+		return
+	}
 
-		if bookIdentify == "" {
-			c.JSONCode(code.MsgErr)
-			return
-		}
+	if bookIdentify == "" {
+		c.JSONCode(code.MsgErr)
+		return
+	}
 
-		var book mysql.Book
+	var book mysql.Book
 
-		mus.Db.Select("book_id").Where("identify = ?", bookIdentify).Find(&book)
-		if book.BookId == 0 {
-			c.JSONCode(code.MsgErr)
-			return
-		}
+	mus.Db.Select("book_id").Where("identify = ?", bookIdentify).Find(&book)
+	if book.BookId == 0 {
+		c.JSONCode(code.MsgErr)
+		return
+	}
 
-		d, _ := dao.Document.FindByBookIdAndDocIdentify(book.BookId, docIdentify)
-		if d.DocumentId > 0 && d.DocumentId != docId {
-			c.JSONCode(code.MsgErr)
-			return
-		}
-	} else {
-		docIdentify = fmt.Sprintf("date-%v", time.Now().Format("2006.01.02.15.04.05"))
+	d, _ := dao.Document.FindByBookIdAndDocIdentify(book.BookId, docIdentify)
+	if d.DocumentId > 0 && d.DocumentId != docId {
+		c.JSONCode(code.MsgErr)
+		return
 	}
 
 	bookId := 0
@@ -223,20 +297,10 @@ func CreateApi(c *core.Context) {
 			return
 		}
 	}
-	fmt.Println("docId------>", docId)
-
-	//document, err := service.MdDocuments.Find(docId)
-	//if err != nil {
-	//
-	//	fmt.Println("aaaaa",err.Error())
-	//	base.JSON(c, code.MsgErr)
-	//	return
-	//}
 
 	var document mysql.Document
 
-	fmt.Println("currentMember------>", currentMember)
-
+	document.DocumentId = docId
 	document.MemberId = currentMember.MemberId
 	document.BookId = bookId
 	if docIdentify != "" {

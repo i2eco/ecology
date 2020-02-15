@@ -4,6 +4,7 @@
     commentInterval=10
     osspic = "ecologyoss"
     chromium = "chromium"
+    baidutongji= ""
 
 # 第三方登录配置
 [oauth]

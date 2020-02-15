@@ -22,20 +22,20 @@
                         {{str2html (ads "explore-under-nav" $.IsMobile)}}
                     </div>
                 {{end}}
-                <div class="help-block lang-explore" style="margin: 10px 0px 0;">
-                    <span class="text-muted">语种：</span>
-                    <a {{if eq $.Lang ""}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}" title="不限">不限</a>
-                    <a {{if eq $.Lang "zh"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=zh" title="中文">中文</a>
-                    <a {{if eq $.Lang "en"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=en" title="英文">英文</a>
-                    <a {{if eq $.Lang "other"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=other" title="其他">其他</a>
-                </div>
+{{/*                <div class="help-block lang-explore" style="margin: 10px 0px 0;">*/}}
+{{/*                    <span class="text-muted">语种：</span>*/}}
+{{/*                    <a {{if eq $.Lang ""}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}" title="不限">不限</a>*/}}
+{{/*                    <a {{if eq $.Lang "zh"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=zh" title="中文">中文</a>*/}}
+{{/*                    <a {{if eq $.Lang "en"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=en" title="英文">英文</a>*/}}
+{{/*                    <a {{if eq $.Lang "other"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=other" title="其他">其他</a>*/}}
+{{/*                </div>*/}}
                 {{if .Cates}}
                     <div class="help-block lang-explore" style="margin: 10px 0 15px;">
                         <span class="text-muted">分类：</span>
-                            <a {{if eq $.Cid 0}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&lang={{$.Lang}}" title="不限">不限</a>
+                            <a {{if eq $.Cid 0}}class="active"{{end}} href="/explore?tab={{$.Tab}}&lang={{$.Lang}}" title="不限">不限</a>
                             {{range .Cates}}
                             {{if and (eq .Pid 0) (gt .Cnt 0)}}
-                                <a {{if eq $.Pid .Id}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{.Id}}&lang={{$.Lang}}" title="{{.Title}}">{{.Title}}</a>
+                                <a {{if eq $.Pid .Id}}class="active"{{end}} href="/explore?tab={{$.Tab}}&cid={{.Id}}&lang={{$.Lang}}" title="{{.Title}}">{{.Title}}</a>
                             {{end}}
                             {{end}}
 
@@ -43,7 +43,7 @@
                             <div class="help-block" style="text-indent: 45px;">
                             {{range .Cates}}
                             {{if and (eq .Pid $.Pid) (gt .Cnt 0)}}
-                                <a {{if eq $.Cid .Id}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{.Id}}&lang={{$.Lang}}" title="{{.Title}}">{{.Title}}</a>
+                                <a {{if eq $.Cid .Id}}class="active"{{end}} href="/explore?tab={{$.Tab}}&cid={{.Id}}&lang={{$.Lang}}" title="{{.Title}}">{{.Title}}</a>
                             {{end}}
                             {{end}}
                             </div>
@@ -51,10 +51,10 @@
                     </div>
                 {{end}}
                 <ul class="nav nav-tabs">
-                    <li {{if eq $.Tab "latest"}}class="active"{{end}}><a href="{{urlfor "HomeController.Index"}}?tab=latest&cid={{$.Cid}}&lang={{$.Lang}}">最新<span class="hidden-xs">发布</span></a></li>
-                    <li {{if eq $.Tab "popular"}}class="active"{{end}}><a href="{{urlfor "HomeController.Index"}}?tab=popular&cid={{$.Cid}}&lang={{$.Lang}}">热门<span class="hidden-xs">书籍</span></a></li>
-                    <li {{if eq $.Tab "recommend"}}class="active"{{end}}><a href="{{urlfor "HomeController.Index"}}?tab=recommend&cid={{$.Cid}}&lang={{$.Lang}}" title="网站推荐"><span class="hidden-xs">网站</span>推荐</a></li>
-                    <li ><a href="{{urlfor "SettingController.Star"}}" target="_blank" class="text-red" title="我的收藏"><i class="fa fa-heart"></i> 我的收藏</a></li>
+                    <li {{if eq $.Tab "latest"}}class="active"{{end}}><a href="/explore?tab=latest&cid={{$.Cid}}&lang={{$.Lang}}">最新<span class="hidden-xs">发布</span></a></li>
+                    <li {{if eq $.Tab "popular"}}class="active"{{end}}><a href="/explore?tab=popular&cid={{$.Cid}}&lang={{$.Lang}}">热门<span class="hidden-xs">书籍</span></a></li>
+                    <li {{if eq $.Tab "recommend"}}class="active"{{end}}><a href="/explore?tab=recommend&cid={{$.Cid}}&lang={{$.Lang}}" title="网站推荐"><span class="hidden-xs">网站</span>推荐</a></li>
+                    <li ><a href="/setting/star" target="_blank" class="text-red" title="我的收藏"><i class="fa fa-heart"></i> 我的收藏</a></li>
 {{/*                    {{if and (gt $.Member.MemberId 0) (eq .IsSignedToday false)}}*/}}
 {{/*                        <li ><a href="{{urlfor "UserController.Index" ":username" $.Member.Account}}" class="text-red" title="每日签到"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i> 每日签到</a></li>*/}}
 {{/*                    {{end}}*/}}
@@ -72,7 +72,7 @@
                 <div class="col-xs-6 col-sm-3 col-md-2">
                     <dl class="manual-item-standard">
                         <dt>
-                            <a class="clearfix tooltips {{if gt $item.OrderIndex 0}}recommend-book{{end}} {{if gt $item.Pin 0}}pin-book{{end}}" href="{{urlfor "DocumentController.Index" ":key" $item.Identify}}" title="{{$item.BookName}}" target="_blank" >
+                            <a class="clearfix tooltips {{if gt $item.OrderIndex 0}}recommend-book{{end}} {{if gt $item.Pin 0}}pin-book{{end}}" href="/books/{{$item.Identify}}" title="{{$item.BookName}}" target="_blank" >
                                 <img class="img-responsive border-cover-img" onerror="this.src='/static/images/book.png'" src="{{showImg $item.Cover "cover"}}" class="cover" alt="{{$item.BookName}}">
                             </a>
                         </dt>

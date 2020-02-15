@@ -147,8 +147,9 @@
             },
             success : function (res) {
                 $("button[type='submit']").button('reset');
+                console.log("res",res)
                 if(res.code === 0){
-                    window.location = "/login";
+                    window.location.href = "/login";
                 }else{
                     $("#captcha-img").click();
                     $("#code").val('');

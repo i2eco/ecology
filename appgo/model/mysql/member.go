@@ -3,6 +3,7 @@ package mysql
 
 import (
 	"errors"
+	"github.com/goecology/ecology/appgo/pkg/mus"
 	"regexp"
 	"strings"
 	"time"
@@ -114,16 +115,15 @@ func (m *Member) Add() error {
 }
 
 // Update 更新用户信息.
-func (m *Member) Update(cols ...string) error {
-	o := orm.NewOrm()
+func (m *Member) Update() error {
 
 	if m.Email == "" {
 		return errors.New("邮箱不能为空")
 	}
-	if _, err := o.Update(m, cols...); err != nil {
-		return err
-	}
-	return nil
+
+	err := mus.Db.Model(m).Where("member_id = ?", m.MemberId).UpdateColumns(m).Error
+
+	return err
 }
 
 func (m *Member) ResolveRoleName() {

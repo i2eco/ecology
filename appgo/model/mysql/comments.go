@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"errors"
-
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -99,74 +96,5 @@ func (this *Score) BookScores(p, listRows, bookId int) (scores []BookScoresResul
 	sql := `select s.score,s.time_create,m.avatar,m.nickname from md_score s left join md_members m on m.member_id=s.uid where s.book_id=? order by s.id desc limit %v offset %v`
 	sql = fmt.Sprintf(sql, listRows, (p-1)*listRows)
 	_, err = orm.NewOrm().Raw(sql, bookId).QueryRows(&scores)
-	return
-}
-
-//添加评论内容
-
-//添加评分
-//score的值只能是1-5，然后需要对score x 10，50则表示5.0分
-func (this *Score) AddScore(uid, bookId, score int) (err error) {
-	//查询评分是否已存在
-	o := orm.NewOrm()
-	var scoreObj = Score{Uid: uid, BookId: bookId}
-	o.Read(&scoreObj, "uid", "book_id")
-	if scoreObj.Id > 0 { //评分已存在
-		err = errors.New("您已给当前文档打过分了")
-		return
-	}
-
-	// 评分不存在，添加评分记录
-	score = score * 10
-	scoreObj.Score = score
-	scoreObj.TimeCreate = time.Now()
-	o.Insert(&scoreObj)
-	if scoreObj.Id > 0 { //评分添加成功，更行当前书籍项目的评分
-		//评分人数+1
-		var book = Book{BookId: bookId}
-		o.Read(&book, "book_id")
-		if book.CntScore == 0 {
-			book.CntScore = 1
-			book.Score = 0
-		} else {
-			book.CntScore = book.CntScore + 1
-		}
-		book.Score = (book.Score*(book.CntScore-1) + score) / book.CntScore
-		_, err = o.Update(&book, "cnt_score", "score")
-		if err != nil {
-			beego.Error(err.Error())
-			err = errors.New("评分失败，内部错误")
-		}
-	}
-	return
-}
-
-//添加评论
-func (this *Comments) AddComments(uid, bookId int, content string) (err error) {
-	var comment Comments
-
-	//查询该用户现有的评论
-	second := beego.AppConfig.DefaultInt("CommentInterval", 60)
-	now := time.Now()
-	o := orm.NewOrm()
-	o.QueryTable("md_comments").Filter("uid", uid).Filter("TimeCreate__gt", now.Add(-time.Duration(second)*time.Second)).OrderBy("-Id").One(&comment, "Id")
-	if comment.Id > 0 {
-		return fmt.Errorf("您距离上次发表评论时间小于 %v 秒，请歇会儿再发。", second)
-	}
-
-	var comments = Comments{
-		Uid:        uid,
-		BookId:     bookId,
-		Content:    content,
-		TimeCreate: now,
-	}
-
-	if _, err = o.Insert(&comments); err != nil {
-		beego.Error(err.Error())
-		err = errors.New("发表评论失败")
-		return
-	}
-	// 项目被评论数量量+1
-	SetIncreAndDecre("md_books", "cnt_comment", fmt.Sprintf("book_id=%v", bookId), true)
 	return
 }
