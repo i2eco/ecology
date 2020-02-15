@@ -1,0 +1,6 @@
+<ul class="nav nav-tabs">
+    <li {{if eq $.Tab "share"}}class="active"{{end}}><a href="/u/{{.User.Account}}">分享</a></li>
+    <li {{if eq $.Tab "collection"}}class="active"{{end}}><a href="/u/{{.User.Account}}/collection">收藏</a></li>
+    <li {{if eq $.Tab "follow"}}class="active"{{end}}><a href="/u/{{ .User.Account}}/follow">关注</a></li>
+    <li {{if eq $.Tab "fans"}}class="active"{{end}}><a href="/u/{{.User.Account}}/fans">粉丝</a></li>
+</ul>

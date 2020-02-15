@@ -1,0 +1,124 @@
+# 联调配置文件
+[app]
+    #评论时间间隔，每次发表评论，限定间隔秒数，避免被恶意刷评论
+    commentInterval=10
+    osspic = "ecologyoss"
+    chromium = "chromium"
+
+# 第三方登录配置
+[oauth]
+
+##### Gitee(码云) ####
+# 申请地址（需要先登录）：https://gitee.com/oauth/applications
+
+# 您的ClientId
+giteeClientId=""
+
+# 您的ClientSecret
+giteeClientSecret=""
+
+# 回调地址，把下面的bookstack.cn的域名换成你的即可
+giteeCallback="http://www.bookstack.cn/login/gitee"
+
+# 下面这两项不要动
+giteeAccesstoken="https://gitee.com/oauth/token"
+giteeUserInfo="https://gitee.com/api/v5/user"
+
+
+
+######## GitHub ########
+# 申请地址(需要先登录你的GitHub)：https://github.com/settings/developers
+
+# 您的ClientId
+githubClientId=""
+
+# 您的ClientSecret
+githubClientSecret=""
+
+# 回调地址，把下面的bookstack.cn的域名换成你的即可
+githubCallback="http://www.bookstack.cn/login/github"
+
+# 下面这两项不要动
+githubAccesstoken="https://github.com/login/oauth/access_token"
+githubUserInfo="https://api.github.com/user"
+
+
+
+#### QQ ####
+# 申请地址（需要先登录你的QQ）:https://connect.qq.com/manage.html
+
+#ClientId，即 APP ID
+qqClientId=""
+
+#ClientSecret，即 APP Key
+qqClientSecret=""
+
+# 回调地址，把下面的bookstack.cn的域名换成你的即可
+qqCallback="http://www.bookstack.cn/login/qq"
+
+# 下面这三项不要动
+qqAccesstoken="https://graph.qq.com/oauth2.0/token"
+qqOpenId="https://graph.qq.com/oauth2.0/me"
+qqUserInfo="https://graph.qq.com/user/get_user_info"
+
+[muses]
+    [muses.app]
+        name = "goecology"
+        env = "dev"
+        version = "1.0"
+        file = "local"
+    [muses.server.stat]
+        addr = ":19001"
+        writeTimeout = "1s"
+        readTimeout = "1s"
+    [muses.server.gin]
+        graceful = true
+        mode = "debug"
+        addr = ":9011"
+        writeTimeout = "10s"
+        readTimeout = "10s"
+        maxHeaderBytes = 100000000000000
+        enabledRecovery = true
+        enabledLogger = true
+        enabledMetric = true
+    [muses.tpl.tplBeego]
+    debug = true
+    tplExt = "html"
+    [muses.logger.system]
+        debug = true
+        level = "debug"
+        path = "./system.log"
+    [muses.mysql.ecology]
+        debug = true
+        level = "panic"
+        network = "tcp"
+        dialect = "mysql"
+        addr = "127.0.0.1:3306"
+        username = "root"
+        password = "root"
+        db = "ecology"
+        charset = "utf8"
+        parseTime = "True"
+        loc = "Local"
+        timeout = "1s"
+        readTimeout = "1s"
+        writeTimeout = "1s"
+        maxOpenConns = 30
+        maxIdleConns = 10
+        connMaxLifetime = "300s"
+    [muses.session.gin]
+        mode = "redis" # memory, redis
+        name = "mysession"
+        size = 10
+        network = "tcp"
+        addr = "127.0.0.1:6379"
+        pwd = ""
+        keypairs = "secret"
+    [muses.mixcache.ecology]
+        mode = "leveldb" # memory, redis, leveldb
+        levelDbPath = "leveldb"
+    [muses.oss.ecology]
+        mode = "file"   # oss, file
+        isDeleteSrcPath = true
+        cdnName = "http://127.0.0.1:9011/ecologyoss/"
+        fileBucket = "ecologyoss"
