@@ -3,7 +3,6 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/TruthHun/BookStack/commands"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/goecology/ecology/appgo/dao"
@@ -204,7 +203,6 @@ func EditBookHtml(c *core.Context) {
 
 // 删除项目.
 func DeleteBook(c *core.Context) {
-
 	bookId := c.GetInt("book_id")
 	if bookId <= 0 {
 		c.JSONErrStr(6001, "参数错误")
@@ -468,7 +466,7 @@ func AttachList(c *core.Context) {
 	}
 
 	for _, item := range attachList {
-		p := filepath.Join(commands.WorkingDirectory, item.FilePath)
+		p := filepath.Join("./", item.FilePath)
 		item.IsExist = utils.FileExists(p)
 	}
 
@@ -491,7 +489,7 @@ func AttachDetailed(c *core.Context) {
 		return
 	}
 
-	attach.FilePath = filepath.Join(commands.WorkingDirectory, attach.FilePath)
+	attach.FilePath = filepath.Join("./", attach.FilePath)
 	attach.HttpPath = c.BaseUrl() + attach.HttpPath
 	attach.IsExist = utils.FileExists(attach.FilePath)
 	c.Tpl().Data["Model"] = attach

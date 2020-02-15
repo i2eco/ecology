@@ -97,9 +97,9 @@ func BindApi(c *core.Context) {
 		//注册成功，绑定用户
 		switch oauthType {
 		case "gitee":
-			err = mysql.ModelGitee.Bind(oauthId, memberId)
+			//err = mysql.ModelGitee.Bind(oauthId, memberId)
 		case "github":
-			err = mysql.ModelGithub.Bind(oauthId, memberId)
+			//err = mysql.ModelGithub.Bind(oauthId, memberId)
 		case "qq":
 			err = mysql.ModelQQ.Bind(oauthId, memberId)
 		}

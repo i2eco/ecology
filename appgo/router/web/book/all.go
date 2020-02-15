@@ -2,6 +2,17 @@ package book
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
+	"github.com/goecology/ecology/appgo/dao"
+	"github.com/goecology/ecology/appgo/model/mysql"
+	"github.com/goecology/ecology/appgo/pkg/code"
+	"github.com/goecology/ecology/appgo/pkg/conf"
+	"github.com/goecology/ecology/appgo/pkg/graphics"
+	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 	"os"
 	"path/filepath"
@@ -9,18 +20,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/TruthHun/BookStack/graphics"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
-	"github.com/astaxie/beego/orm"
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/code"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/ecology/appgo/router/core"
 )
 
 //保存项目信息
@@ -504,7 +503,7 @@ func Delete(c *core.Context) {
 	}
 
 	err = dao.Book.ThoroughDeleteBook(bookResult.BookId)
-	if err == orm.ErrNoRows {
+	if err == gorm.ErrRecordNotFound {
 		c.JSONErrStr(6002, "项目不存在")
 		return
 	}
