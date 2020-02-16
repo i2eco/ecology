@@ -13,11 +13,11 @@ import (
 
 // AddMember 参加参与用户.
 func AddMember(c *core.Context) {
-	identify := c.GetPostFormString("identify")
-	account := c.GetPostFormString("account")
+	identify := c.PostForm("identify")
+	account := c.PostForm("account")
 	// todo fix
 	//roleId, _ := this.GetInt("role_id", 3)
-	roleId, _ := strconv.Atoi(c.GetPostFormString("role_id"))
+	roleId, _ := strconv.Atoi(c.PostForm("role_id"))
 
 	if identify == "" || account == "" {
 		c.JSONErrStr(6001, "参数错误")
