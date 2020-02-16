@@ -3,7 +3,9 @@ package book
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/goecology/ecology/appgo/pkg/mus"
 	"html/template"
+	"strconv"
 
 	"github.com/goecology/ecology/appgo/model/mysql"
 
@@ -120,8 +122,10 @@ func Setting(c *core.Context) {
 
 // Users 用户列表.
 func Users(c *core.Context) {
-	pageIndex := c.GetInt("page")
-
+	pageIndex, _ := strconv.Atoi(c.Query("page"))
+	if pageIndex == 0 {
+		pageIndex = 1
+	}
 	key := c.Param("key")
 	if key == "" {
 		c.Html404()
@@ -140,7 +144,7 @@ func Users(c *core.Context) {
 	members, totalCount, _ := mysql.NewMemberRelationshipResult().FindForUsersByBookId(book.BookId, pageIndex, pageSize)
 
 	for idx, member := range members {
-		member.Avatar = utils.ShowImg(member.Avatar, "avatar")
+		member.Avatar = mus.Oss.ShowImg(member.Avatar, "")
 		members[idx] = member
 	}
 

@@ -67,7 +67,9 @@ func (m *MemberRelationshipResult) FindForUsersByBookId(bookId, pageIndex, pageS
 
 	sql2 := "SELECT count(*) AS total_count FROM " + Relationship{}.TableName() + " AS rel LEFT JOIN " + Member{}.TableName() + " as member ON rel.member_id = member.member_id WHERE rel.book_id = ?"
 
-	var totalCount int
+	totalCount := struct {
+		TotalCount int
+	}{}
 
 	err := mus.Db.Raw(sql2, bookId).Scan(&totalCount).Error
 
@@ -86,5 +88,5 @@ func (m *MemberRelationshipResult) FindForUsersByBookId(bookId, pageIndex, pageS
 	for _, item := range members {
 		item.ResolveRoleName()
 	}
-	return members, totalCount, nil
+	return members, totalCount.TotalCount, nil
 }
