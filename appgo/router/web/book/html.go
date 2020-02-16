@@ -30,6 +30,7 @@ func Index(c *core.Context) {
 	c.Tpl().Data["Private"] = req.Private //是否是私有文档
 	pageIndex := req.Page
 	books, totalCount, err := dao.Book.FindToPager(pageIndex, conf.Conf.Info.PageSize, c.Member().MemberId, req.Private)
+	fmt.Println("books------>", books)
 	if err != nil {
 		c.Html404()
 		return
@@ -91,7 +92,6 @@ func Setting(c *core.Context) {
 		c.Html404()
 		return
 	}
-
 	//如果不是创始人也不是管理员则不能操作
 	if book.RoleId != conf.BookFounder && book.RoleId != conf.BookAdmin {
 		c.Html404()
@@ -99,20 +99,18 @@ func Setting(c *core.Context) {
 	}
 
 	if book.PrivateToken != "" {
-		//book.PrivateToken = this.BaseUrl() + beego.URLFor("DocumentController.Index", ":key", book.Identify, "token", book.PrivateToken)
 		tipsFmt := "访问链接：%v  访问密码：%v"
-		book.PrivateToken = fmt.Sprintf(tipsFmt, c.BaseUrl()+beego.URLFor("DocumentController.Index", ":key", book.Identify), book.PrivateToken)
+		book.PrivateToken = fmt.Sprintf(tipsFmt, "/books/"+book.Identify+"?token="+book.PrivateToken)
 	}
 
 	//查询当前书籍的分类id
-	//  todo fix
-	//if selectedCates, rows, _ := new(mysql.BookCategory).GetByBookId(book.BookId); rows > 0 {
-	//	var maps = make(map[int]bool)
-	//	for _, cate := range selectedCates {
-	//		maps[cate.Id] = true
-	//	}
-	//	c.Tpl().Data["Maps"] = maps
-	//}
+	if selectedCates, _ := dao.BookCategory.GetByBookId(book.BookId); len(selectedCates) > 0 {
+		var maps = make(map[int]bool)
+		for _, cate := range selectedCates {
+			maps[cate.Id] = true
+		}
+		c.Tpl().Data["Maps"] = maps
+	}
 
 	c.Tpl().Data["Cates"], _ = dao.Category.GetCates(c.Context, -1, 1)
 	book.DealCover()

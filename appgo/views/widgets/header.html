@@ -7,23 +7,23 @@
                     <li>
                         <a href="/" class="visible-xs" title="首页"><i class="fa fa-home"></i> 首页</a>
                     </li>
-                    <li>
-                        <a href="/explore" class="visible-xs" title="发现"><i class="fa fa-globe"></i> 发现</a>
-                    </li>
-                    <li>
-                        <a href="{{urlfor "LabelController.List"}}" class="visible-xs" title="标签"><i class="fa fa-tags"></i> 标签</a>
-                    </li>
-                    <li>
-                        <a href="{{urlfor "SearchController.Search"}}" class="visible-xs visible-sm" title="搜索"><i class="fa fa-search"></i> 搜索</a>
-                    </li>
+{{/*                    <li>*/}}
+{{/*                        <a href="/explore" class="visible-xs" title="发现"><i class="fa fa-globe"></i> 发现</a>*/}}
+{{/*                    </li>*/}}
+{{/*                    <li>*/}}
+{{/*                        <a href="{{urlfor "LabelController.List"}}" class="visible-xs" title="标签"><i class="fa fa-tags"></i> 标签</a>*/}}
+{{/*                    </li>*/}}
+{{/*                    <li>*/}}
+{{/*                        <a href="{{urlfor "SearchController.Search"}}" class="visible-xs visible-sm" title="搜索"><i class="fa fa-search"></i> 搜索</a>*/}}
+{{/*                    </li>*/}}
 
-                    {{if eq .CloseOpenSourceLink false}}
-                        <li><a href="https://www.bookstack.cn/read/help/opensource.md" title="BookStack开源" target="_blank"><i class="fa fa-code"></i> 开源</a></li>
-                    {{end}}
-                    {{if .APP_PAGE}}
-                        {{/*  "/app" 会自动根据后台配置的APP单页地址跳转过去  */}}
-                        <li><a href="/app" title="手机APP下载" target="_blank"><i class="fa fa-paper-plane-o"></i> APP下载</a></li>
-                    {{end}}
+{{/*                    {{if eq .CloseOpenSourceLink false}}*/}}
+{{/*                        <li><a href="https://www.bookstack.cn/read/help/opensource.md" title="BookStack开源" target="_blank"><i class="fa fa-code"></i> 开源</a></li>*/}}
+{{/*                    {{end}}*/}}
+{{/*                    {{if .APP_PAGE}}*/}}
+{{/*                        */}}{{/*  "/app" 会自动根据后台配置的APP单页地址跳转过去  */}}
+{{/*                        <li><a href="/app" title="手机APP下载" target="_blank"><i class="fa fa-paper-plane-o"></i> APP下载</a></li>*/}}
+{{/*                    {{end}}*/}}
                 {{if gt .Member.MemberId 0}}
                     <li>
                         <a href="{{urlfor "SettingController.Index"}}" title="个人中心"><i class="fa fa-user-o" aria-hidden="true"></i> 个人中心</a>
@@ -38,16 +38,16 @@
                     <li>
                         <a href="/book" title="我的项目"><i class="fa fa-book" aria-hidden="true"></i> 我的项目</a>
                     </li>
-                {{if eq .Member.Role 0 }}
+                {{if eq .Member.Role 1 }}
                     <li>
-                        <a href="{{urlfor "ManagerController.Index"}}" title="管理后台"><i class="fa fa-university" aria-hidden="true"></i> 管理后台</a>
+                        <a href="/manager" title="管理后台"><i class="fa fa-university" aria-hidden="true"></i> 管理后台</a>
                     </li>
                 {{end}}
                     <li>
-                        <a href="{{urlfor "AccountController.Logout"}}" title="退出登录"><i class="fa fa-sign-out"></i> 退出登录</a>
+                        <a href="/logout" title="退出登录"><i class="fa fa-sign-out"></i> 退出登录</a>
                     </li>
                 {{else}}
-                    <li><a href="{{urlfor "AccountController.Oauth" ":oauth" "email"}}" title="注册"><i class="fa fa-user-plus"></i> 注册</a></li>
+                    <li><a href="/login/email" title="注册"><i class="fa fa-user-plus"></i> 注册</a></li>
                     <li><a href="/login" title="登录"><i class="fa fa-sign-in"></i> 登录</a></li>
                 {{end}}
                 </ul>
@@ -59,15 +59,12 @@
             <nav class="collapse navbar-collapse">
 
                 <ul class="nav navbar-nav">
-                    <li class="{{if .IsCate}}active{{end}}">
-                        <a href="/" title="首页"><i class="fa fa-home"></i> 首页</a>
-                    </li>
-                    <li {{if .IsHome}}class="active"{{end}}>
-                        <a href="/explore" title="发现"><i class="fa fa-globe"></i> 发现</a>
-                    </li>
-                    <li {{if .IsRank}}class="active"{{end}}>
-                        <a href="/rank" title="榜单"><img src="/static/images/rank.png" alt=""> 榜单</a>
-                    </li>
+{{/*                    <li class="{{if .IsHome}}active{{end}}">*/}}
+{{/*                        <a href="/" title="首页"><i class="fa fa-home"></i> 首页</a>*/}}
+{{/*                    </li>*/}}
+{{/*                    <li {{if .IsRank}}class="active"{{end}}>*/}}
+{{/*                        <a href="/rank" title="榜单"><img src="/static/images/rank.png" alt=""> 榜单</a>*/}}
+{{/*                    </li>*/}}
 {{/*                    {{if eq .HideTag false}}*/}}
 {{/*                    <li class="{{if .IsLabel}}active{{end}}">*/}}
 {{/*                        <a href="/tags" class="hidden-sm" title="标签"><i class="fa fa-tags"></i> 标签</a>*/}}
@@ -78,30 +75,30 @@
 {{/*                        <a href="/submit" class="hidden-sm" title="收录"><i class="fa fa-check-square-o"></i> 收录</a>*/}}
 {{/*                    </li>*/}}
 {{/*                    {{end}}*/}}
-                    {{if eq .CloseOpenSourceLink false}}
-                    <li class="hidden-sm"><a href="https://www.bookstack.cn/read/help/opensource.md" title="BookStack开源" target="_blank"><i class="fa fa-code"></i> 开源</a></li>
-                    {{end}}
-                    {{if .APP_PAGE}}
-                        {{/*  "/app" 会自动根据后台配置的APP单页地址跳转过去  */}}
-                        <li><a href="/app" title="手机APP下载" target="_blank"><i class="fa fa-paper-plane-o"></i> APP下载</a></li>
-                    {{end}}
-                    {{if .IsSearch}}
-                        <li class="active">
-                            <a href="{{urlfor "SearchController.Search" }}" title="搜索"><i class="fa fa-search"></i> 搜索</a>
-                        </li>
-                    {{end}}
+{{/*                    {{if eq .CloseOpenSourceLink false}}*/}}
+{{/*                    <li class="hidden-sm"><a href="https://www.bookstack.cn/read/help/opensource.md" title="BookStack开源" target="_blank"><i class="fa fa-code"></i> 开源</a></li>*/}}
+{{/*                    {{end}}*/}}
+{{/*                    {{if .APP_PAGE}}*/}}
+{{/*                        */}}{{/*  "/app" 会自动根据后台配置的APP单页地址跳转过去  */}}
+{{/*                        <li><a href="/app" title="手机APP下载" target="_blank"><i class="fa fa-paper-plane-o"></i> APP下载</a></li>*/}}
+{{/*                    {{end}}*/}}
+{{/*                    {{if .IsSearch}}*/}}
+{{/*                        <li class="active">*/}}
+{{/*                            <a href="{{urlfor "SearchController.Search" }}" title="搜索"><i class="fa fa-search"></i> 搜索</a>*/}}
+{{/*                        </li>*/}}
+{{/*                    {{end}}*/}}
                 </ul>
 
-                {{if .IsSearch}}{{else}}
-                    <div class="searchbar pull-left">
-                        <form class="form-inline" action="{{urlfor "SearchController.Result"}}" method="get">
-                            <input class="form-control" name="wd" type="search"  placeholder="书籍搜索..." value="{{.Keyword}}">
-                            <button class="search-btn">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </form>
-                    </div>
-                {{end}}
+{{/*                {{if .IsSearch}}{{else}}*/}}
+{{/*                    <div class="searchbar pull-left">*/}}
+{{/*                        <form class="form-inline" action="{{urlfor "SearchController.Result"}}" method="get">*/}}
+{{/*                            <input class="form-control" name="wd" type="search"  placeholder="书籍搜索..." value="{{.Keyword}}">*/}}
+{{/*                            <button class="search-btn">*/}}
+{{/*                                <i class="fa fa-search"></i>*/}}
+{{/*                            </button>*/}}
+{{/*                        </form>*/}}
+{{/*                    </div>*/}}
+{{/*                {{end}}*/}}
 
 
             </nav>
@@ -142,7 +139,7 @@
                     </ul>
                 </li>
                 {{else}}
-                    <li><a href="{{urlfor "AccountController.Oauth" ":oauth" "email"}}" title="注册"><i class="fa fa-user-plus"></i> 注册</a></li>
+                    <li><a href="/login/email" title="注册"><i class="fa fa-user-plus"></i> 注册</a></li>
                     <li><a href="/login" title="登录"><i class="fa fa-sign-in"></i> 登录</a></li>
                 {{end}}
             </ul>

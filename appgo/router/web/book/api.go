@@ -10,8 +10,6 @@ import (
 	"github.com/TruthHun/gotil/util"
 	"github.com/TruthHun/gotil/ziptil"
 	"github.com/TruthHun/html2md"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/goecology/ecology/appgo/dao"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/model/mysql/store"
@@ -273,37 +271,8 @@ func Release(c *core.Context) {
 	c.JSONOK("发布任务已推送到任务队列，稍后将在后台执行。")
 }
 
-//生成下载文档
-//加锁，防止用户不停地点击生成下载文档造成服务器资源开销.
-func Generate(c *core.Context) {
-	identify := c.Param("key")
-	member := c.Member()
-
-	if !dao.Book.HasProjectAccess(identify, member.MemberId, conf.BookAdmin) {
-		c.JSONErrStr(1, "您没有操作权限，只有项目创始人和项目管理员才有权限")
-		return
-	}
-
-	book, err := dao.Book.FindByIdentify(identify)
-	if err != nil {
-		c.JSONErrStr(1, "项目不存在")
-		return
-	}
-	//书籍正在生成离线文档
-	if isGenerating := utils.BooksGenerate.Exist(book.BookId); isGenerating {
-		c.JSONErrStr(1, "上一次下载文档生成任务正在后台执行，请您稍后再执行新的下载文档生成操作")
-		return
-	}
-
-	baseUrl := "http://localhost:" + beego.AppConfig.String("httpport")
-	go dao.Document.GenerateBook(book, baseUrl)
-
-	c.JSONOK("下载文档生成任务已交由后台执行，请您耐心等待。")
-}
-
 //文档排序.
 func SaveSort(c *core.Context) {
-
 	identify := c.Param("key")
 	if identify == "" {
 		c.JSONErrStr(code.MsgErr, "err")
@@ -350,11 +319,15 @@ func SaveSort(c *core.Context) {
 	qs := mus.Db.Model(mysql.Document{}).Where("book_id = ?", bookId)
 	now := time.Now()
 	for _, item := range docs {
-		qs.Where("document_id", item.Id).Update(orm.Params{
+		err = qs.Where("document_id = ?", item.Id).Updates(mysql.Ups{
 			"parent_id":   item.Parent,
 			"order_sort":  item.Sort,
 			"modify_time": now,
-		})
+		}).Error
+		if err != nil {
+			c.JSONErr(code.MsgErr, err)
+			return
+		}
 	}
 	c.JSONOK()
 }

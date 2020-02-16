@@ -55,6 +55,6 @@ func (this *category) AddCates(pid int, cates string) (err error) {
 
 //根据字段更新内容
 func (this *category) UpdateByField(id int, field, val string) (err error) {
-	err = mus.Db.Where("id = ?", id).Updates(mysql.Ups{field: val}).Error
+	err = mus.Db.Model(mysql.Category{}).Where("id = ?", id).Updates(mysql.Ups{field: val}).Error
 	return
 }

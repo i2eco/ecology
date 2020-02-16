@@ -82,30 +82,29 @@ func DeleteMember(c *core.Context) {
 	memberId, _ := strconv.Atoi(memberIdStr)
 
 	if memberId <= 0 {
-		c.JSONCode(code.MsgErr)
+		c.JSONCode(code.DeleteMemberErr1)
 		return
 	}
 
 	member, err := dao.Member.Find(memberId)
-
 	if err != nil {
-		c.JSONErr(code.MsgErr, err)
+		c.JSONErr(code.DeleteMemberErr2, err)
 		return
 	}
 	if member.Role == conf.Conf.Info.MemberSuperRole {
-		c.JSONCode(code.MsgErr)
+		c.JSONCode(code.DeleteMemberErr3)
 		return
 	}
 	superMember, err := dao.Member.FindByFieldFirst("role", 0)
 
 	if err != nil {
-		c.JSONErr(code.MsgErr, err)
+		c.JSONErr(code.DeleteMemberErr4, err)
 		return
 	}
 
 	err = dao.Member.DeleteXX(c.Context, memberId, superMember.MemberId)
 	if err != nil {
-		c.JSONErr(code.MsgErr, err)
+		c.JSONErr(code.DeleteMemberErr5, err)
 		return
 	}
 	c.JSONOK()

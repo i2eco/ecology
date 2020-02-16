@@ -20,6 +20,7 @@
 {{/*<script src="/static/respond.js/1.4.2/respond.min.js"></script>*/}}
     <script src="/static/respond.js/1.4.2/respond.min.js"></script>
 </head>
+
 <body>
 <div class="manual-reader">
     {{template "widgets/header.html" .}}
@@ -99,9 +100,9 @@
                                     <div class="btns">
                                         <a :href="'/books/' + item.identify" title="查看文档" class="btn btn-default btn-sm" data-toggle="tooltip" target="_blank"><i class="fa fa-eye"></i> 查看<span class="hidden-xs">文档</span></a>
                                         <a v-if="item.role_id < 2" :href="'/book/' + item.identify + '/setting'" title="项目设置" class="btn btn-default btn-sm" data-toggle="tooltip" target="_blank"><i class="fa fa-cogs"></i> <span class="hidden-xs">项目</span>设置</a>
-                                        <a v-if="item.role_id < 2" :href="'/book/'+ item.identify +'/generate'" class="btn btn-default btn-sm ajax-get confirm" :data-identify="item.identify">
-                                            <i class="fa fa-book"></i> 生成下载文档
-                                        </a>
+{{/*                                        <a v-if="item.role_id < 2" :href="'/book/'+ item.identify +'/generate'" class="btn btn-default btn-sm ajax-get confirm" :data-identify="item.identify">*/}}
+{{/*                                            <i class="fa fa-book"></i> 生成下载文档*/}}
+{{/*                                        </a>*/}}
 
                                         <template v-if="item.role_id != 3">
                                             <a :href="'/document/content/' + item.identify" title="编辑文档" data-toggle="tooltip" class="btn btn-default btn-sm"><i class="fa fa-edit" aria-hidden="true"></i> 编辑<span class="hidden-xs">文档</span></a>
@@ -139,18 +140,18 @@
                                             </div>
                                         </template>
 
-                                        <div class="btn-group btn-group-download">
-                                            <button type="button" class="btn btn-default"><i class="fa fa-cloud-download"></i> 导出项目</button>
-                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
-                                            <ul class="dropdown-menu">
-                                                <li><a :href="'{{urlfor "DocumentController.Export" ":key" ""}}' + item.identify+'?output=pdf'">导出 PDF</a></li>
-                                                <li><a :href="'{{urlfor "DocumentController.Export" ":key" ""}}' + item.identify+'?output=mobi'">导出 MOBI</a></li>
-                                                <li><a :href="'{{urlfor "DocumentController.Export" ":key" ""}}' + item.identify+'?output=epub'">导出 EPUB</a></li>
-                                            </ul>
-                                        </div>
+{{/*                                        <div class="btn-group btn-group-download">*/}}
+{{/*                                            <button type="button" class="btn btn-default"><i class="fa fa-cloud-download"></i> 导出项目</button>*/}}
+{{/*                                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">*/}}
+{{/*                                                <span class="caret"></span>*/}}
+{{/*                                                <span class="sr-only">Toggle Dropdown</span>*/}}
+{{/*                                            </button>*/}}
+{{/*                                            <ul class="dropdown-menu">*/}}
+{{/*                                                <li><a :href="'{{urlfor "DocumentController.Export" ":key" ""}}' + item.identify+'?output=pdf'">导出 PDF</a></li>*/}}
+{{/*                                                <li><a :href="'{{urlfor "DocumentController.Export" ":key" ""}}' + item.identify+'?output=mobi'">导出 MOBI</a></li>*/}}
+{{/*                                                <li><a :href="'{{urlfor "DocumentController.Export" ":key" ""}}' + item.identify+'?output=epub'">导出 EPUB</a></li>*/}}
+{{/*                                            </ul>*/}}
+{{/*                                        </div>*/}}
 
                                     </div>
                                 </div>
@@ -211,16 +212,35 @@
                 <div class="form-group">
                     <div class="col-lg-6">
                         <label>
-                            <input type="radio" name="privately_owned" value="1" checked> 私有<span class="text">(只有参与者或使用令牌才能访问)</span>
+                            <input type="radio" name="privately_owned" value="1"> 私有<span class="text">(只有参与者或使用令牌才能访问)</span>
                         </label>
                     </div>
                     <div class="col-lg-6">
                         <label>
-                            <input type="radio" name="privately_owned" value="0" > 公开<span class="text">(任何人都可以访问)</span>
+                            <input type="radio" name="privately_owned" value="0" checked> 公开<span class="text">(任何人都可以访问)</span>
                         </label>
                     </div>
                     <div class="clearfix"></div>
                 </div>
+                <div class="form-group">
+                    <div class="col-lg-4">
+                        <label>
+                            <input type="radio" name="book_type" value="ecology">社区<span class="text">(属于ecology社区的书籍)</span>
+                        </label>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>
+                            <input type="radio" name="book_type" value="original" checked>原创<span class="text">(属于自己创作)</span>
+                        </label>
+                    </div>
+                    <div class="col-lg-4">
+                        <label>
+                            <input type="radio" name="book_type" value="opensource">开源<span class="text">(属于开源)</span>
+                        </label>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+
                 <div class="clearfix"></div>
             </div>
             <div class="modal-footer">

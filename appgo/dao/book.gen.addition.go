@@ -136,13 +136,14 @@ func (m *book) ResultFindByIdentify(identify string, memberId int) (result *mysq
 	if err != nil {
 		return
 	}
-
+	// todo fix
 	var member2 *mysql.Member
 	member2, err = Member.Find(doc.ModifyAt)
-	if err != nil {
+	if err == nil {
+		result.LastModifyText = member2.Account + " 于 " + doc.ModifyTime.Format("2006-01-02 15:04:05")
 		return
 	}
-	result.LastModifyText = member2.Account + " 于 " + doc.ModifyTime.Format("2006-01-02 15:04:05")
+	err = nil
 	return
 }
 
@@ -268,7 +269,7 @@ func (m *book) UpdateXX(oneBook *mysql.Book) (err error) {
 		go Label.InsertOrUpdateMulti(oneBook.Label + "," + tempBook.Label)
 	}
 
-	err = mus.Db.UpdateColumns(oneBook).Error
+	err = mus.Db.Model(mysql.Book{}).Where("book_id = ?", oneBook.BookId).UpdateColumns(oneBook).Error
 	return err
 }
 
@@ -375,18 +376,19 @@ func (m *book) ThoroughDeleteBook(id int) (err error) {
 //首页数据
 //完善根据分类查询数据
 //orderType:排序条件，可选值：recommend(推荐)、latest（）
-func (m *book) HomeData(pageIndex, pageSize int, orderType mysql.BookOrder, lang string, cid int, fields ...string) (books []*mysql.Book, totalCount int, err error) {
+func (m *book) HomeData(pageIndex, pageSize int, orderType mysql.BookOrder, bookType string, cid int, fields ...string) (books []*mysql.Book, totalCount int, err error) {
+	if len(fields) == 0 {
+		fields = append(fields, "book_id", "book_name", "identify", "cover", "order_index", "pin", "description", "member_id", "doc_count", "vcnt")
+	} else {
+		fields = append(fields, "pin")
+	}
 	if cid > 0 { //针对cid>0
-		return m.homeData(pageIndex, pageSize, orderType, lang, cid, fields...)
+		return m.homeData(pageIndex, pageSize, orderType, bookType, cid, fields...)
 	}
 	order := ""   //排序
 	condStr := "" //查询条件
 	cond := []string{"privately_owned=0"}
-	if len(fields) == 0 {
-		fields = append(fields, "book_id", "book_name", "identify", "cover", "order_index", "pin")
-	} else {
-		fields = append(fields, "pin")
-	}
+
 	switch orderType {
 	case mysql.OrderRecommend: //推荐
 		cond = append(cond, "order_index>0")
@@ -411,14 +413,14 @@ func (m *book) HomeData(pageIndex, pageSize int, orderType mysql.BookOrder, lang
 		condStr = " where " + strings.Join(cond, " and ")
 	}
 
-	lang = strings.ToLower(lang)
-	switch lang {
-	case "zh", "en", "other":
+	bookType = strings.ToLower(bookType)
+	switch bookType {
+	case "original", "opensource", "ecology":
 	default:
-		lang = ""
+		bookType = ""
 	}
-	if strings.TrimSpace(lang) != "" {
-		condStr = condStr + " and `lang` = '" + lang + "'"
+	if strings.TrimSpace(bookType) != "" {
+		condStr = condStr + " and `book_type` = '" + bookType + "'"
 	}
 	sqlFmt := "select %v from " + mysql.Book{}.TableName() + condStr
 	fieldStr := strings.Join(fields, ",")
@@ -433,13 +435,10 @@ func (m *book) HomeData(pageIndex, pageSize int, orderType mysql.BookOrder, lang
 }
 
 //针对cid大于0
-func (m *book) homeData(pageIndex, pageSize int, orderType mysql.BookOrder, lang string, cid int, fields ...string) (books []*mysql.Book, totalCount int, err error) {
+func (m *book) homeData(pageIndex, pageSize int, orderType mysql.BookOrder, bookType string, cid int, fields ...string) (books []*mysql.Book, totalCount int, err error) {
 	order := ""   //排序
 	condStr := "" //查询条件
 	cond := []string{"b.privately_owned=0"}
-	if len(fields) == 0 {
-		fields = append(fields, "book_id", "book_name", "identify", "cover", "order_index")
-	}
 	switch orderType {
 	case mysql.OrderRecommend: //推荐
 		cond = append(cond, "b.order_index>0")
@@ -463,14 +462,14 @@ func (m *book) homeData(pageIndex, pageSize int, orderType mysql.BookOrder, lang
 	if len(cond) > 0 {
 		condStr = " where " + strings.Join(cond, " and ")
 	}
-	lang = strings.ToLower(lang)
-	switch lang {
-	case "zh", "en", "other":
+	bookType = strings.ToLower(bookType)
+	switch bookType {
+	case "original", "opensource", "ecology":
 	default:
-		lang = ""
+		bookType = ""
 	}
-	if strings.TrimSpace(lang) != "" {
-		condStr = condStr + " and `lang` = '" + lang + "'"
+	if strings.TrimSpace(bookType) != "" {
+		condStr = condStr + " and `book_type` = '" + bookType + "'"
 	}
 	sqlFmt := "select %v from " + mysql.Book{}.TableName() + " b left join book_category c on b.book_id=c.book_id" + condStr
 	fieldStr := "b." + strings.Join(fields, ",b.")

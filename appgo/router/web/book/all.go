@@ -24,7 +24,7 @@ import (
 
 //保存项目信息
 func SaveBook(c *core.Context) {
-	bookResult, err := isPermission(c)
+	bookResult, err := isFormPermission(c)
 	if err != nil {
 		c.JSONErrStr(6001, err.Error())
 		return
@@ -84,10 +84,9 @@ func SaveBook(c *core.Context) {
 	bookResult.Label = tag
 
 	//更新书籍分类
-	// todo fix
-	//if cids, ok := c.Context.Request.Form["cid"]; ok {
-	//	new(mysql.BookCategory).SetBookCates(book.BookId, cids)
-	//}
+	if cids, ok := c.GetPostFormArray("cid"); ok {
+		dao.BookCategory.SetBookCates(book.BookId, cids)
+	}
 
 	go func() {
 		es := mysql.ElasticSearchData{
@@ -285,7 +284,7 @@ func UploadCover(c *core.Context) {
 		return
 	}
 
-	dstPath := mus.Oss.GenerateKey("book")
+	dstPath := mus.Oss.GenerateKey("eco-book")
 
 	oldCover := book.Cover
 	book.Cover = dstPath
@@ -326,8 +325,8 @@ func Create(c *core.Context) {
 			return
 		}
 	}
-
 	bookName := strings.TrimSpace(c.GetPostFormString("book_name"))
+	bookType := strings.TrimSpace(c.GetPostFormString("book_type"))
 	identify := strings.TrimSpace(c.GetPostFormString("identify"))
 	description := strings.TrimSpace(c.GetPostFormString("description"))
 	author := strings.TrimSpace(c.GetPostFormString("author"))
@@ -400,6 +399,7 @@ func Create(c *core.Context) {
 	book.Cover = conf.GetDefaultCover()
 	book.Editor = "markdown"
 	book.Theme = "default"
+	book.BookType = bookType
 	book.Score = 40 //默认评分，40即表示4星
 
 	//设置默认时间，因为beego的orm好像无法设置datetime的默认值

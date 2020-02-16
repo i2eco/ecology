@@ -7,16 +7,15 @@
     <title>编辑文档</title>
     <script type="text/javascript">
         window.editor = null;
-        window.imageUploadURL = "{{urlfor "DocumentController.Upload" "identify" .Model.Identify}}";
-        window.fileUploadURL = "{{urlfor "DocumentController.Upload" "identify" .Model.Identify}}";
+        window.imageUploadURL = "/api/web/document/upload/{{.Model.Identify}}";
+        window.fileUploadURL = "/api/web/document/upload/{{.Model.Identify}}";
         window.documentCategory = {{.Result}};
         window.book = {{.ModelResult}};
         window.selectNode = null;
-        window.deleteURL = "{{urlfor "DocumentController.Delete" ":key" .Model.Identify}}";
+        window.deleteURL = "/api/web/document/delete/{{.Model.Identify}}";
         window.editURL = "/api/web/document/content/{{.Model.Identify}}/";
         window.editURI = "/api/web/document/content/{{.Model.Identify}}/";
         window.releaseURL = "/api/web/book/release/{{.Model.Identify}}";
-        window.generateURL = "{{urlfor "BookController.Generate" ":key" .Model.Identify}}";//生成书籍文档
         window.sortURL = "/api/web/book/sort/{{.Model.Identify}}";
         window.historyURL = "{{urlfor "DocumentController.History"}}";
         window.removeAttachURL = "{{urlfor "DocumentController.RemoveAttachment"}}";
@@ -123,9 +122,9 @@
             {{/*<a href="javascript:;" data-toggle="tooltip" data-title="使用帮助"><i class="fa fa-question-circle-o last" aria-hidden="true" name="help"></i></a>*/}}
         {{/*</div>*/}}
 
-        <div class="editormd-group pull-right">
-            <a href="javascript:;" data-toggle="tooltip" data-title="生成下载文档"><i class="fa fa-book" name="generate" aria-hidden="true"></i></a>
-        </div>
+{{/*        <div class="editormd-group pull-right">*/}}
+{{/*            <a href="javascript:;" data-toggle="tooltip" data-title="生成下载文档"><i class="fa fa-book" name="generate" aria-hidden="true"></i></a>*/}}
+{{/*        </div>*/}}
 
         <div class="editormd-group">
             <a href="javascript:;" data-toggle="tooltip" data-title=""></a>

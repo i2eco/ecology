@@ -626,9 +626,9 @@ func Category(c *core.Context) {
 
 //更新分类字段内容
 func UpdateCate(c *core.Context) {
-	field := c.GetString("field")
-	val := c.GetString("value")
-	id := c.GetInt("id")
+	field := c.Query("field")
+	val := c.Query("value")
+	id, _ := strconv.Atoi(c.Query("id"))
 	if err := dao.Category.UpdateByField(id, field, val); err != nil {
 		c.JSONErrStr(1, "更新失败："+err.Error())
 		return

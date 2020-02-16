@@ -2,25 +2,13 @@ package dao
 
 import (
 	"bytes"
-	"crypto/tls"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/TruthHun/converter/converter"
-	"github.com/TruthHun/gotil/cryptil"
-	"github.com/TruthHun/gotil/util"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/httplib"
-	"github.com/astaxie/beego/orm"
 	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/model/mysql/store"
-	"github.com/goecology/ecology/appgo/pkg/conf"
 	"github.com/goecology/ecology/appgo/pkg/md"
 	"github.com/goecology/ecology/appgo/pkg/mus"
 	"github.com/goecology/ecology/appgo/pkg/utils"
@@ -40,22 +28,16 @@ func (m *document) Find(id int) (doc *mysql.Document, err error) {
 
 //插入和更新文档.
 //存在文档id或者文档标识，则表示更新文档内容
-func (m *document) InsertOrUpdate(db *gorm.DB, documents *mysql.Document, cols ...string) (id int, err error) {
+func (m *document) InsertOrUpdate(db *gorm.DB, documents *mysql.Document) (id int, err error) {
 	id = documents.DocumentId
+	documents.ModifyTime = time.Now()
 	if documents.DocumentId > 0 { //文档id存在，则更新
-		err = db.Model(documents).Where("document_id = ?", documents.DocumentId).Update(map[string]interface{}{
-			"modify_time":   time.Now(),
-			"document_name": strings.TrimSpace(documents.DocumentName),
-		}).Error
-		if err != nil {
-			return
-		}
+		err = db.Model(documents).Where("document_id = ?", documents.DocumentId).UpdateColumns(documents).Error
 		return
 	}
 
 	var mm mysql.Document
 	//直接查询一个字段，优化MySQL IO
-
 	mus.Db.Where("identify = ? and book_id = ?", documents.Identify, documents.BookId).Find(&mm)
 
 	if mm.DocumentId == 0 {
@@ -67,16 +49,14 @@ func (m *document) InsertOrUpdate(db *gorm.DB, documents *mysql.Document, cols .
 		}
 		id = documents.DocumentId
 		Book.ResetDocumentNumber(documents.BookId)
-	} else { //identify存在，则执行更新
-		err = db.Model(mysql.Document{}).Where("document_id = ?", documents.DocumentId).Update(map[string]interface{}{
-			"modify_time":   time.Now(),
-			"document_name": strings.TrimSpace(documents.DocumentName),
-		}).Error
-		if err != nil {
-			return
-		}
-		id = mm.DocumentId
+		return
 	}
+	//identify存在，则执行更新
+	err = db.Model(mysql.Document{}).Where("document_id = ?", documents.DocumentId).UpdateColumns(documents).Error
+	if err != nil {
+		return
+	}
+	id = mm.DocumentId
 	return
 }
 
@@ -203,193 +183,6 @@ func (m *document) ReleaseContent(bookId int, baseUrl string) {
 	}
 	client := NewElasticSearchClient()
 	client.RebuildAllIndex(bookId)
-}
-
-//离线文档生成
-func (m *document) GenerateBook(book *mysql.Book, baseUrl string) {
-	//将书籍id加入进去，表示正在生成离线文档
-	utils.BooksGenerate.Set(book.BookId)
-	defer utils.BooksGenerate.Delete(book.BookId) //最后移除
-
-	//公开文档，才生成文档文件
-	debug := true
-	//if beego.AppConfig.String("runmode") == "prod" {
-	//	debug = false
-	//}
-
-	Nickname := Member.GetNicknameByUid(book.MemberId)
-
-	docs, err := m.FindListByBookId(book.BookId)
-	if err != nil {
-		mus.Logger.Error("generate book file list error", zap.Error(err))
-		return
-	}
-
-	var ExpCfg = converter.Config{
-		Contributor: conf.Conf.App.ExportCreator,
-		Cover:       "",
-		Creator:     conf.Conf.App.ExportCreator,
-		Timestamp:   book.ReleaseTime.Format("2006-01-02"),
-		Description: book.Description,
-		Header:      conf.Conf.App.ExportHeader,
-		Footer:      conf.Conf.App.ExportFooter,
-		Identifier:  "",
-		Language:    "zh-CN",
-		Publisher:   conf.Conf.App.ExportCreator,
-		Title:       book.BookName,
-		Format:      []string{"epub", "mobi", "pdf"},
-		FontSize:    conf.Conf.App.ExportFontSize,
-		PaperSize:   conf.Conf.App.ExportPagerSize,
-		More: []string{
-			"--pdf-page-margin-bottom", conf.Conf.App.ExportMarginBottom,
-			"--pdf-page-margin-left", conf.Conf.App.ExportMarginLeft,
-			"--pdf-page-margin-right", conf.Conf.App.ExportMarginRight,
-			"--pdf-page-margin-top", conf.Conf.App.ExportMarginTop,
-		},
-	}
-
-	folder := fmt.Sprintf("cache/books/%v/", book.Identify)
-	os.MkdirAll(folder, os.ModePerm)
-	if !debug {
-		defer os.RemoveAll(folder)
-	}
-
-	//生成致谢信内容
-	if htmlStr, err := utils.ExecuteViewPathTemplate("document/tpl_statement.html", map[string]interface{}{"Model": book, "Nickname": Nickname, "Date": ExpCfg.Timestamp}); err == nil {
-		h1Title := "说明"
-		if doc, err := goquery.NewDocumentFromReader(strings.NewReader(htmlStr)); err == nil {
-			h1Title = doc.Find("h1").Text()
-		}
-		toc := converter.Toc{
-			Id:    time.Now().Nanosecond(),
-			Pid:   0,
-			Title: h1Title,
-			Link:  "statement.html",
-		}
-		htmlname := folder + toc.Link
-		ioutil.WriteFile(htmlname, []byte(htmlStr), os.ModePerm)
-		ExpCfg.Toc = append(ExpCfg.Toc, toc)
-	}
-	for _, doc := range docs {
-		content := strings.TrimSpace(DocumentStore.GetFiledById(doc.DocumentId, "content"))
-		if utils.GetTextFromHtml(content) == "" { //内容为空，渲染文档内容，并再重新获取文档内容
-			utils.RenderDocumentById(doc.DocumentId)
-			mus.Db.Where("document_id = ?", doc.DocumentId).Find(&doc)
-		}
-
-		//将图片链接更换成绝对链接
-		toc := converter.Toc{
-			Id:    doc.DocumentId,
-			Pid:   doc.ParentId,
-			Title: doc.DocumentName,
-			Link:  fmt.Sprintf("%v.html", doc.DocumentId),
-		}
-		ExpCfg.Toc = append(ExpCfg.Toc, toc)
-		//图片处理，如果图片路径不是http开头，则表示是相对路径的图片，加上BaseUrl.如果图片是以http开头的，下载下来
-		if gq, err := goquery.NewDocumentFromReader(strings.NewReader(doc.Release)); err == nil {
-			gq.Find("img").Each(func(i int, s *goquery.Selection) {
-				pic := ""
-				if src, ok := s.Attr("src"); ok {
-					if srcLower := strings.ToLower(src); strings.HasPrefix(srcLower, "http://") || strings.HasPrefix(srcLower, "https://") {
-						pic = src
-					} else {
-						if utils.StoreType == utils.StoreOss {
-							pic = strings.TrimRight(beego.AppConfig.String("oss::Domain"), "/ ") + "/" + strings.TrimLeft(src, "./")
-						} else {
-							pic = baseUrl + src
-						}
-					}
-					//下载图片，放到folder目录下
-					ext := ""
-					if picSlice := strings.Split(pic, "?"); len(picSlice) > 0 {
-						ext = filepath.Ext(picSlice[0])
-					}
-					filename := cryptil.Md5Crypt(pic) + ext
-					localPic := folder + filename
-					req := httplib.Get(pic).SetTimeout(5*time.Second, 5*time.Second)
-					if strings.HasPrefix(pic, "https") {
-						req.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
-					}
-					req.Header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3298.4 Safari/537.36")
-					if err := req.ToFile(localPic); err == nil { //成功下载图片
-						s.SetAttr("src", filename)
-					} else {
-						beego.Error("错误:", err, filename, pic)
-						s.SetAttr("src", pic)
-					}
-
-				}
-			})
-			gq.Find(".markdown-toc").Remove()
-			doc.Release, _ = gq.Find("body").Html()
-		}
-
-		//生成html
-		if htmlStr, err := utils.ExecuteViewPathTemplate("document/tpl_export.html", map[string]interface{}{"Model": book, "Doc": doc, "BaseUrl": baseUrl, "Nickname": Nickname, "Date": ExpCfg.Timestamp}); err == nil {
-			htmlName := folder + toc.Link
-			ioutil.WriteFile(htmlName, []byte(htmlStr), os.ModePerm)
-		} else {
-			mus.Logger.Error(err.Error())
-		}
-
-	}
-
-	//复制css文件到目录
-	if b, err := ioutil.ReadFile("static/editor.md/css/export-editormd.css"); err == nil {
-		ioutil.WriteFile(folder+"editormd.css", b, os.ModePerm)
-	} else {
-		mus.Logger.Error(err.Error())
-	}
-	cfgFile := folder + "config.json"
-	ioutil.WriteFile(cfgFile, []byte(util.InterfaceToJson(ExpCfg)), os.ModePerm)
-	if Convert, err := converter.NewConverter(cfgFile, debug); err == nil {
-		if err := Convert.Convert(); err != nil {
-			mus.Logger.Error(err.Error())
-		}
-	} else {
-		mus.Logger.Error(err.Error())
-	}
-
-	//将文档移动到oss
-	//将PDF文档移动到oss
-	oldBook := fmt.Sprintf("projects/%v/books/%v", book.Identify, book.GenerateTime.Unix()) //旧书籍的生成时间
-	//最后再更新文档生成时间
-	book.GenerateTime = time.Now()
-	if _, err = orm.NewOrm().Update(book, "generate_time"); err != nil {
-		mus.Logger.Error("generate book update error", zap.Error(err))
-	}
-
-	mus.Db.Where("book_id = ?", book.BookId).Find(&book)
-
-	newBook := fmt.Sprintf("projects/%v/books/%v", book.Identify, book.GenerateTime.Unix())
-
-	exts := []string{".pdf", ".epub", ".mobi"}
-	for _, ext := range exts {
-		switch utils.StoreType {
-		case utils.StoreOss:
-			//不要开启gzip压缩，否则会出现文件损坏的情况
-			if err := store.ModelStoreOss.MoveToOss(folder+"output/book"+ext, newBook+ext, true, false); err != nil {
-				mus.Logger.Error("generate book oss error", zap.Error(err))
-			} else { //设置下载头
-				store.ModelStoreOss.SetObjectMeta(newBook+ext, book.BookName+ext)
-			}
-		case utils.StoreLocal: //本地存储
-			store.ModelStoreLocal.MoveToStore(folder+"output/book"+ext, "uploads/"+newBook+ext)
-		}
-
-	}
-
-	//删除旧文件
-	switch utils.StoreType {
-	case utils.StoreOss:
-		if err := store.ModelStoreOss.DelFromOss(oldBook+".pdf", oldBook+".epub", oldBook+".mobi"); err != nil { //删除旧版
-			mus.Logger.Error("DelFromOss book oss error", zap.Error(err))
-		}
-	case utils.StoreLocal: //本地存储
-		if err := store.ModelStoreLocal.DelFiles(oldBook+".pdf", oldBook+".epub", oldBook+".mobi"); err != nil { //删除旧版
-			mus.Logger.Error("DelFiles book oss error", zap.Error(err))
-		}
-	}
 }
 
 //根据项目ID查询文档列表.

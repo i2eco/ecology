@@ -63,10 +63,10 @@ func getDocumentTree(array []*DocumentTree, parentId int, selectedId int, select
 			buf.WriteString(selectedLi)
 			buf.WriteString("><a href=\"")
 			if item.Identify != "" {
-				uri := "/api/web/read/" + item.BookIdentify + "/" + item.Identify
+				uri := "/api/web/books/" + item.BookIdentify + "/" + item.Identify
 				buf.WriteString(uri)
 			} else {
-				uri := "/api/web/read/" + item.BookIdentify + "/" + strconv.Itoa(item.DocumentId)
+				uri := "/api/web/books/" + item.BookIdentify + "/" + strconv.Itoa(item.DocumentId)
 				buf.WriteString(uri)
 			}
 			buf.WriteString("\" title=\"")

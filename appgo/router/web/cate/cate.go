@@ -1,6 +1,7 @@
 package cate
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/goecology/ecology/appgo/dao"
@@ -20,6 +21,7 @@ func Index(c *core.Context) {
 //分类
 func List(c *core.Context) {
 	if cates, err := dao.Category.GetCates(c.Context, -1, 1); err == nil {
+		fmt.Println("cates------>", cates)
 		c.Tpl().Data["Cates"] = cates
 	} else {
 		mus.Logger.Error(err.Error())

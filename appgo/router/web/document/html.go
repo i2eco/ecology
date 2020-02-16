@@ -7,7 +7,6 @@ import (
 	"go.uber.org/zap"
 	"html/template"
 	"image/png"
-	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -505,172 +504,6 @@ func CreateMulti(c *core.Context) {
 	c.JSONOK()
 }
 
-//上传附件或图片.
-func Upload(c *core.Context) {
-	identify := c.GetString("identify")
-	docId := c.GetInt("doc_id")
-	isAttach := true
-
-	if identify == "" {
-		c.JSONErrStr(6001, "参数错误")
-	}
-
-	name := "editormd-file-file"
-	//
-	//file, moreFile, err := c.(name)
-	//if err == http.ErrMissingFile {
-	//	name = "editormd-image-file"
-	//	file, moreFile, err = this.GetFile(name)
-	//	if err == http.ErrMissingFile {
-	//		c.JSONErrStr(6003, "没有发现需要上传的文件")
-	//	}
-	//}
-
-	fileHeader, err := c.FormFile(name)
-	if err == http.ErrMissingFile {
-		name = "editormd-image-file"
-		fileHeader, err = c.FormFile(name)
-		if err == http.ErrMissingFile {
-			c.JSONErrStr(6003, "没有发现需要上传的文件")
-			return
-		}
-	}
-
-	file, err := fileHeader.Open()
-	if err != nil {
-		c.JSONErr(code.MsgErr, err)
-		return
-	}
-	defer file.Close()
-
-	ext := filepath.Ext(fileHeader.Filename)
-	if ext == "" {
-		c.JSONErrStr(6003, "无法解析文件的格式")
-		return
-	}
-
-	if !conf.IsAllowUploadFileExt(ext) {
-		c.JSONErrStr(6004, "不允许的文件类型")
-		return
-	}
-
-	bookId := 0
-	//如果是超级管理员，则不判断权限
-	if c.Member().IsAdministrator() {
-		book, err := dao.Book.FindByFieldFirst("identify", identify)
-		if err != nil {
-			c.JSONErrStr(6006, "文档不存在或权限不足")
-			return
-		}
-		bookId = book.BookId
-	} else {
-		book, err := dao.Book.ResultFindByIdentify(identify, c.Member().MemberId)
-		if err != nil {
-			mus.Logger.Error(err.Error())
-			c.JSONErrStr(6001, err.Error())
-			return
-		}
-		//如果没有编辑权限
-		if book.RoleId != conf.BookEditor && book.RoleId != conf.BookAdmin && book.RoleId != conf.BookFounder {
-			c.JSONErrStr(6006, "权限不足")
-			return
-		}
-		bookId = book.BookId
-	}
-
-	if docId > 0 {
-		doc, err := dao.Document.Find(docId)
-		if err != nil {
-			c.JSONErrStr(6007, "文档不存在")
-			return
-		}
-		if doc.BookId != bookId {
-			c.JSONErrStr(6008, "文档不属于指定的项目")
-			return
-		}
-	}
-
-	fileName := strconv.FormatInt(time.Now().UnixNano(), 16)
-
-	filePath := filepath.Join("./", "uploads", time.Now().Format("200601"), fileName+ext)
-
-	path := filepath.Dir(filePath)
-
-	os.MkdirAll(path, os.ModePerm)
-
-	err = c.SaveToFile(name, filePath)
-
-	if err != nil {
-		c.JSONErrStr(6005, "保存文件失败")
-		return
-	}
-	attachment := mysql.NewAttachment()
-	attachment.BookId = bookId
-	attachment.FileName = fileHeader.Filename
-	attachment.CreateAt = c.Member().MemberId
-	attachment.FileExt = ext
-	attachment.FilePath = strings.TrimPrefix(filePath, "./")
-	attachment.DocumentId = docId
-
-	if fileInfo, err := os.Stat(filePath); err == nil {
-		attachment.FileSize = float64(fileInfo.Size())
-	}
-	if docId > 0 {
-		attachment.DocumentId = docId
-	}
-
-	if strings.EqualFold(ext, ".jpg") || strings.EqualFold(ext, ".jpeg") || strings.EqualFold(ext, ".png") || strings.EqualFold(ext, ".gif") {
-
-		attachment.HttpPath = "/" + strings.Replace(strings.TrimPrefix(filePath, "./"), "\\", "/", -1)
-		if strings.HasPrefix(attachment.HttpPath, "//") {
-			attachment.HttpPath = string(attachment.HttpPath[1:])
-		}
-		isAttach = false
-	}
-
-	err = mus.Db.Create(&attachment).Error
-
-	if err != nil {
-		os.Remove(filePath)
-		c.JSONErrStr(6006, "文件保存失败")
-		return
-	}
-	if attachment.HttpPath == "" {
-		attachment.HttpPath = beego.URLFor("DocumentController.DownloadAttachment", ":key", identify, ":attach_id", attachment.AttachmentId)
-
-		if err := mus.Db.UpdateColumns(attachment).Error; err != nil {
-			c.JSONErrStr(6005, "保存文件失败")
-			return
-		}
-	}
-	osspath := fmt.Sprintf("projects/%v/%v", identify, fileName+filepath.Ext(attachment.HttpPath))
-	switch utils.StoreType {
-	case utils.StoreOss:
-		if err := store.ModelStoreOss.MoveToOss("."+attachment.HttpPath, osspath, true, false); err != nil {
-			mus.Logger.Error(err.Error())
-		}
-		//attachment.HttpPath = this.OssDomain + "/" + osspath
-		attachment.HttpPath = "/" + osspath
-	case utils.StoreLocal:
-		osspath = "uploads/" + osspath
-		if err := store.ModelStoreLocal.MoveToStore("."+attachment.HttpPath, osspath); err != nil {
-			mus.Logger.Error(err.Error())
-		}
-		attachment.HttpPath = "/" + osspath
-	}
-
-	result := map[string]interface{}{
-		"errcode":   0,
-		"success":   1,
-		"message":   "ok",
-		"url":       attachment.HttpPath,
-		"alt":       attachment.FileName,
-		"is_attach": isAttach,
-		"attach":    attachment,
-	}
-	c.JSONOK(result)
-}
-
 //DownloadAttachment 下载附件.
 func DownloadAttachment(c *core.Context) {
 	identify := c.Param(":key")
@@ -767,68 +600,6 @@ func RemoveAttachment(c *core.Context) {
 	c.JSONOK(attach)
 }
 
-//删除文档.
-func Delete(c *core.Context) {
-
-	identify := c.GetString("identify")
-	docId := c.GetInt("doc_id")
-
-	bookId := 0
-	//如果是超级管理员则忽略权限判断
-	if c.Member().IsAdministrator() {
-		book, err := dao.Book.FindByFieldFirst("identify", identify)
-		if err != nil {
-			c.JSONErrStr(6002, "项目不存在或权限不足")
-			return
-		}
-		bookId = book.BookId
-	} else {
-		bookResult, err := dao.Book.ResultFindByIdentify(identify, c.Member().MemberId)
-		if err != nil || bookResult.RoleId == conf.BookObserver {
-			c.JSONErrStr(6002, "项目不存在或权限不足")
-			return
-		}
-		bookId = bookResult.BookId
-	}
-
-	if docId <= 0 {
-		c.JSONErrStr(6001, "参数错误")
-		return
-	}
-
-	doc, err := dao.Document.Find(docId)
-	if err != nil {
-		c.JSONErrStr(6003, "删除失败")
-		return
-	}
-
-	//如果文档所属项目错误
-	if doc.BookId != bookId {
-		c.JSONErrStr(6004, "参数错误")
-		return
-	}
-	//递归删除项目下的文档以及子文档
-	err = dao.Document.RecursiveDocument(doc.DocumentId)
-	if err != nil {
-		mus.Logger.Error(err.Error())
-		c.JSONErrStr(6005, "删除失败")
-		return
-	}
-
-	//重置文档数量统计
-	dao.Book.ResetDocumentNumber(doc.BookId)
-
-	go func() {
-		// 删除文档的索引
-		client := dao.NewElasticSearchClient()
-		if errDel := client.DeleteIndex(docId, false); errDel != nil && client.On {
-			mus.Logger.Error(errDel.Error())
-		}
-	}()
-
-	c.JSONOK()
-}
-
 //获取或更新文档内容.
 func ContentGet(c *core.Context) {
 	identify := c.Param("key")
@@ -892,7 +663,7 @@ func ContentPost(c *core.Context) {
 	if currentMember.IsAdministrator() {
 		book, err := dao.Book.FindByFieldFirst("identify", identify)
 		if err != nil {
-			c.JSONErr(code.MsgErr, err)
+			c.JSONErr(code.DocContentPostErr1, err)
 			return
 		}
 		bookId = book.BookId
@@ -900,14 +671,14 @@ func ContentPost(c *core.Context) {
 		bookResult, err := dao.Book.ResultFindByIdentify(identify, currentMember.MemberId)
 
 		if err != nil || bookResult.RoleId == conf.Conf.Info.BookObserver {
-			c.JSONOK(code.MsgErr)
+			c.JSONOK(code.DocContentPostErr2)
 			return
 		}
 		bookId = bookResult.BookId
 	}
 
 	if docId <= 0 {
-		c.JSONCode(code.MsgErr)
+		c.JSONCode(code.DocContentPostErr3)
 		return
 
 	}
@@ -924,7 +695,7 @@ func ContentPost(c *core.Context) {
 			markdown = strings.Replace(markdown, fmt.Sprintf("<bookstack-split>%v</bookstack-split>", seg), "", -1)
 			err := dao.Document.SplitMarkdownAndStore(seg, markdown, docId)
 			if err != nil {
-				c.JSONErr(code.MsgErr, err)
+				c.JSONErr(code.DocContentPostErr4, err)
 				return
 			}
 			c.JSONOK(code.MsgOk)
@@ -938,15 +709,15 @@ func ContentPost(c *core.Context) {
 	doc, err := dao.Document.Find(docId)
 
 	if err != nil {
-		c.JSONErr(code.MsgErr, err)
+		c.JSONErr(code.DocContentPostErr5, err)
 		return
 	}
 	if doc.BookId != bookId {
-		c.JSONCode(code.MsgErr)
+		c.JSONCode(code.DocContentPostErr6)
 		return
 	}
 	if doc.Version != int64(version) && !strings.EqualFold(isCover, "yes") {
-		c.JSONCode(code.MsgErr)
+		c.JSONCode(code.DocContentPostErr7)
 		return
 	}
 
@@ -1015,16 +786,18 @@ func ContentPost(c *core.Context) {
 	} else {
 		isAuto = true
 	}
-	fmt.Println("ds------>", ds)
 
+	doc.ModifyAt = c.Member().MemberId
 	doc.Version = time.Now().Unix()
 	if docId, err := dao.Document.InsertOrUpdate(mus.Db, doc); err != nil {
-		c.JSONErr(code.MsgErr, err)
+		c.JSONErr(code.DocContentPostErr8, err)
 		return
 	} else {
 		ds.DocumentId = int(docId)
 		if err := dao.DocumentStore.InsertOrUpdate(mus.Db, &ds); err != nil {
 			mus.Logger.Error(err.Error())
+			c.JSONErr(code.DocContentPostErr9, err)
+			return
 		}
 	}
 

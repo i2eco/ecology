@@ -29,7 +29,7 @@ func (m *label) InsertOrUpdate(labelName string) (err error) {
 		err = mus.Db.Create(&one).Error
 		return
 	}
-	err = mus.Db.UpdateColumns(one).Error
+	err = mus.Db.Model(mysql.Label{}).Where("label_name=?", labelName).UpdateColumns(one).Error
 	return
 }
 

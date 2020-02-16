@@ -1,10 +1,9 @@
 package mysql
 
 import (
-	"time"
-
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
+	"github.com/goecology/ecology/appgo/pkg/mus"
+	"time"
 )
 
 type period string
@@ -56,37 +55,37 @@ func CountCategory() {
 
 	var count []Count
 
-	o := orm.NewOrm()
-	sql := "select count(bc.id) cnt, bc.category_id from md_book_category bc left join md_books b on b.book_id=bc.book_id where b.privately_owned=0 group by bc.category_id"
-	o.Raw(sql).QueryRows(&count)
+	sql := "select count(bc.id) cnt, bc.category_id from " + BookCategory{}.TableName() + " bc left join " + Book{}.TableName() + " b on b.book_id=bc.book_id where b.privately_owned=0 group by bc.category_id"
+	mus.Db.Raw(sql).Scan(&count)
 	if len(count) == 0 {
 		return
 	}
 
 	var cates []Category
-	tableCate := "md_category"
-	o.QueryTable(tableCate).All(&cates, "id", "pid", "cnt")
+
+	mus.Db.Select("id,pid,cnt").Find(&cates)
 	if len(cates) == 0 {
 		return
 	}
 
 	var err error
 
-	o.Begin()
+	db := mus.Db.Begin()
 	defer func() {
 		if err != nil {
-			o.Rollback()
+			db.Rollback()
 		} else {
-			o.Commit()
+			db.Commit()
 		}
 	}()
 
-	o.QueryTable(tableCate).Update(orm.Params{"cnt": 0})
+	db.Model(Category{}).Updates(Ups{"cnt": 0})
+
 	cateChild := make(map[int]int)
 	for _, item := range count {
 		if item.Cnt > 0 {
 			cateChild[item.CategoryId] = item.Cnt
-			_, err = o.QueryTable(tableCate).Filter("id", item.CategoryId).Update(orm.Params{"cnt": item.Cnt})
+			err = db.Model(Category{}).Where("id=?", item.CategoryId).Updates(Ups{"cnt": item.Cnt}).Error
 			if err != nil {
 				return
 			}

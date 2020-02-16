@@ -58,6 +58,9 @@ type Book struct {
 	AdTitle           string    `gorm:"not null;"json:"adTitle"`    // 文字广告标题
 	AdLink            string    `gorm:"not null;"json:"adLink"`     // 文字广告链接
 	Lang              string    `gorm:"not null;"json:"lang"`
+	BookType          string    `gorm:"not null;"json:"bookType"` //  original 原创， opensource 开源
+	Avatar            string    `gorm:"-"json:"avatar"`
+	UserName          string    `gorm:"-"json:"userName"`
 }
 
 // TableName 获取对应数据库表名.
@@ -71,6 +74,14 @@ func NewBook() *Book {
 
 func (b *Book) DealCover() {
 	b.Cover = mus.Oss.ShowImg(b.Cover)
+}
+
+func (b *Book) DealAll() {
+	b.Cover = mus.Oss.ShowImg(b.Cover)
+	var member Member
+	mus.Db.Where("member_id = ?", b.MemberId).Find(&member)
+	b.Avatar = member.Avatar
+	b.UserName = member.Account
 }
 
 func (book *Book) ToBookResult() (m *BookResult) {

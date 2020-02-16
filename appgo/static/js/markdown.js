@@ -60,7 +60,7 @@ $(function () {
                     });
                 }else if($state === "success"){
                     if($res.code === 0) {
-                        var value = '![](' + $res.url + ')';
+                        var value = '![](' + $res.data.url + ')';
                         window.editor.insertValue(value);
                     }
                 }
@@ -127,18 +127,6 @@ $(function () {
             }else{
                 layer.msg("没有需要发布的文档")
             }
-       }else if(name === "generate"){
-           $.ajax({
-               url : window.generateURL,
-               data :{"identify" : window.book.identify },
-               type : "post",
-               dataType : "json",
-               success : function (res) {
-                   layer.msg(res.msg);
-               }
-           }).fail(function () {
-               layer.msg("请求失败");
-           });
        }else if(name === "tasks") {
            //插入GFM任务列表
            var cm = window.editor.cm;
@@ -267,9 +255,6 @@ $(function () {
                 break;
             }
         }
-
-        console.log("node id",node)
-        console.log("node id",window.editURL+node.id)
 
         $.ajax({
             beforeSend  : function () {

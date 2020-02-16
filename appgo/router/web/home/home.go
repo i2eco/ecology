@@ -1,38 +1,42 @@
 package home
 
 import (
-	"math"
-	"strconv"
-	"strings"
-
 	"github.com/goecology/ecology/appgo/dao"
-
 	"github.com/goecology/ecology/appgo/model/constx"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/conf"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"github.com/goecology/ecology/appgo/router/core"
+	"math"
+	"strconv"
+	"strings"
 )
 
-func Index(c *core.Context) {
+func index(c *core.Context, bookType string) {
+	req := ReqHome{}
+	err := c.Bind(&req)
+	if err != nil {
+		// 首页就用默认值
+	}
+	cid := req.Cid //分类，如果只是一级分类，则忽略，二级分类，则根据二级分类查找内容
+	pageIndex := req.Page
+	if pageIndex == 0 {
+		pageIndex = 1
+	}
 	//tab
 	var (
-		cid       int //分类，如果只是一级分类，则忽略，二级分类，则根据二级分类查找内容
 		urlPrefix = "/"
 		cate      mysql.Category
-		lang      = c.GetString("lang")
 		tabName   = map[string]string{"recommend": "站长推荐", "latest": "最新发布", "popular": "热门书籍"}
 	)
-	tab, _ := c.GetQuery("tab")
-	tab = strings.ToLower(tab)
-	switch tab {
+	req.Tab = strings.ToLower(req.Tab)
+	switch req.Tab {
 	case "recommend", "popular", "latest":
 	default:
-		tab = "latest"
+		req.Tab = "latest"
 	}
 
 	cates, _ := dao.Category.GetCates(c.Context, -1, 1)
-	cid = c.GetInt("cid")
 	pid := cid
 	if cid > 0 {
 		for _, item := range cates {
@@ -46,28 +50,25 @@ func Index(c *core.Context) {
 			}
 		}
 	}
+
 	c.Tpl().Data["Cates"] = cates
 	c.Tpl().Data["Cid"] = cid
 	c.Tpl().Data["Pid"] = pid
 	c.Tpl().Data["IsHome"] = true
 
-	pageIndex := c.GetInt("page")
-	if pageIndex == 0 {
-		pageIndex = 1
-	}
 	//每页显示24个，为了兼容Pad、mobile、PC
 	pageSize := 24
-	books, totalCount, err := dao.Book.HomeData(pageIndex, pageSize, mysql.BookOrder(tab), lang, cid)
+	books, totalCount, err := dao.Book.HomeData(pageIndex, pageSize, mysql.BookOrder(req.Tab), bookType, cid)
 	if err != nil {
 		c.Html404()
 		return
 	}
 	if totalCount > 0 {
-		urlSuffix := "&tab=" + tab
+		urlSuffix := "&tab=" + req.Tab
 		if cid > 0 {
 			urlSuffix = urlSuffix + "&cid=" + strconv.Itoa(cid)
 		}
-		urlSuffix = urlSuffix + "&lang=" + lang
+		urlSuffix = urlSuffix + "&type=" + bookType
 		html := utils.NewPaginations(conf.RollPage, totalCount, pageSize, pageIndex, urlPrefix, urlSuffix)
 		c.Tpl().Data["PageHtml"] = html
 	} else {
@@ -77,16 +78,16 @@ func Index(c *core.Context) {
 	c.Tpl().Data["TotalPages"] = int(math.Ceil(float64(totalCount) / float64(pageSize)))
 
 	for _, book := range books {
-		book.DealCover()
+		book.DealAll()
 	}
 
 	c.Tpl().Data["Lists"] = books
-	c.Tpl().Data["Tab"] = tab
-	c.Tpl().Data["Lang"] = lang
+	c.Tpl().Data["Tab"] = req.Tab
+	c.Tpl().Data["BookType"] = bookType
 	title := dao.Global.Get(constx.SITE_NAME)
 
 	if cid > 0 {
-		title = "[发现] " + cate.Title + " - " + tabName[tab] + " - " + title
+		title = "[发现] " + cate.Title + " - " + tabName[req.Tab] + " - " + title
 	} else {
 		title = "探索，发现新世界，畅想新知识 - " + dao.Global.Get(constx.SITE_NAME)
 	}
@@ -96,5 +97,20 @@ func Index(c *core.Context) {
 		"description": dao.Global.Get(constx.SITE_NAME) + "专注于文档在线写作、协作、分享、阅读与托管，让每个人更方便地发布、分享和获得知识。",
 	})
 	c.Html("home/index")
+}
 
+func Home(c *core.Context) {
+	index(c, "")
+}
+
+func Ecology(c *core.Context) {
+	index(c, "ecology")
+}
+
+func Original(c *core.Context) {
+	index(c, "original")
+}
+
+func Opensource(c *core.Context) {
+	index(c, "opensource")
 }

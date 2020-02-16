@@ -3,6 +3,124 @@
 <head>
     {{template "widgets/head.html" .}}
 </head>
+<style>
+.home-list-item {
+    display: flex;
+    padding: 25px;
+    box-sizing: border-box;
+    background-color: #fff;
+    position: relative;
+    border-bottom: 1px solid #e6e8e8;
+}
+.home-list-item .book-cover {
+    width: 100px;
+    height: 140px;
+    flex-shrink: 0;
+    box-shadow: 3px 4px 12px 0 rgba(0,0,0,.2);
+    overflow: hidden;
+    background-color: #fff;
+}
+.home-list-item .book-info {
+    flex-grow: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #2e3135;
+    padding-left: 22px;
+}
+.home-list-item .book-desc {
+    margin-top: 5px;
+    line-height: 20px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    -webkit-line-clamp: 1;
+    color: #71777c;
+    white-space: nowrap;
+}
+.home-list-item .book-author {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.home-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    margin-right: 4px;
+    background-position: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+}
+.home-panel {
+    display: block;
+    margin-top:45px;
+}
+.home-panel-title {
+    height: 50px;
+    font-weight: 600;
+    line-height: 50px;
+    color: #404040;
+    font-size: 1.35rem;
+}
+.home-panel-contact {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 17px 0px 20px;
+    background-size: 100%;
+    background: #f8f9fd;
+    border-radius: 5px;
+}
+    .home-panel-contact-item {
+        padding: 5px 15px;
+    }
+
+.home-button {
+    border: none;
+    outline: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 92px;
+    height: 33px;
+    color: #fff;
+    background: #fa8919;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 400;
+}
+.home-footer-content {
+    color: #888;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+    .home-active {
+        font-weight: 500;
+        color: #fa8919;
+        background: #fbf5ee;
+        position: relative;
+        margin-right: 5px;
+        margin-bottom: 12px;
+        padding: 0 12px;
+        height: 22px;
+        line-height: 22px;
+        font-size: 15px;
+        border-radius: 14px;
+        white-space: nowrap;
+    }
+</style>
 <body>
 <div class="manual-reader manual-container">
     {{template "widgets/header.html" .}}
@@ -16,99 +134,131 @@
             </form>
         </div>
         <div class="row">
-            <div class="col-xs-12 mgt-15px" style="line-height: 200%;">
-                {{if (ads "explore-under-nav" $.IsMobile)}}
-                    <div class="ap ap-explore-under-nav mgb-15px">
-                        {{str2html (ads "explore-under-nav" $.IsMobile)}}
-                    </div>
-                {{end}}
-{{/*                <div class="help-block lang-explore" style="margin: 10px 0px 0;">*/}}
-{{/*                    <span class="text-muted">语种：</span>*/}}
-{{/*                    <a {{if eq $.Lang ""}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}" title="不限">不限</a>*/}}
-{{/*                    <a {{if eq $.Lang "zh"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=zh" title="中文">中文</a>*/}}
-{{/*                    <a {{if eq $.Lang "en"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=en" title="英文">英文</a>*/}}
-{{/*                    <a {{if eq $.Lang "other"}}class="active"{{end}} href="{{urlfor "HomeController.Index"}}?tab={{$.Tab}}&cid={{$.Cid}}&lang=other" title="其他">其他</a>*/}}
-{{/*                </div>*/}}
-                {{if .Cates}}
+            <div class="col-xs-12 col-sm-12 col-md-8">
+                <div class="col-xs-12 mgt-15px" style="line-height: 200%;">
+                    {{if (ads "explore-under-nav" $.IsMobile)}}
+                        <div class="ap ap-explore-under-nav mgb-15px">
+                            {{str2html (ads "explore-under-nav" $.IsMobile)}}
+                        </div>
+                    {{end}}
                     <div class="help-block lang-explore" style="margin: 10px 0 15px;">
-                        <span class="text-muted">分类：</span>
-                            <a {{if eq $.Cid 0}}class="active"{{end}} href="/explore?tab={{$.Tab}}&lang={{$.Lang}}" title="不限">不限</a>
+                        <span class="text-muted">形式：</span>
+                        <a {{if eq $.BookType ""}}class="home-active"{{end}} href="/?tab={{$.Tab}}&cid={{$.Cid}}" title="不限">不限</a>
+                        <a {{if eq $.BookType "ecology"}}class="home-active"{{end}} href="/ecology?tab={{$.Tab}}&cid={{$.Cid}}">社区</a>
+                        <a {{if eq $.BookType "original"}}class="home-active"{{end}} href="/original?tab={{$.Tab}}l&cid={{$.Cid}}">原创</a>
+                        <a {{if eq $.BookType "opensource"}}class="home-active"{{end}} href="/opensource?tab={{$.Tab}}&cid={{$.Cid}}">开源</a>
+                    </div>
+                    {{if .Cates}}
+                        <div class="help-block lang-explore" style="margin: 10px 0 15px;">
+                            <span class="text-muted">方向：</span>
+                            <a {{if eq $.Cid 0}}class="home-active"{{end}} href="/?tab={{$.Tab}}&type{{$.BookType}}" title="不限">不限</a>
                             {{range .Cates}}
-                            {{if and (eq .Pid 0) (gt .Cnt 0)}}
-                                <a {{if eq $.Pid .Id}}class="active"{{end}} href="/explore?tab={{$.Tab}}&cid={{.Id}}&lang={{$.Lang}}" title="{{.Title}}">{{.Title}}</a>
+                                {{if and (eq .Pid 0) (gt .Cnt 0)}}
+                                    <a {{if eq $.Pid .Id}}class="home-active"{{end}} href="/{{$.BookType}}?tab={{$.Tab}}&cid={{.Id}}" title="{{.Title}}">{{.Title}}</a>
+                                {{end}}
                             {{end}}
-                            {{end}}
-
-                        {{if gt $.Cid 0}}
-                            <div class="help-block" style="text-indent: 45px;">
-                            {{range .Cates}}
-                            {{if and (eq .Pid $.Pid) (gt .Cnt 0)}}
-                                <a {{if eq $.Cid .Id}}class="active"{{end}} href="/explore?tab={{$.Tab}}&cid={{.Id}}&lang={{$.Lang}}" title="{{.Title}}">{{.Title}}</a>
-                            {{end}}
-                            {{end}}
+                        </div>
+                        {{if ne $.Cid 0}}
+                            <div class="help-block lang-explore" style="margin: 10px 0 15px;">
+                                <span class="text-muted">分类：</span>
+                                {{if gt $.Cid 0}}
+                                    {{range .Cates}}
+                                        {{if and (eq .Pid $.Pid) (gt .Cnt 0)}}
+                                            <a {{if eq $.Cid .Id}}class="home-active"{{end}} href="/{{$.BookType}}?tab={{$.Tab}}&cid={{.Id}}" title="{{.Title}}">{{.Title}}</a>
+                                        {{end}}
+                                    {{end}}
+                                {{end}}
                             </div>
                         {{end}}
+                    {{end}}
+                    <div class="help-block lang-explore" style="margin: 10px 0 15px;">
+                        <span class="text-muted">排序：</span>
+                        <a {{if eq $.Tab "latest"}}class="home-active"{{end}} href="/{{$.BookType}}?tab=latest&cid={{$.Cid}}">最新<span class="hidden-xs">发布</span></a>
+                        <a {{if eq $.Tab "popular"}}class="home-active"{{end}} href="/{{$.BookType}}?tab=popular&cid={{$.Cid}}">热门<span class="hidden-xs">书籍</span></a>
+                        <a {{if eq $.Tab "recommend"}}class="home-active"{{end}} href="/{{$.BookType}}?tab=recommend&cid={{$.Cid}}" title="网站推荐"><span class="hidden-xs">网站</span>推荐</a>
                     </div>
-                {{end}}
-                <ul class="nav nav-tabs">
-                    <li {{if eq $.Tab "latest"}}class="active"{{end}}><a href="/explore?tab=latest&cid={{$.Cid}}&lang={{$.Lang}}">最新<span class="hidden-xs">发布</span></a></li>
-                    <li {{if eq $.Tab "popular"}}class="active"{{end}}><a href="/explore?tab=popular&cid={{$.Cid}}&lang={{$.Lang}}">热门<span class="hidden-xs">书籍</span></a></li>
-                    <li {{if eq $.Tab "recommend"}}class="active"{{end}}><a href="/explore?tab=recommend&cid={{$.Cid}}&lang={{$.Lang}}" title="网站推荐"><span class="hidden-xs">网站</span>推荐</a></li>
-                    <li ><a href="/setting/star" target="_blank" class="text-red" title="我的收藏"><i class="fa fa-heart"></i> 我的收藏</a></li>
-{{/*                    {{if and (gt $.Member.MemberId 0) (eq .IsSignedToday false)}}*/}}
-{{/*                        <li ><a href="{{urlfor "UserController.Index" ":username" $.Member.Account}}" class="text-red" title="每日签到"><i class="fa fa-calendar-plus-o" aria-hidden="true"></i> 每日签到</a></li>*/}}
-{{/*                    {{end}}*/}}
-                </ul>
-            </div>
+                </div>
 
 
-
-        </div>
-        <div class="row">
-            <div class="manual-list">
                 {{range $index,$item := .Lists}}
-                {{/*<div class="list-item">*/}}
-
-                <div class="col-xs-6 col-sm-3 col-md-2">
-                    <dl class="manual-item-standard">
-                        <dt>
-                            <a class="clearfix tooltips {{if gt $item.OrderIndex 0}}recommend-book{{end}} {{if gt $item.Pin 0}}pin-book{{end}}" href="/books/{{$item.Identify}}" title="{{$item.BookName}}" target="_blank" >
-                                <img class="img-responsive border-cover-img" onerror="this.src='/static/images/book.png'" src="{{showImg $item.Cover "cover"}}" class="cover" alt="{{$item.BookName}}">
+                    <div class="home-list-item clearfix">
+                        <div class="book-cover" style="padding-left: 0px">
+                            <a class="" href="/books/{{$item.Identify}}"  target="_blank" title="查看文档" data-toggle="tooltip">
+                                <img style="height:140px"  onerror="this.src='/static/images/book.png'"  class="img-responsive" src="{{$item.Cover}}" alt="{{$item.BookName}}">
                             </a>
-                        </dt>
-                        <dd>
-                            <a href="{{urlfor "DocumentController.Index" ":key" $item.Identify}}" class="name tooltips" title="{{$item.BookName}}" target="_blank">{{$item.BookName}}</a>
-                        </dd>
-                        {{/*<dd>*/}}
-                            {{/*<span class="author">*/}}
-                                {{/*<b class="text">作者</b>*/}}
-                                {{/*<b class="text">-</b>*/}}
-                                {{/*<b class="text">{{$item.CreateName}}</b>*/}}
-                            {{/*</span>*/}}
-                        {{/*</dd>*/}}
-                    </dl>
-                </div>
-                {{end}}
-                <div class="clearfix"></div>
-            </div>
-            {{if (ads "explore-before-pagination" $.IsMobile)}}
-                    <div class="ap ap-explore-before-pagination">
-                        {{str2html (ads "explore-before-pagination" $.IsMobile)}}
+                        </div>
+                        <div class="book-info">
+                            <a class="" href="/books/{{$item.Identify}}"  target="_blank" title="查看文档" data-toggle="tooltip">
+                                {{$item.BookName}}
+                            </a>
+                            <div class="book-desc">
+                                {{$item.Description}}
+                            </div>
+                            <div class="book-author">
+                                <div class="author-info">
+                                    <a href="/u/{{$item.UserName}}" target="_blank" class="user">
+                                        <img class="home-avatar"  onerror="this.src='/static/images/avatar.png'"  class="img-responsive" src="{{$item.Avatar}}">
+                                        <span>{{$item.UserName}}</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div style="height:30px">
+
+                            </div>
+                            <div class="footer-bar" style="display: flex;height: 35px;    justify-content: space-between;">
+                                <p style="display: flex;height: 35px;line-height:35px"> <span class="home-footer-content">{{$item.DocCount}}篇课程<span class="dot">·</span>{{$item.Vcnt}}阅读</span></p>
+                                <button class="home-button"><a style="    color: #fff;" href="/books/{{$item.Identify}}" title="查看文档" target="_blank">
+                                        开始阅读</a></button>
+                            </div>
+                        </div>
                     </div>
-            {{end}}
-            <nav class="pagination-container">
-                {{if gt .TotalPages 1}}
-                {{.PageHtml}}
                 {{end}}
-                <div class="clearfix"></div>
-            </nav>
-            {{if (ads "explore-under-pagination" $.IsMobile)}}
-                <div class="ap ap-explore-under-pagination">
-                    {{str2html (ads "explore-under-pagination" $.IsMobile)}}
+                {{if (ads "explore-before-pagination" $.IsMobile)}}
+                        <div class="ap ap-explore-before-pagination">
+                            {{str2html (ads "explore-before-pagination" $.IsMobile)}}
+                        </div>
+                {{end}}
+                <nav class="pagination-container">
+                    {{if gt .TotalPages 1}}
+                    {{.PageHtml}}
+                    {{end}}
+                    <div class="clearfix"></div>
+                </nav>
+                {{if (ads "explore-under-pagination" $.IsMobile)}}
+                    <div class="ap ap-explore-under-pagination">
+                        {{str2html (ads "explore-under-pagination" $.IsMobile)}}
+                    </div>
+                {{end}}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4">
+                <div class="home-panel" style="margin-top:0px">
+                    <div class="home-panel-title">
+                        关注我们
+                    </div>
+                    <div class="home-panel-contact">
+                        <div class="home-panel-contact-item">
+                            Github组织：<a href="https://github.com/goecology" target="_blank">GoEcology</a>
+                        </div>
+                        <div class="home-panel-contact-item">
+                            商城项目：<a href="https://github.com/goecology/egoshop" target="_blank">EGoShopy</a>
+                        </div>
+                        <div class="home-panel-contact-item">
+                            技术网站项目：<a href="https://github.com/goecology/ecology" target="_blank">Ecology</a>
+                        </div>
+                        <div class="home-panel-contact-item">
+                            脚手架项目：<a href="https://github.com/goecology/muses" target="_blank">Muses</a>
+                        </div>
+                    </div>
                 </div>
-            {{end}}
-        </div>
-    </div>
+                <div class="home-panel">
+                    <div class="home-panel-title">
+                        加入我们
+                    </div>
+                    <div class="home-panel-content">
+                        <img src="http://doc.egoshop.questionfans.com/assets/img/wechat.e06fed30.jpg" style="width:180px;margin-left: auto; margin-right: auto; display: block;">
+                    </div>
+                </div>
+            </div>
 </div>
 {{template "widgets/footer.html" .}}
 </body>

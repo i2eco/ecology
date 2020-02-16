@@ -4,12 +4,6 @@
             {{if (ads "global-before-friend-link" $.IsMobile)}}
                 <div class="ap ap-global-before-friend-link col-xs-12 mgb-15px">{{str2html (ads "global-before-friend-link" $.IsMobile)}}</div>
             {{end}}
-            <div class="col-xs-12 friend-links">
-                <span class="text-muted">友情链接</span>
-                {{range $.Friendlinks}}
-                    <a href="{{.Link}}" title="{{.Title}}" target="_blank">{{.Title}}</a>
-                {{end}}
-            </div>
             <div class="clearfix mgt-15px text-center">
                 <div class="col-xs-12 mgt-15px">
                     {{if eq .HideTag true}}
@@ -27,9 +21,9 @@
                 </div>
                 <div class="col-xs-12 hidden-xs mgt-15px">
                     <small class="text-muted">
-                        <span>Modified By <a target="_blank" title="BookStack" href="https://www.bookstack.cn">BookStack</a> {{$.Version}} </span>
+                        <span>Modified By <a target="_blank" title="BookStack" href="/">GoEcology</a> {{$.Version}} </span>
                         <span>&nbsp;·&nbsp;</span>
-                        <span>Powered By <a href="https://www.iminho.me" TARGET="_blank" title="MinDoc">MinDoc</a></span>
+                        <span>Powered By <a href="https://www.bookstack.cn" TARGET="_blank" title="MinDoc">BookStack</a></span>
                     </small>
                 </div>
                 <div class="col-xs-12 mgt-15px  text-center">

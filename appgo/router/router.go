@@ -9,7 +9,6 @@ import (
 	"github.com/goecology/ecology/appgo/router/web/account"
 	"github.com/goecology/ecology/appgo/router/web/book"
 	"github.com/goecology/ecology/appgo/router/web/bookMember"
-	"github.com/goecology/ecology/appgo/router/web/cate"
 	"github.com/goecology/ecology/appgo/router/web/document"
 	"github.com/goecology/ecology/appgo/router/web/home"
 	"github.com/goecology/ecology/appgo/router/web/label"
@@ -39,8 +38,11 @@ func webGrp(r *gin.Engine) {
 	r.Use(mus.Session)
 	tplGrp := r.Group("", mdw.LoginRequired(), mdw.TplRequired())
 	{
-		tplGrp.GET("/", core.Handle(cate.Index))
-		tplGrp.GET("/explore", core.Handle(home.Index))
+		//tplGrp.GET("/", core.Handle(cate.index))
+		tplGrp.GET("/", core.Handle(home.Home))
+		tplGrp.GET("/ecology", core.Handle(home.Ecology))
+		tplGrp.GET("/opensource", core.Handle(home.Opensource))
+		tplGrp.GET("/original", core.Handle(home.Original))
 		tplGrp.GET("/login", core.Handle(account.LoginHtml))
 		tplGrp.GET("/logout", core.Handle(account.Logout))
 		tplGrp.GET("/note", core.Handle(account.Note))
@@ -52,7 +54,7 @@ func webGrp(r *gin.Engine) {
 		tplGrp.GET("/book/:key/dashboard", core.Handle(book.Dashboard))
 		tplGrp.GET("/book/:key/users", core.Handle(book.Users))
 
-		//tplGrp.GET("/books/:key", core.Handle(document.Index))
+		//tplGrp.GET("/books/:key", core.Handle(document.index))
 		tplGrp.GET("/books/:key/:id", core.Handle(document.ReadHtml))
 		tplGrp.GET("/books/:key", core.Handle(document.ReadHtml))
 		tplGrp.GET("/document/content/:key", core.Handle(document.Edit))
@@ -108,7 +110,6 @@ func webGrp(r *gin.Engine) {
 		apiGrp.POST("/book/replace/:key", core.Handle(book.Replace))
 		apiGrp.POST("/book/dashboard/:key", core.Handle(book.Dashboard))
 		apiGrp.POST("/book/release/:key", core.Handle(book.Release))
-		apiGrp.POST("/book/generate/:key", core.Handle(book.Generate))
 		apiGrp.POST("/book/sort/:key", core.Handle(book.SaveSort))
 
 		apiGrp.POST("/book/uploadProject", core.Handle(book.UploadProject))
@@ -132,11 +133,16 @@ func webGrp(r *gin.Engine) {
 		apiGrp.POST("/document/content/:key/:id", core.Handle(document.ContentPost))
 		apiGrp.POST("/document/create/:key", core.Handle(document.CreateApi))
 		apiGrp.POST("/document/update/:key", core.Handle(document.UpdateApi))
+		apiGrp.POST("/document/upload/:key", core.Handle(document.Upload))
+		apiGrp.POST("/document/delete/:key", core.Handle(document.Delete))
 
 		apiGrp.GET("/u/follow/:uid", core.Handle(user.SetFollow))
 		apiGrp.GET("/u/sign", core.Handle(user.SignToday))
 
 		apiGrp.POST("/manager/category", core.Handle(manager.CategoryApi))
+		apiGrp.POST("/manager/member/delete", core.Handle(manager.DeleteMember))
+		apiGrp.GET("/manager/updateCate", core.Handle(manager.UpdateCate))
+
 		apiGrp.POST("/setting/password", core.Handle(setting.PasswordUpdate))
 
 	}

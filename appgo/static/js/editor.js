@@ -272,8 +272,8 @@ function uploadImage($id,$callback) {
                     success: function(data) {
                         layer.close(layerIndex);
                         $callback('success', data);
-                        if(data.errcode !== 0){
-                            layer.msg(data.message);
+                        if(data.code !== 0){
+                            layer.msg(data.msg);
                         }
 
                     }
