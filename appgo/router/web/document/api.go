@@ -94,7 +94,7 @@ func ReadApi(c *core.Context) {
 	}
 
 	//文档阅读人次+1
-	if err := dao.SetIncreAndDecre("md_documents", "vcnt",
+	if err := dao.SetIncreAndDecre(mysql.Document{}.TableName(), "vcnt",
 		fmt.Sprintf("document_id=%v", doc.DocumentId),
 		true, 1,
 	); err != nil {
@@ -102,7 +102,7 @@ func ReadApi(c *core.Context) {
 		return
 	}
 	//项目阅读人次+1
-	if err := dao.SetIncreAndDecre("md_books", "vcnt",
+	if err := dao.SetIncreAndDecre(mysql.Book{}.TableName(), "vcnt",
 		fmt.Sprintf("book_id=%v", doc.BookId),
 		true, 1,
 	); err != nil {

@@ -22,6 +22,6 @@ func SetIncreAndDecre(table string, field string, condition string, incre bool, 
 		s = step[0]
 	}
 	sql := fmt.Sprintf("update %v set %v=%v%v%v where %v", table, field, field, mark, s, condition)
-	err = mus.Db.Raw(sql).Error
+	err = mus.Db.Exec(sql).Error
 	return
 }

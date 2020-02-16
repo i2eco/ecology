@@ -22,7 +22,7 @@ func (m *star) Star(uid, bid int) (cancel bool, err error) {
 			return
 		}
 		// todo sql 注入, transaction
-		err = SetIncreAndDecre("books", "star", fmt.Sprintf("book_id=%v and star>0", bid), false, 1)
+		err = SetIncreAndDecre("book", "star", fmt.Sprintf("book_id=%v and star>0", bid), false, 1)
 		if err != nil {
 			return
 		}
@@ -39,7 +39,7 @@ func (m *star) Star(uid, bid int) (cancel bool, err error) {
 			//收藏计数+1
 			return
 		}
-		err = SetIncreAndDecre("books", "star", "book_id="+strconv.Itoa(bid), true, 1)
+		err = SetIncreAndDecre("book", "star", "book_id="+strconv.Itoa(bid), true, 1)
 		if err != nil {
 			return
 		}
