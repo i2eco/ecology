@@ -31,6 +31,18 @@ func (g *relationship) Create(c *gin.Context, db *gorm.DB, data *mysql.Relations
 	return nil
 }
 
+// Update 根据主键更新一条记录
+func (g *relationship) Update(c *gin.Context, db *gorm.DB, paramRelationshipId int, ups mysql.Ups) (err error) {
+	var sql = "`relationship_id`=?"
+	var binds = []interface{}{paramRelationshipId}
+
+	if err = db.Table("relationship").Where(sql, binds...).Updates(ups).Error; err != nil {
+		g.logger.Error("relationship update error", zap.Error(err))
+		return
+	}
+	return
+}
+
 // UpdateX Update的扩展方法，根据Cond更新一条或多条记录
 func (g *relationship) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds, ups mysql.Ups) (err error) {
 
@@ -39,6 +51,19 @@ func (g *relationship) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds, u
 		g.logger.Error("relationship update error", zap.Error(err))
 		return
 	}
+	return
+}
+
+// Delete 根据主键删除一条记录。如果有delete_time则软删除，否则硬删除。
+func (g *relationship) Delete(c *gin.Context, db *gorm.DB, paramRelationshipId int) (err error) {
+	var sql = "`relationship_id`=?"
+	var binds = []interface{}{paramRelationshipId}
+
+	if err = db.Table("relationship").Where(sql, binds...).Delete(&mysql.Relationship{}).Error; err != nil {
+		g.logger.Error("relationship delete error", zap.Error(err))
+		return
+	}
+
 	return
 }
 
@@ -51,6 +76,18 @@ func (g *relationship) DeleteX(c *gin.Context, db *gorm.DB, conds mysql.Conds) (
 		return
 	}
 
+	return
+}
+
+// Info 根据PRI查询单条记录
+func (g *relationship) Info(c *gin.Context, paramRelationshipId int) (resp mysql.Relationship, err error) {
+	var sql = "`relationship_id`=?"
+	var binds = []interface{}{paramRelationshipId}
+
+	if err = g.db.Table("relationship").Where(sql, binds...).First(&resp).Error; err != nil {
+		g.logger.Error("relationship info error", zap.Error(err))
+		return
+	}
 	return
 }
 
@@ -76,6 +113,22 @@ func (g *relationship) List(c *gin.Context, conds mysql.Conds, extra ...string) 
 	if err = g.db.Table("relationship").Where(sql, binds...).Order(sorts).Find(&resp).Error; err != nil {
 		g.logger.Error("relationship info error", zap.Error(err))
 		return
+	}
+	return
+}
+
+// ListMap 查询map，map遍历的时候是无序的，所以指定sorts参数没有意义
+func (g *relationship) ListMap(c *gin.Context, conds mysql.Conds) (resp map[int]mysql.Relationship, err error) {
+	sql, binds := mysql.BuildQuery(conds)
+
+	mysqlSlice := make([]mysql.Relationship, 0)
+	resp = make(map[int]mysql.Relationship, 0)
+	if err = g.db.Table("relationship").Where(sql, binds...).Find(&mysqlSlice).Error; err != nil {
+		g.logger.Error("relationship info error", zap.Error(err))
+		return
+	}
+	for _, value := range mysqlSlice {
+		resp[value.RelationshipId] = value
 	}
 	return
 }

@@ -1,6 +1,10 @@
 package manager
 
 import (
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/goecology/ecology/appgo/dao"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/code"
@@ -8,9 +12,6 @@ import (
 	"github.com/goecology/ecology/appgo/pkg/mus"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"github.com/goecology/ecology/appgo/router/core"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
 // 添加用户.

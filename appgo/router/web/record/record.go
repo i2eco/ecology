@@ -1,11 +1,12 @@
 package record
 
 import (
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/mus"
 	"github.com/goecology/ecology/appgo/router/core"
-	"time"
 )
 
 //获取阅读记录列表

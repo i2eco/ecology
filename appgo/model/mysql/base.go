@@ -1,9 +1,10 @@
 package mysql
 
 import (
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/goecology/ecology/appgo/pkg/mus"
-	"time"
 )
 
 type period string

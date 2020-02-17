@@ -32,6 +32,7 @@ func main() {
 	)
 	app.SetRootCommand(func(cobraCommand *cobra.Command) {
 		cobraCommand.AddCommand(command.InstallCmd)
+		cobraCommand.AddCommand(command.AwesomeCmd)
 	})
 	app.SetStartCommand(func(cobraCommand *cobra.Command) {
 		cobraCommand.PersistentFlags().StringVar(&command.Mode, "mode", "all", "设置启动模式")

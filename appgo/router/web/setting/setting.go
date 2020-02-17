@@ -1,11 +1,12 @@
 package setting
 
 import (
+	"strconv"
+
 	"github.com/goecology/ecology/appgo/dao"
 	"github.com/goecology/ecology/appgo/pkg/conf"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"github.com/goecology/ecology/appgo/router/core"
-	"strconv"
 )
 
 //基本信息

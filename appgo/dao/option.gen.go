@@ -31,6 +31,18 @@ func (g *option) Create(c *gin.Context, db *gorm.DB, data *mysql.Option) (err er
 	return nil
 }
 
+// Update 根据主键更新一条记录
+func (g *option) Update(c *gin.Context, db *gorm.DB, paramOptionId int, ups mysql.Ups) (err error) {
+	var sql = "`option_id`=?"
+	var binds = []interface{}{paramOptionId}
+
+	if err = db.Table("option").Where(sql, binds...).Updates(ups).Error; err != nil {
+		g.logger.Error("option update error", zap.Error(err))
+		return
+	}
+	return
+}
+
 // UpdateX Update的扩展方法，根据Cond更新一条或多条记录
 func (g *option) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds, ups mysql.Ups) (err error) {
 
@@ -39,6 +51,19 @@ func (g *option) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds, ups mys
 		g.logger.Error("option update error", zap.Error(err))
 		return
 	}
+	return
+}
+
+// Delete 根据主键删除一条记录。如果有delete_time则软删除，否则硬删除。
+func (g *option) Delete(c *gin.Context, db *gorm.DB, paramOptionId int) (err error) {
+	var sql = "`option_id`=?"
+	var binds = []interface{}{paramOptionId}
+
+	if err = db.Table("option").Where(sql, binds...).Delete(&mysql.Option{}).Error; err != nil {
+		g.logger.Error("option delete error", zap.Error(err))
+		return
+	}
+
 	return
 }
 
@@ -51,6 +76,18 @@ func (g *option) DeleteX(c *gin.Context, db *gorm.DB, conds mysql.Conds) (err er
 		return
 	}
 
+	return
+}
+
+// Info 根据PRI查询单条记录
+func (g *option) Info(c *gin.Context, paramOptionId int) (resp mysql.Option, err error) {
+	var sql = "`option_id`=?"
+	var binds = []interface{}{paramOptionId}
+
+	if err = g.db.Table("option").Where(sql, binds...).First(&resp).Error; err != nil {
+		g.logger.Error("option info error", zap.Error(err))
+		return
+	}
 	return
 }
 
@@ -76,6 +113,22 @@ func (g *option) List(c *gin.Context, conds mysql.Conds, extra ...string) (resp 
 	if err = g.db.Table("option").Where(sql, binds...).Order(sorts).Find(&resp).Error; err != nil {
 		g.logger.Error("option info error", zap.Error(err))
 		return
+	}
+	return
+}
+
+// ListMap 查询map，map遍历的时候是无序的，所以指定sorts参数没有意义
+func (g *option) ListMap(c *gin.Context, conds mysql.Conds) (resp map[int]mysql.Option, err error) {
+	sql, binds := mysql.BuildQuery(conds)
+
+	mysqlSlice := make([]mysql.Option, 0)
+	resp = make(map[int]mysql.Option, 0)
+	if err = g.db.Table("option").Where(sql, binds...).Find(&mysqlSlice).Error; err != nil {
+		g.logger.Error("option info error", zap.Error(err))
+		return
+	}
+	for _, value := range mysqlSlice {
+		resp[value.OptionId] = value
 	}
 	return
 }

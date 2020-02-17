@@ -1,14 +1,15 @@
 package user
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/goecology/ecology/appgo/dao"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/conf"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"github.com/goecology/ecology/appgo/router/core"
 	"github.com/kataras/iris/core/errors"
-	"strconv"
-	"time"
 )
 
 func prepare(c *core.Context) (UcenterMember mysql.Member, err error) {

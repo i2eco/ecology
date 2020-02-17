@@ -21,6 +21,10 @@ install:
 	@cd $(APPPATH)/appgo && $(APPPATH)/tool/build.sh $(APPNAME) $(APPOUT) $(MUSES_SYSTEM)
 	@cd $(APPPATH)/appgo && $(APPOUT) install --conf=conf/conf.toml
 
+install.create:
+	@cd $(APPPATH)/appgo && $(APPPATH)/tool/build.sh $(APPNAME) $(APPOUT) $(MUSES_SYSTEM)
+	@cd $(APPPATH)/appgo && $(APPOUT) install --conf=conf/conf.toml --mode=create
+
 install.clear:
 	@cd $(APPPATH)/appgo && $(APPPATH)/tool/build.sh $(APPNAME) $(APPOUT) $(MUSES_SYSTEM)
 	@cd $(APPPATH)/appgo && $(APPOUT) install --conf=conf/conf.toml --clear=true

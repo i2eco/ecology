@@ -2,6 +2,13 @@ package book
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/goecology/ecology/appgo/dao"
@@ -14,12 +21,6 @@ import (
 	"github.com/goecology/ecology/appgo/router/core"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 //保存项目信息

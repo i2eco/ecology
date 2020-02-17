@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"fmt"
+
 	"github.com/goecology/ecology/appgo/pkg/mus"
 )
 

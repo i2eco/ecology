@@ -1,10 +1,11 @@
 package rank
 
 import (
+	"strconv"
+
 	"github.com/goecology/ecology/appgo/dao"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/router/core"
-	"strconv"
 )
 
 func Index(c *core.Context) {

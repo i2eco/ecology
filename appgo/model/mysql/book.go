@@ -1,9 +1,10 @@
 package mysql
 
 import (
-	"github.com/goecology/ecology/appgo/pkg/mus"
 	"strings"
 	"time"
+
+	"github.com/goecology/ecology/appgo/pkg/mus"
 
 	"github.com/goecology/ecology/appgo/pkg/utils"
 )

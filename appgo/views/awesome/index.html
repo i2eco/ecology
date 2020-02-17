@@ -125,14 +125,6 @@
 <div class="manual-reader manual-container">
     {{template "widgets/header.html" .}}
     <div class="container manual-body">
-        <div class="row visible-xs" style="margin:30px 0px 15px 0px;">
-            <form method="get" action="{{urlfor "SearchController.Result"}}" class="search-form">
-                <div class="input-group input-group-lg">
-                    <input type="text" name="wd" placeholder="Search..." class="form-control">
-                    <span class="input-group-addon"><i class="fa fa-search"></i><span class="hidden-xs"> 搜索</span></span>
-                </div>
-            </form>
-        </div>
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-8">
                 <div class="col-xs-12 mgt-15px" style="line-height: 200%;">
@@ -142,73 +134,41 @@
                         </div>
                     {{end}}
                     <div class="help-block lang-explore" style="margin: 10px 0 15px;">
-                        <span class="text-muted">形式：</span>
-                        <a {{if eq $.BookType ""}}class="home-active"{{end}} href="/?tab={{$.Tab}}&cid={{$.Cid}}" title="不限">不限</a>
-                        <a {{if eq $.BookType "ecology"}}class="home-active"{{end}} href="/ecology?tab={{$.Tab}}&cid={{$.Cid}}">社区</a>
-                        <a {{if eq $.BookType "original"}}class="home-active"{{end}} href="/original?tab={{$.Tab}}l&cid={{$.Cid}}">原创</a>
-                        <a {{if eq $.BookType "opensource"}}class="home-active"{{end}} href="/opensource?tab={{$.Tab}}&cid={{$.Cid}}">开源</a>
-                    </div>
-                    {{if .Cates}}
-                        <div class="help-block lang-explore" style="margin: 10px 0 15px;">
-                            <span class="text-muted">方向：</span>
-                            <a {{if eq $.Cid 0}}class="home-active"{{end}} href="/?tab={{$.Tab}}&type{{$.BookType}}" title="不限">不限</a>
-                            {{range .Cates}}
-                                {{if and (eq .Pid 0) (gt .Cnt 0)}}
-                                    <a {{if eq $.Pid .Id}}class="home-active"{{end}} href="/{{$.BookType}}?tab={{$.Tab}}&cid={{.Id}}" title="{{.Title}}">{{.Title}}</a>
-                                {{end}}
-                            {{end}}
-                        </div>
-                        {{if ne $.Cid 0}}
-                            <div class="help-block lang-explore" style="margin: 10px 0 15px;">
-                                <span class="text-muted">分类：</span>
-                                {{if gt $.Cid 0}}
-                                    {{range .Cates}}
-                                        {{if and (eq .Pid $.Pid) (gt .Cnt 0)}}
-                                            <a {{if eq $.Cid .Id}}class="home-active"{{end}} href="/{{$.BookType}}?tab={{$.Tab}}&cid={{.Id}}" title="{{.Title}}">{{.Title}}</a>
-                                        {{end}}
-                                    {{end}}
-                                {{end}}
-                            </div>
-                        {{end}}
-                    {{end}}
-                    <div class="help-block lang-explore" style="margin: 10px 0 15px;">
                         <span class="text-muted">排序：</span>
-                        <a {{if eq $.Tab "latest"}}class="home-active"{{end}} href="/{{$.BookType}}?tab=latest&cid={{$.Cid}}">最新<span class="hidden-xs">发布</span></a>
-                        <a {{if eq $.Tab "popular"}}class="home-active"{{end}} href="/{{$.BookType}}?tab=popular&cid={{$.Cid}}">热门<span class="hidden-xs">书籍</span></a>
-                        <a {{if eq $.Tab "recommend"}}class="home-active"{{end}} href="/{{$.BookType}}?tab=recommend&cid={{$.Cid}}" title="网站推荐"><span class="hidden-xs">网站</span>推荐</a>
+                        <a {{if eq $.Type "latest"}}class="home-active"{{end}} href="/awesome?type=latest">最新</a>
+{{/*                        <a {{if eq $.Type "popular"}}class="home-active"{{end}} href="/awesome?type=popular">热门</a>*/}}
                     </div>
                 </div>
 
 
                 {{range $index,$item := .Lists}}
                     <div class="home-list-item clearfix">
-                        <div class="book-cover" style="padding-left: 0px">
-                            <a class="" href="/books/{{$item.Identify}}"  target="_blank" title="查看文档" data-toggle="tooltip">
-                                <img style="height:140px"  onerror="this.src='/static/images/book.png'"  class="img-responsive" src="{{$item.Cover}}" alt="{{$item.BookName}}">
-                            </a>
-                        </div>
                         <div class="book-info">
-                            <a class="" href="/books/{{$item.Identify}}"  target="_blank" title="查看文档" data-toggle="tooltip">
-                                {{$item.BookName}}
+                            <a class="" href="{{$item.HtmlUrl}}"  target="_blank" title="查看文档" data-toggle="tooltip">
+                                <img class="home-avatar"  onerror="this.src='/static/images/avatar.png'"  class="img-responsive" src="{{$item.OwnerAvatarUrl}}">
+                                <span>{{$item.GitName}}</span>
                             </a>
                             <div class="book-desc">
-                                {{$item.Description}}
+                                {{$item.Desc}}
                             </div>
                             <div class="book-author">
                                 <div class="author-info">
-                                    <a href="/u/{{$item.UserName}}" target="_blank" class="user">
-                                        <img class="home-avatar"  onerror="this.src='/static/images/avatar.png'"  class="img-responsive" src="{{$item.Avatar}}">
-                                        <span>{{$item.UserName}}</span>
-                                    </a>
+                                    <span>协议：{{$item.LicenseName}}<span class="dot"> · </span>语言：{{$item.Language}}<span class="dot"> · </span>最近更新时间：{{$item.GitUpdatedAt}}</span>
                                 </div>
                             </div>
                             <div style="height:30px">
 
                             </div>
                             <div class="footer-bar" style="display: flex;height: 35px;    justify-content: space-between;">
-                                <p style="display: flex;height: 35px;line-height:35px"> <span class="home-footer-content">{{$item.DocCount}}篇课程<span class="dot">·</span>{{$item.Vcnt}}阅读</span></p>
-                                <a style="    color: #fff;" href="/books/{{$item.Identify}}" title="查看文档" target="_blank"><button class="home-button">
-                                        开始阅读</button></a>
+                                <p style="display: flex;height: 35px;line-height:35px"> <span class="home-footer-content">{{$item.StarCount}}点赞<span class="dot"> · </span>{{$item.WatcherCount}}关注<span class="dot"> · </span>{{$item.ForkCount}}Fork<span class="dot"> · </span>{{$item.ReadCount}}访问</span></p>
+                                <div style="display: flex;height: 35px;">
+                                {{if ne $item.HomePage ""}}
+                                    <a style="color: #fff;" href="/api/web/awesome/click?q2={{$item.HomePage}}" title="查看文档" target="_blank"><button class="home-button">
+                                    官网</button></a>
+                                {{end}}
+                                    <a style="    color: #fff;" href="/api/web/awesome/click?q1={{$item.HtmlUrl}}" title="查看文档" target="_blank"><button class="home-button" style="margin-left: 10px">
+                                        Github</button></a>
+                                </div>
                             </div>
                         </div>
                     </div>

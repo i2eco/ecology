@@ -2,15 +2,16 @@ package dao
 
 import (
 	"errors"
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/conf"
 	"github.com/goecology/ecology/appgo/pkg/mus"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"go.uber.org/zap"
-	"regexp"
-	"strings"
-	"time"
 )
 
 // Login 用户登录.

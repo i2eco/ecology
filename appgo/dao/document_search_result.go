@@ -2,10 +2,11 @@ package dao
 
 import (
 	"fmt"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
 	"strconv"
 	"strings"
+
+	"github.com/goecology/ecology/appgo/model/mysql"
+	"github.com/goecology/ecology/appgo/pkg/mus"
 )
 
 type documentSearchResult struct {

@@ -1,10 +1,11 @@
 package user
 
 import (
+	"strconv"
+
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/code"
 	"github.com/goecology/ecology/appgo/router/core"
-	"strconv"
 )
 
 //关注或取消关注

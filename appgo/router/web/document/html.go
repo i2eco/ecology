@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"go.uber.org/zap"
 	"html/template"
 	"image/png"
 	"os"
@@ -13,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"go.uber.org/zap"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/TruthHun/html2md"
@@ -313,7 +314,7 @@ func ReadHtml(c *core.Context) {
 	}
 
 	if c.Member().MemberId > 0 { //增加用户阅读记录
-		if err := new(mysql.ReadRecord).Add(doc.DocumentId, c.Member().MemberId); err != nil {
+		if err := dao.ReadRecord.Add(doc.DocumentId, c.Member().MemberId); err != nil {
 			mus.Logger.Error(err.Error())
 		}
 	}

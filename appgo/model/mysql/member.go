@@ -3,10 +3,11 @@ package mysql
 
 import (
 	"errors"
-	"github.com/goecology/ecology/appgo/pkg/mus"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/goecology/ecology/appgo/pkg/mus"
 
 	"github.com/astaxie/beego/orm"
 	"github.com/goecology/ecology/appgo/pkg/conf"
@@ -16,7 +17,7 @@ import (
 // member
 type Member struct {
 	MemberId                   int       `gorm:"not null;primary_key;AUTO_INCREMENT"json:"memberId"`
-	Account                    string    `gorm:"not null;unique_key"json:"account"`
+	Account                    string    `gorm:"not null;UNIQUE_INDEX"json:"account"`
 	Nickname                   string    `gorm:"not null;"json:"nickname"` //昵称
 	Password                   string    `gorm:"not null;"json:"-"`
 	AuthMethod                 string    `gorm:"not null;"json:"authMethod"` //认证方式: local 本地数据库 /ldap LDAP

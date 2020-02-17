@@ -31,6 +31,18 @@ func (g *documentHistory) Create(c *gin.Context, db *gorm.DB, data *mysql.Docume
 	return nil
 }
 
+// Update 根据主键更新一条记录
+func (g *documentHistory) Update(c *gin.Context, db *gorm.DB, paramHistoryId int, ups mysql.Ups) (err error) {
+	var sql = "`history_id`=?"
+	var binds = []interface{}{paramHistoryId}
+
+	if err = db.Table("document_history").Where(sql, binds...).Updates(ups).Error; err != nil {
+		g.logger.Error("document_history update error", zap.Error(err))
+		return
+	}
+	return
+}
+
 // UpdateX Update的扩展方法，根据Cond更新一条或多条记录
 func (g *documentHistory) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds, ups mysql.Ups) (err error) {
 
@@ -39,6 +51,19 @@ func (g *documentHistory) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds
 		g.logger.Error("document_history update error", zap.Error(err))
 		return
 	}
+	return
+}
+
+// Delete 根据主键删除一条记录。如果有delete_time则软删除，否则硬删除。
+func (g *documentHistory) Delete(c *gin.Context, db *gorm.DB, paramHistoryId int) (err error) {
+	var sql = "`history_id`=?"
+	var binds = []interface{}{paramHistoryId}
+
+	if err = db.Table("document_history").Where(sql, binds...).Delete(&mysql.DocumentHistory{}).Error; err != nil {
+		g.logger.Error("document_history delete error", zap.Error(err))
+		return
+	}
+
 	return
 }
 
@@ -51,6 +76,18 @@ func (g *documentHistory) DeleteX(c *gin.Context, db *gorm.DB, conds mysql.Conds
 		return
 	}
 
+	return
+}
+
+// Info 根据PRI查询单条记录
+func (g *documentHistory) Info(c *gin.Context, paramHistoryId int) (resp mysql.DocumentHistory, err error) {
+	var sql = "`history_id`=?"
+	var binds = []interface{}{paramHistoryId}
+
+	if err = g.db.Table("document_history").Where(sql, binds...).First(&resp).Error; err != nil {
+		g.logger.Error("document_history info error", zap.Error(err))
+		return
+	}
 	return
 }
 
@@ -76,6 +113,22 @@ func (g *documentHistory) List(c *gin.Context, conds mysql.Conds, extra ...strin
 	if err = g.db.Table("document_history").Where(sql, binds...).Order(sorts).Find(&resp).Error; err != nil {
 		g.logger.Error("document_history info error", zap.Error(err))
 		return
+	}
+	return
+}
+
+// ListMap 查询map，map遍历的时候是无序的，所以指定sorts参数没有意义
+func (g *documentHistory) ListMap(c *gin.Context, conds mysql.Conds) (resp map[int]mysql.DocumentHistory, err error) {
+	sql, binds := mysql.BuildQuery(conds)
+
+	mysqlSlice := make([]mysql.DocumentHistory, 0)
+	resp = make(map[int]mysql.DocumentHistory, 0)
+	if err = g.db.Table("document_history").Where(sql, binds...).Find(&mysqlSlice).Error; err != nil {
+		g.logger.Error("document_history info error", zap.Error(err))
+		return
+	}
+	for _, value := range mysqlSlice {
+		resp[value.HistoryId] = value
 	}
 	return
 }

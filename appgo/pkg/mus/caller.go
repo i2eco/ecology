@@ -37,7 +37,7 @@ func Init() error {
 	Session = ginsession.Caller()
 
 	FormRestyClient = resty.New().SetDebug(true).SetTimeout(3*time.Second).SetHeader("Content-Type", "multipart/form-data")
-	JsonRestyClient = resty.New().SetDebug(true).SetTimeout(3*time.Second).SetHeader("Content-Type", "application/json;charset=utf-8")
+	JsonRestyClient = resty.New().SetDebug(true).SetTimeout(10*time.Second).SetHeader("Content-Type", "application/json;charset=utf-8")
 
 	return nil
 

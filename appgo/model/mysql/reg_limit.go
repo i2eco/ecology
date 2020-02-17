@@ -1,9 +1,10 @@
 package mysql
 
 import (
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"time"
 )
 
 type RegLimit struct {

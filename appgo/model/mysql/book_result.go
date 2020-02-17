@@ -1,8 +1,9 @@
 package mysql
 
 import (
-	"github.com/goecology/ecology/appgo/pkg/mus"
 	"time"
+
+	"github.com/goecology/ecology/appgo/pkg/mus"
 )
 
 type BookResult struct {

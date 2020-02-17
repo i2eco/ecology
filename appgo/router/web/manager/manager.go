@@ -3,6 +3,12 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 	"github.com/goecology/ecology/appgo/dao"
@@ -11,11 +17,6 @@ import (
 	"github.com/goecology/ecology/appgo/pkg/mus"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"github.com/goecology/ecology/appgo/router/core"
-	"html/template"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
 )
 
 func Index(c *core.Context) {

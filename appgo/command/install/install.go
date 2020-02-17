@@ -1,10 +1,11 @@
 package install
 
 import (
+	"time"
+
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	mmysql "github.com/goecology/muses/pkg/database/mysql"
-	"time"
 )
 
 var Models []interface{}
@@ -40,6 +41,8 @@ func init() {
 		&mysql.AdsCont{},
 		&mysql.FriendLink{},
 		&mysql.Fans{},
+		&mysql.Awesome{},
+		&mysql.AwesomeCate{},
 	}
 }
 func Create(isClear bool) error {

@@ -1,15 +1,16 @@
 package home
 
 import (
+	"math"
+	"strconv"
+	"strings"
+
 	"github.com/goecology/ecology/appgo/dao"
 	"github.com/goecology/ecology/appgo/model/constx"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/conf"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"github.com/goecology/ecology/appgo/router/core"
-	"math"
-	"strconv"
-	"strings"
 )
 
 func index(c *core.Context, bookType string) {

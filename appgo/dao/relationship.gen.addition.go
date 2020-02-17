@@ -77,7 +77,7 @@ func (m *relationship) Insert(db *gorm.DB, create *mysql.Relationship) error {
 	return db.Create(create).Error
 }
 
-func (m *relationship) Update(db *gorm.DB, update *mysql.Relationship) error {
+func (m *relationship) UpdateXX(db *gorm.DB, update *mysql.Relationship) error {
 	return db.UpdateColumns(update).Error
 }
 
@@ -130,13 +130,13 @@ func (m *relationship) Transfer(bookId, founderId, receiveId int) (err error) {
 	receiver.RoleId = conf.BookFounder
 	receiver.BookId = bookId
 
-	if err := Relationship.Update(transdb, &founder); err != nil {
+	if err := Relationship.UpdateXX(transdb, &founder); err != nil {
 		transdb.Rollback()
 		return err
 	}
 
 	if receiver.RelationshipId > 0 {
-		if err := Relationship.Update(transdb, &receiver); err != nil {
+		if err := Relationship.UpdateXX(transdb, &receiver); err != nil {
 			transdb.Rollback()
 			return err
 		}

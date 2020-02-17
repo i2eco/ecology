@@ -1,8 +1,9 @@
 package mdw
 
 import (
-	"github.com/spf13/viper"
 	"strings"
+
+	"github.com/spf13/viper"
 
 	"github.com/goecology/ecology/appgo/dao"
 

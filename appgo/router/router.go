@@ -7,6 +7,7 @@ import (
 	"github.com/goecology/ecology/appgo/router/core"
 	"github.com/goecology/ecology/appgo/router/mdw"
 	"github.com/goecology/ecology/appgo/router/web/account"
+	"github.com/goecology/ecology/appgo/router/web/awesome"
 	"github.com/goecology/ecology/appgo/router/web/book"
 	"github.com/goecology/ecology/appgo/router/web/bookMember"
 	"github.com/goecology/ecology/appgo/router/web/document"
@@ -84,6 +85,10 @@ func webGrp(r *gin.Engine) {
 		tplGrp.GET("/manager/tags", core.Handle(manager.Tags))
 		tplGrp.GET("/manager/friendlink", core.Handle(manager.FriendLink))
 
+		{
+			tplGrp.GET("/awesome", core.Handle(awesome.Index))
+		}
+
 		//用户中心 【start】
 		tplGrp.GET("/u/:account", core.Handle(user.Index))
 		tplGrp.GET("/u/:account/collection", core.Handle(user.Collection))
@@ -98,6 +103,12 @@ func webGrp(r *gin.Engine) {
 
 	apiGrp := r.Group("/api/web", mdw.LoginRequired())
 	{
+
+		apiGrp.GET("/awesome/info", core.Handle(awesome.Info))
+		apiGrp.GET("/awesome/gen", core.Handle(awesome.Gen))
+		apiGrp.GET("/awesome/all", core.Handle(awesome.All))
+		apiGrp.GET("/awesome/click", core.Handle(awesome.Click))
+
 		apiGrp.POST("/login", core.Handle(account.LoginApi))
 		apiGrp.POST("/account/bind", core.Handle(account.BindApi))
 		apiGrp.POST("/find_password", core.Handle(account.FindPasswordApi))

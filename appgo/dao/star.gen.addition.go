@@ -61,7 +61,7 @@ func (this *star) DoesStar(uid, bid interface{}) bool {
 //获取收藏列表，查询项目信息
 func (this *star) ListXX(uid, p, listRows int, order ...string) (cnt int64, books []mysql.StarResult, err error) {
 	//根据用户id查询用户的收藏，先从收藏表中查询book_id
-	sqlCount := `select count(s.bid) cnt from ` + mysql.Book{}.TableName() + ` b left join md_star s on s.bid=b.book_id where s.uid=? and b.privately_owned=0`
+	sqlCount := `select count(s.bid) cnt from ` + mysql.Book{}.TableName() + ` b left join ` + mysql.Star{}.TableName() + ` s on s.bid=b.book_id where s.uid=? and b.privately_owned=0`
 	var count mysql.DataCount
 
 	mus.Db.Raw(sqlCount, uid).Scan(&count)
@@ -72,7 +72,7 @@ func (this *star) ListXX(uid, p, listRows int, order ...string) (cnt int64, book
 		orderBy = "id desc"
 	}
 	if cnt = count.Cnt; cnt > 0 {
-		sql := `select b.*,m.nickname from md_books b left join ` + mysql.Star{}.TableName() + ` s on s.bid=b.book_id left join  ` + mysql.Member{}.TableName() + ` m on m.member_id=b.member_id where s.uid=? and b.privately_owned=0 order by %v limit %v offset %v`
+		sql := `select b.*,m.nickname from ` + mysql.Book{}.TableName() + ` b left join ` + mysql.Star{}.TableName() + ` s on s.bid=b.book_id left join  ` + mysql.Member{}.TableName() + ` m on m.member_id=b.member_id where s.uid=? and b.privately_owned=0 order by %v limit %v offset %v`
 		sql = fmt.Sprintf(sql, orderBy, listRows, (p-1)*listRows)
 		err = mus.Db.Raw(sql, uid).Scan(&books).Error
 	}

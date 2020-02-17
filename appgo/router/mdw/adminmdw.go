@@ -2,12 +2,13 @@ package mdw
 
 import (
 	"encoding/gob"
+	"strings"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/pkg/conf"
 	"github.com/goecology/ecology/appgo/router/types"
-	"strings"
 )
 
 func init() {

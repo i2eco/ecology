@@ -3,11 +3,12 @@ package mysql
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/goecology/ecology/appgo/pkg/mus"
+	"go.uber.org/zap"
 )
 
 // 阅读时长

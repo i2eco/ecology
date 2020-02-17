@@ -19,6 +19,7 @@ require (
 	github.com/gin-gonic/gin v1.5.0
 	github.com/go-resty/resty/v2 v2.1.0
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/gocarina/gocsv v0.0.0-20200212142550-0b7418e775b8
 	github.com/goecology/muses v0.2.6
 	github.com/huichen/sego v0.0.0-20180617034105-3f3c8a8cfacc
 	github.com/iris-contrib/go.uuid v2.0.0+incompatible // indirect

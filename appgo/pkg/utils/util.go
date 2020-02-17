@@ -5,15 +5,16 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
 	"image"
 	"io/ioutil"
 	"os"
 	"path"
 	"reflect"
 	"sync"
+
+	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
 
 	"github.com/mssola/user_agent"
 

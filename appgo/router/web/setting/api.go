@@ -2,6 +2,11 @@ package setting
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/goecology/ecology/appgo/model/mysql"
 	"github.com/goecology/ecology/appgo/model/mysql/store"
@@ -9,10 +14,6 @@ import (
 	"github.com/goecology/ecology/appgo/pkg/mus"
 	"github.com/goecology/ecology/appgo/pkg/utils"
 	"github.com/goecology/ecology/appgo/router/core"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 //

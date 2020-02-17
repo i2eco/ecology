@@ -1,28 +1,36 @@
 package dao
 
 var (
-	Option          *option
-	Label           *label
-	Book            *book
-	DocumentStore   *documentStore
-	Star            *star
-	Score           *score
-	Member          *member
+	Sign            *sign
+	BookCounter     *bookCounter
+	Seo             *seo
+	Document        *document
+	Comments        *comments
+	ReadingTime     *readingTime
 	Wechat          *wechat
+	FriendLink      *friendLink
+	Awesome         *awesome
+	Relationship    *relationship
+	Banner          *banner
+	BookCategory    *bookCategory
+	Star            *star
+	DocumentStore   *documentStore
+	GithubUser      *githubUser
+	Member          *member
+	Label           *label
+	Bookmark        *bookmark
+	AwesomeCate     *awesomeCate
+	AdsCont         *adsCont
+	Logs            *logs
+	Github          *github
+	Score           *score
+	Book            *book
+	DocumentHistory *documentHistory
 	ReadRecord      *readRecord
 	ReadCount       *readCount
-	Banner          *banner
-	DocumentHistory *documentHistory
-	GithubUser      *githubUser
-	Attachment      *attachment
-	Github          *github
-	BookCounter     *bookCounter
 	Category        *category
-	BookCategory    *bookCategory
-	Comments        *comments
-	Logs            *logs
-	Bookmark        *bookmark
 	MemberToken     *memberToken
-	Document        *document
-	Relationship    *relationship
+	Attachment      *attachment
+	Option          *option
+	Fans            *fans
 )

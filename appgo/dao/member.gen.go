@@ -33,6 +33,18 @@ func (g *member) Create(c *gin.Context, db *gorm.DB, data *mysql.Member) (err er
 	return nil
 }
 
+// Update 根据主键更新一条记录
+func (g *member) Update(c *gin.Context, db *gorm.DB, paramMemberId int, ups mysql.Ups) (err error) {
+	var sql = "`member_id`=?"
+	var binds = []interface{}{paramMemberId}
+
+	if err = db.Table("member").Where(sql, binds...).Updates(ups).Error; err != nil {
+		g.logger.Error("member update error", zap.Error(err))
+		return
+	}
+	return
+}
+
 // UpdateX Update的扩展方法，根据Cond更新一条或多条记录
 func (g *member) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds, ups mysql.Ups) (err error) {
 
@@ -41,6 +53,19 @@ func (g *member) UpdateX(c *gin.Context, db *gorm.DB, conds mysql.Conds, ups mys
 		g.logger.Error("member update error", zap.Error(err))
 		return
 	}
+	return
+}
+
+// Delete 根据主键删除一条记录。如果有delete_time则软删除，否则硬删除。
+func (g *member) Delete(c *gin.Context, db *gorm.DB, paramMemberId int) (err error) {
+	var sql = "`member_id`=?"
+	var binds = []interface{}{paramMemberId}
+
+	if err = db.Table("member").Where(sql, binds...).Delete(&mysql.Member{}).Error; err != nil {
+		g.logger.Error("member delete error", zap.Error(err))
+		return
+	}
+
 	return
 }
 
@@ -53,6 +78,18 @@ func (g *member) DeleteX(c *gin.Context, db *gorm.DB, conds mysql.Conds) (err er
 		return
 	}
 
+	return
+}
+
+// Info 根据PRI查询单条记录
+func (g *member) Info(c *gin.Context, paramMemberId int) (resp mysql.Member, err error) {
+	var sql = "`member_id`=?"
+	var binds = []interface{}{paramMemberId}
+
+	if err = g.db.Table("member").Where(sql, binds...).First(&resp).Error; err != nil {
+		g.logger.Error("member info error", zap.Error(err))
+		return
+	}
 	return
 }
 
@@ -78,6 +115,22 @@ func (g *member) List(c *gin.Context, conds mysql.Conds, extra ...string) (resp 
 	if err = g.db.Table("member").Where(sql, binds...).Order(sorts).Find(&resp).Error; err != nil {
 		g.logger.Error("member info error", zap.Error(err))
 		return
+	}
+	return
+}
+
+// ListMap 查询map，map遍历的时候是无序的，所以指定sorts参数没有意义
+func (g *member) ListMap(c *gin.Context, conds mysql.Conds) (resp map[int]mysql.Member, err error) {
+	sql, binds := mysql.BuildQuery(conds)
+
+	mysqlSlice := make([]mysql.Member, 0)
+	resp = make(map[int]mysql.Member, 0)
+	if err = g.db.Table("member").Where(sql, binds...).Find(&mysqlSlice).Error; err != nil {
+		g.logger.Error("member info error", zap.Error(err))
+		return
+	}
+	for _, value := range mysqlSlice {
+		resp[value.MemberId] = value
 	}
 	return
 }

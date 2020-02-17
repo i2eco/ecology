@@ -3,9 +3,10 @@ package book
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/goecology/ecology/appgo/pkg/mus"
 	"html/template"
 	"strconv"
+
+	"github.com/goecology/ecology/appgo/pkg/mus"
 
 	"github.com/goecology/ecology/appgo/model/mysql"
 
