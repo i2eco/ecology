@@ -3,8 +3,8 @@ package dao
 import (
 	"strings"
 
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 )
 
 func (m *label) FindFirst(field string, value interface{}) (resp *mysql.Label, err error) {

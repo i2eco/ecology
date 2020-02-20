@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/router/core"
 )
 
 //添加或者移除书签

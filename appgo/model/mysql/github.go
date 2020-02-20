@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/goecology/ecology/appgo/pkg/oauth"
+	"github.com/i2eco/ecology/appgo/pkg/oauth"
 )
 
 var ModelGithub = new(Github)

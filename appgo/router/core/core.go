@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
@@ -14,18 +15,18 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/goecology/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/dao"
 
 	"github.com/gin-contrib/sessions"
 
 	"github.com/gin-gonic/gin"
-	"github.com/goecology/ecology/appgo/model/constx"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/code"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/router/types"
-	"github.com/goecology/muses/pkg/tpl/tplbeego"
+	"github.com/i2eco/ecology/appgo/model/constx"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/router/types"
+	"github.com/i2eco/muses/pkg/tpl/tplbeego"
 	"go.uber.org/zap"
 )
 
@@ -456,4 +457,40 @@ func (c *Context) sortBySummary(bookIdentify, htmlStr string, bookId int) {
 	if len(hrefs) > 0 { //如果有新创建的文档，则再调用一遍，用于处理排序
 		c.ReplaceLinks(bookIdentify, htmlStr, true)
 	}
+}
+
+func (c *Context) SaveToFileImg(fromfile string) (tofile string, name string, err error) {
+	var fileHeader *multipart.FileHeader
+	fileHeader, err = c.FormFile(fromfile)
+	if err != nil {
+		return
+	}
+	var file multipart.File
+	file, err = fileHeader.Open()
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	ext := filepath.Ext(fileHeader.Filename)
+
+	if !strings.EqualFold(ext, ".png") && !strings.EqualFold(ext, ".jpg") && !strings.EqualFold(ext, ".gif") && !strings.EqualFold(ext, ".jpeg") {
+		err = errors.New("img type error")
+		return
+	}
+
+	fileName := strconv.FormatInt(time.Now().UnixNano(), 16)
+	name = fileName + ext
+	tofile = filepath.Join("uploads", time.Now().Format("200601"), name)
+
+	path := filepath.Dir(tofile)
+	// todo 优化
+	err = os.MkdirAll(path, os.ModePerm)
+	f, err := os.OpenFile(tofile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	io.Copy(f, file)
+	return
 }

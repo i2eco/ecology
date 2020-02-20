@@ -5,3 +5,4 @@ cache
 leveldb
 store
 bin.tar.gz
+tool/gencode/gencode

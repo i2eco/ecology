@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/spf13/viper"
 )
 

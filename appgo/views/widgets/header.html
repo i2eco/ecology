@@ -1,3 +1,16 @@
+<style>
+    .header-active a{
+        color: #fa8919;
+    }
+    .navbar-nav a:hover{
+        color: #fa8919;
+        background: #fff;
+    }
+    .navbar-nav li:hover{
+        color: #fa8919;
+        background: #fff;
+    }
+    </style>
 <header class="navbar navbar-static-top navbar-fixed-top manual-header" role="banner">
     <div class="container" style="position: relative;">
         <div class="navbar-header col-sm-12 col-md-10 col-lg-10">
@@ -5,14 +18,14 @@
                 <button class="btn btn-default dropdown-toggle hidden-lg" type="button" data-toggle="dropdown"><i class="fa fa-align-justify"></i></button>
                 <ul class="dropdown-menu" role="menu">
                     <li>
-                        <a href="/" class="visible-xs" title="首页"><i class="fa fa-home"></i> 首页</a>
+                        <a href="/" class="visible-xs" title="首页">看书</a>
                     </li>
-{{/*                    <li>*/}}
-{{/*                        <a href="/explore" class="visible-xs" title="发现"><i class="fa fa-globe"></i> 发现</a>*/}}
-{{/*                    </li>*/}}
-{{/*                    <li>*/}}
-{{/*                        <a href="{{urlfor "LabelController.List"}}" class="visible-xs" title="标签"><i class="fa fa-tags"></i> 标签</a>*/}}
-{{/*                    </li>*/}}
+                    <li {{if .IsAwesome}}class="active"{{end}}>
+                        <a href="/awesome" title="awesome"><img src="/static/images/rank.png" alt="">Awesome</a>
+                    </li>
+                    <li {{if .IsTutorial}}class="active"{{end}}>
+                        <a href="/tutorial" title="awesome"><i class="fa fa-check-square-o"></i>教程</a>
+                    </li>
 {{/*                    <li>*/}}
 {{/*                        <a href="{{urlfor "SearchController.Search"}}" class="visible-xs visible-sm" title="搜索"><i class="fa fa-search"></i> 搜索</a>*/}}
 {{/*                    </li>*/}}
@@ -59,11 +72,14 @@
             <nav class="collapse navbar-collapse">
 
                 <ul class="nav navbar-nav">
-                    <li class="{{if .IsHome}}active{{end}}">
-                        <a href="/" title="首页"><i class="fa fa-home"></i> 首页</a>
+                    <li class="{{if .IsHome}}header-active{{end}}">
+                        <a href="/" title="首页">看书</a>
                     </li>
-                    <li {{if .IsAwesome}}class="active"{{end}}>
-                        <a href="/awesome" title="榜单"><img src="/static/images/rank.png" alt=""> Awesome</a>
+                    <li {{if .IsAwesome}}class="header-active"{{end}}>
+                        <a href="/awesome" title="awesome">Awesome</a>
+                    </li>
+                    <li {{if .IsTutorial}}class="header-active"{{end}}>
+                        <a href="/tutorial" title="awesome">教程</a>
                     </li>
 {{/*                    {{if eq .HideTag false}}*/}}
 {{/*                    <li class="{{if .IsLabel}}active{{end}}">*/}}
@@ -108,7 +124,7 @@
                 {{if gt .Member.MemberId 0}}
                 <li>
                     <div class="img user-info" data-toggle="dropdown">
-                        <img  onerror="this.src='/static/images/avatar.png'"  src="{{showImg .Member.Avatar "avatar"}}" class="img-circle userbar-avatar border" alt="{{.Member.Nickname}}">
+                        <img  onerror="this.src='/static/images/avatar.png'"  src="{{showImg .Member.Avatar ""}}" class="img-circle userbar-avatar border" alt="{{.Member.Nickname}}">
                         <div class="userbar-content">
                             <span>{{.Member.Nickname}}</span>
                             <div>{{.Member.RoleName}}</div>

@@ -10,8 +10,8 @@ import (
 
 	"github.com/astaxie/beego"
 
-	"github.com/goecology/ecology/appgo/model/mysql/store"
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/model/mysql/store"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 )
 
 // 版本控制，文件存储于获取

@@ -20,14 +20,14 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/model/mysql/store"
-	"github.com/goecology/ecology/appgo/pkg/code"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/model/mysql/store"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/router/core"
 	"github.com/spf13/viper"
 )
 
@@ -814,16 +814,23 @@ func ContentPost(c *core.Context) {
 			history.Version = time.Now().Unix()
 			history.Action = "modify"
 			history.ActionName = actionName
+			history.ModifyTime = time.Now()
 			// todo fix
 
-			//_, err = service.MdDocumentHistory.InsertOrUpdate()
-			//if err != nil {
-			//	mus.Logger.Error("DocumentHistory InsertOrUpdate => " + err.Error())
-			//} else {
-			//	vc := service.NewVersionControl(docId, history.Version)
-			//	vc.SaveVersion(ds.Content, ds.Markdown)
-			//	service.MdDocumentHistory.DeleteByLimit(docId, enableDocumentHistory())
-			//}
+			err = dao.DocumentHistory.InsertOrUpdate(&history)
+			if err != nil {
+				mus.Logger.Error("DocumentHistory InsertOrUpdate => " + err.Error())
+			} else {
+				vc := dao.NewVersionControl(docId, history.Version)
+				err = vc.SaveVersion(ds.Content, ds.Markdown)
+				if err != nil {
+					// todo log
+				}
+				err = dao.DocumentHistory.DeleteByLimit(docId, enableDocumentHistory())
+				if err != nil {
+					// todo log
+				}
+			}
 		}
 
 	}
@@ -996,11 +1003,12 @@ func Search(c *core.Context) {
 
 //文档历史列表.
 func History(c *core.Context) {
-
-	identify := c.GetString("identify")
-	docId := c.GetInt("doc_id")
-	//pageIndex := c.GetInt("page")
-
+	identify := c.Query("identify")
+	docId, _ := strconv.Atoi(c.Query("doc_id"))
+	pageIndex, _ := strconv.Atoi(c.Query("page"))
+	if pageIndex == 0 {
+		pageIndex = 1
+	}
 	bookId := 0
 	//如果是超级管理员则忽略权限判断
 	if c.Member().IsAdministrator() {
@@ -1047,21 +1055,21 @@ func History(c *core.Context) {
 
 	// todo fix
 
-	//histories, totalCount, err := mysql.NewDocumentHistory().FindToPager(docId, pageIndex, conf.PageSize)
-	//if err != nil {
-	//	mus.Logger.Error("FindToPager => ", err)
-	//	c.Tpl().Data["ErrorMessage"] = "获取历史失败"
-	//	return
-	//}
+	histories, totalCount, err := dao.DocumentHistory.FindToPager(docId, pageIndex, conf.PageSize)
+	if err != nil {
+		c.Tpl().Data["ErrorMessage"] = "获取历史失败"
+		c.Html("document/history")
+		return
+	}
 
-	//c.Tpl().Data["List"] = histories
+	c.Tpl().Data["List"] = histories
 	c.Tpl().Data["PageHtml"] = ""
 	c.Tpl().Data["Document"] = doc
 
-	//if totalCount > 0 {
-	//	html := utils.GetPagerHtml(c.Context.Request.RequestURI, pageIndex, conf.PageSize, totalCount)
-	//	c.Tpl().Data["PageHtml"] = html
-	//}
+	if totalCount > 0 {
+		html := utils.GetPagerHtml(c.Context.Request.RequestURI, pageIndex, conf.PageSize, totalCount)
+		c.Tpl().Data["PageHtml"] = html
+	}
 	c.Html("document/history")
 }
 

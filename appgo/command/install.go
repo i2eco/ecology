@@ -1,11 +1,11 @@
 package command
 
 import (
-	"github.com/goecology/ecology/appgo/command/install"
-	"github.com/goecology/muses"
-	"github.com/goecology/muses/pkg/cache/mixcache"
-	mmysql "github.com/goecology/muses/pkg/database/mysql"
-	"github.com/goecology/muses/pkg/oss"
+	"github.com/i2eco/ecology/appgo/command/install"
+	"github.com/i2eco/muses"
+	"github.com/i2eco/muses/pkg/cache/mixcache"
+	mmysql "github.com/i2eco/muses/pkg/database/mysql"
+	"github.com/i2eco/muses/pkg/oss"
 	"github.com/spf13/cobra"
 )
 

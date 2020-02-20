@@ -6,20 +6,18 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/cache"
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/captcha"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/muses/pkg/tpl/tplbeego"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/captcha"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/muses/pkg/tpl/tplbeego"
 )
 
 var cpt *captcha.Captcha
 
 func Init() (err error) {
-
 	fc := &cache.FileCache{CachePath: "./cache/captcha"}
 	cpt = captcha.NewWithFilter("/captcha/", fc)
-	fmt.Println("Init------>", Init)
 	err = tplbeego.AddFuncMap("config", dao.Global.FindByKey)
 	if err != nil {
 		panic(err)

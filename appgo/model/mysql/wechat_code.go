@@ -6,11 +6,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/goecology/ecology/appgo/model/mysql/store"
+	"github.com/i2eco/ecology/appgo/model/mysql/store"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 )
 
 // 微信小程序码记录表

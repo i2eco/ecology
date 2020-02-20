@@ -2,6 +2,7 @@ package book
 
 import (
 	"fmt"
+	"github.com/i2eco/ecology/appgo/pkg/constx"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -11,14 +12,14 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/code"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/graphics"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/graphics"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/router/core"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
@@ -229,45 +230,18 @@ func UploadCover(c *core.Context) {
 		return
 	}
 
-	fileHeader, err := c.FormFile("image-file")
-	if err != nil {
-		c.JSONErr(code.UploadCoverErr3, err)
-		return
-	}
-
-	file, err := fileHeader.Open()
-	if err != nil {
-		c.JSONErr(code.UploadCoverErr4, err)
-		return
-	}
-	defer file.Close()
-
-	ext := filepath.Ext(fileHeader.Filename)
-
-	if !strings.EqualFold(ext, ".png") && !strings.EqualFold(ext, ".jpg") && !strings.EqualFold(ext, ".gif") && !strings.EqualFold(ext, ".jpeg") {
-		c.JSONErr(code.UploadCoverErr5, err)
-		return
-	}
-
-	fileName := strconv.FormatInt(time.Now().UnixNano(), 16)
-
-	filePath := filepath.Join("uploads", time.Now().Format("200601"), fileName+ext)
-
-	path := filepath.Dir(filePath)
-
-	os.MkdirAll(path, os.ModePerm)
-
-	err = c.SaveToFile("image-file", filePath)
+	var filePath string
+	var fileName string
+	filePath, fileName, err = c.SaveToFileImg("image-file")
 
 	if err != nil {
 		c.JSONErr(code.MsgErr, err)
 		return
 	}
-	if utils.StoreType != utils.StoreLocal {
-		defer func(filePath string) {
-			os.Remove(filePath)
-		}(filePath)
-	}
+
+	defer func(filePath string) {
+		os.Remove(filePath)
+	}(filePath)
 
 	//剪切图片
 	subImg, err := graphics.ImageCopyFromFile(filePath, int(req.X), int(req.Y), int(req.Width), int(req.Height))
@@ -276,7 +250,7 @@ func UploadCover(c *core.Context) {
 		return
 	}
 
-	filePath = filepath.Join(conf.Conf.Info.WorkingDirectory, "uploads", time.Now().Format("200601"), fileName+ext)
+	filePath = filepath.Join(conf.Conf.Info.WorkingDirectory, "uploads", time.Now().Format("200601"), fileName)
 
 	//生成缩略图并保存到磁盘
 	err = graphics.ImageResizeSaveFile(subImg, 175, 230, filePath)
@@ -285,7 +259,7 @@ func UploadCover(c *core.Context) {
 		return
 	}
 
-	dstPath := mus.Oss.GenerateKey("eco-book")
+	dstPath := mus.Oss.GenerateKey(constx.OssBook)
 
 	oldCover := book.Cover
 	book.Cover = dstPath

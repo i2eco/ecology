@@ -64,7 +64,7 @@ qqUserInfo="https://graph.qq.com/user/get_user_info"
 
 [muses]
     [muses.app]
-        name = "goecology"
+        name = "i2eco"
         env = "dev"
         version = "1.0"
         file = "local"

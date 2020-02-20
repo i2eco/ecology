@@ -1,12 +1,15 @@
 package record
 
 import (
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"strconv"
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/router/core"
 )
 
 //获取阅读记录列表
@@ -20,11 +23,11 @@ func List(c *core.Context) {
 		//message string = "数据查询成功"
 		count int64
 	)
-	bookId, _ := this.GetInt(":book_id")
+	bookId, _ := strconv.Atoi(c.Param("bookId"))
 	if bookId > 0 {
 		m := new(mysql.ReadRecord)
 		if rl, count, err = m.List(c.Member().MemberId, bookId); err == nil && len(rl) > 0 {
-			rp, _ = m.Progress(c.Member().MemberId, bookId)
+			rp, _ = dao.ReadRecord.Progress(c.Member().MemberId, bookId)
 			for _, item := range rl {
 				var list = make(map[string]interface{})
 				list["title"] = item.Title
@@ -36,37 +39,38 @@ func List(c *core.Context) {
 		}
 	}
 	if len(lists) == 0 {
-		errCode = 1
-		message = "您当前没有阅读记录"
+		// "您当前没有阅读记录"
+		c.JSONErr(code.MsgErr, nil)
 	}
 	c.JSONOK(map[string]interface{}{
 		"lists":    lists,
 		"count":    count,
 		"progress": rp,
-		"clear":    beego.URLFor("RecordController.Clear", ":book_id", bookId),
+		"clear":    "/record/clear/" + strconv.Itoa(bookId),
 	})
 }
 
 //重置阅读进度(清空阅读历史)
-func Clear() {
-	bookId, _ := this.GetInt(":book_id")
+func Clear(c *core.Context) {
+	bookId, _ := strconv.Atoi(c.Param("bookId"))
 	if bookId > 0 {
-		m := new(mysql.ReadRecord)
-		if err := m.Clear(c.Member().MemberId, bookId); err != nil {
-			mus.Logger.Error(err)
+		if err := dao.ReadRecord.Clear(c.Member().MemberId, bookId); err != nil {
+			mus.Logger.Error(err.Error())
 		}
 	}
 	//不管删除是否成功，均返回成功
-	c.JSONErrStr(0, "重置阅读进度成功")
+	c.JSONOK()
 }
 
 //删除单条阅读历史
-func Delete() {
-	docId, _ := this.GetInt(":doc_id")
+func Delete(c *core.Context) {
+	docId, _ := strconv.Atoi(c.Param("docId"))
 	if docId > 0 {
-		if err := new(mysql.ReadRecord).Delete(c.Member().MemberId, docId); err != nil {
-			mus.Logger.Error(err)
+		if err := dao.ReadRecord.DeleteXX(c.Member().MemberId, docId); err != nil {
+			mus.Logger.Error(err.Error())
+			c.JSONErr(code.MsgErr, err)
+			return
 		}
 	}
-	c.JSONErrStr(0, "删除成功")
+	c.JSONOK()
 }

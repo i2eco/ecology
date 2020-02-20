@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/gocarina/gocsv"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/muses"
-	mmysql "github.com/goecology/muses/pkg/database/mysql"
-	"github.com/goecology/muses/pkg/oss"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/muses"
+	mmysql "github.com/i2eco/muses/pkg/database/mysql"
+	"github.com/i2eco/muses/pkg/oss"
 	"github.com/spf13/cobra"
 )
 

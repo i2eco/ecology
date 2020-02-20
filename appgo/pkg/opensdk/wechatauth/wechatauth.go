@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/goecology/ecology/appgo/pkg/opensdk/common"
-	"github.com/goecology/ecology/appgo/pkg/opensdk/utils"
+	"github.com/i2eco/ecology/appgo/pkg/opensdk/common"
+	"github.com/i2eco/ecology/appgo/pkg/opensdk/utils"
 )
 
 // refer https://github.com/aimuz/wechat-sdk/blob/master/login/login.go

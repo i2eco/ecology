@@ -1,11 +1,12 @@
 package dao
 
 import (
+	"errors"
+	"fmt"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"strconv"
 	"time"
-
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
 )
 
 var (
@@ -167,4 +168,96 @@ func (*readRecord) UpdateReadingRule() {
 			_readingRule.Invalid = num
 		}
 	}
+}
+
+//查询阅读记录
+func (*readRecord) ListXX(uid, bookId int) (lists []mysql.RecordList, cnt int, err error) {
+	if uid*bookId == 0 {
+		err = errors.New("用户id和项目id不能为空")
+		return
+	}
+	fields := "r.doc_id,r.create_at,d.document_name title,d.identify"
+	sql := "select %v from %v r left join " + mysql.Document{}.TableName() + " d on r.doc_id=d.document_id where r.book_id=? and r.uid=? order by r.id desc limit 5000"
+	sql = fmt.Sprintf(sql, fields, mysql.ReadRecord{}.TableName())
+	err = mus.Db.Raw(sql, bookId, uid).Scan(&lists).Error
+	cnt = len(lists)
+	return
+}
+
+//查询阅读进度
+func (this *readRecord) Progress(uid, bookId int) (rp mysql.ReadProgress, err error) {
+	if uid*bookId == 0 {
+		err = errors.New("用户id和书籍id均不能为空")
+		return
+	}
+	var (
+		rc   mysql.ReadCount
+		book = new(mysql.Book)
+	)
+
+	err = mus.Db.Where("uid = ? and book_id = ?", uid, bookId).Find(&rc).Error
+	if err == nil {
+		err = mus.Db.Where("book_id=?", bookId).Find(book).Error
+		if err == nil {
+			rp.Total = book.DocCount
+		}
+	}
+
+	rp.Cnt = rc.Cnt
+	rp.BookIdentify = book.Identify
+	if rp.Total == 0 {
+		rp.Percent = "0.00%"
+	} else {
+		if rp.Cnt > rp.Total {
+			rp.Cnt = rp.Total
+		}
+		f := float32(rp.Cnt) / float32(rp.Total)
+		rp.Percent = fmt.Sprintf("%.2f", f*100) + "%"
+	}
+	return
+}
+
+//清空阅读记录
+//当删除文档项目时，直接删除该文档项目的所有记录
+func (this *readRecord) Clear(uid, bookId int) (err error) {
+	if bookId > 0 && uid > 0 {
+		err = mus.Db.Where("uid = ? and book_id = ?").Delete(&mysql.ReadCount{}).Error
+		if err != nil {
+			return
+		}
+		err = mus.Db.Where("uid = ? and book_id = ?").Delete(&mysql.ReadRecord{}).Error
+		if err != nil {
+			return
+		}
+	} else if uid == 0 && bookId > 0 {
+		err = mus.Db.Where("book_id = ?").Delete(&mysql.ReadCount{}).Error
+		if err != nil {
+			return
+		}
+		err = mus.Db.Where("book_id = ?").Delete(&mysql.ReadRecord{}).Error
+		if err != nil {
+			return
+		}
+	}
+	return
+}
+
+//删除单条阅读记录
+func (this *readRecord) DeleteXX(uid, docId int) (err error) {
+	if uid*docId == 0 {
+		err = errors.New("用户id和文档id不能为空")
+		return
+	}
+
+	var record mysql.ReadRecord
+
+	mus.Db.Where("uid = ? and doc_id = ?", uid, docId).Find(&record)
+	if record.BookId > 0 { //存在，则删除该阅读记录
+		err = mus.Db.Where("id = ?", record.Id).Delete(&record).Error
+		if err != nil {
+			return
+		}
+		err = SetIncreAndDecre(mysql.ReadCount{}.TableName(), "cnt", "book_id="+strconv.Itoa(record.BookId)+" and uid="+strconv.Itoa(uid), false, 1)
+	}
+	return
 }

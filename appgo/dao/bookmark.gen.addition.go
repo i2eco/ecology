@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 )
 
 //书签列表

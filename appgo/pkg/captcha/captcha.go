@@ -71,7 +71,7 @@ import (
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/utils"
-	tmplbeego "github.com/goecology/muses/pkg/tpl/tplbeego"
+	tmplbeego "github.com/i2eco/muses/pkg/tpl/tplbeego"
 )
 
 var (

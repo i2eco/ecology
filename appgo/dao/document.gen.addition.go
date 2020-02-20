@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/md"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/md"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
@@ -142,7 +142,8 @@ func (m *document) ReleaseContent(bookId int, baseUrl string) {
 			ds.Markdown = "[TOC]\n\n" + ds.Markdown
 		} else if len(utils.GetTextFromHtml(ds.Content)) == 0 {
 			//内容为空，渲染一下文档，然后再重新获取
-			utils.RenderDocumentById(item.DocumentId)
+			// 去掉这个，比较耗性能
+			//utils.RenderDocumentById(item.DocumentId)
 			ds, _ = DocumentStore.GetById(item.DocumentId)
 		}
 

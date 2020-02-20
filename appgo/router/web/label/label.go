@@ -4,10 +4,10 @@ import (
 	"math"
 
 	"github.com/astaxie/beego"
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/router/core"
 )
 
 // 查看包含标签的文档列表.

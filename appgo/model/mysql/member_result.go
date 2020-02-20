@@ -3,9 +3,9 @@ package mysql
 import (
 	"time"
 
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 
-	"github.com/goecology/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
 )
 
 // MemberRelationshipResult

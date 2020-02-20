@@ -3,7 +3,6 @@ package book
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -18,14 +17,13 @@ import (
 	"github.com/TruthHun/gotil/util"
 	"github.com/TruthHun/gotil/ziptil"
 	"github.com/TruthHun/html2md"
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/model/mysql/store"
-	"github.com/goecology/ecology/appgo/pkg/code"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/router/core"
 	"github.com/jinzhu/gorm"
 	"github.com/russross/blackfriday"
 	"go.uber.org/zap"
@@ -428,16 +426,12 @@ func unzipToData(bookId, memberId int, identify, zipFile, originFilename string)
 		for _, file := range files {
 			if !file.IsDir {
 				ext := strings.ToLower(filepath.Ext(file.Path))
+				imgUrl := "eco-doc-img/book/" + identify + "/" + strings.TrimPrefix(file.Path, projectRoot)
+
 				if ok, _ := imgMap[ext]; ok { //图片，录入oss
-					switch utils.StoreType {
-					case utils.StoreOss:
-						if err := store.ModelStoreOss.MoveToOss(file.Path, "projects/"+identify+strings.TrimPrefix(file.Path, projectRoot), false, false); err != nil {
-							mus.Logger.Error("store oss error", zap.Error(err))
-						}
-					case utils.StoreLocal:
-						if err := store.ModelStoreLocal.MoveToStore(file.Path, "uploads/projects/"+identify+strings.TrimPrefix(file.Path, projectRoot)); err != nil {
-							mus.Logger.Error("store local error", zap.Error(err))
-						}
+					err = mus.Oss.PutObjectFromFile(imgUrl, file.Path)
+					if err != nil {
+						mus.Logger.Error("unzip file img put to oss error", zap.String("filepath", file.Path), zap.Error(err))
 					}
 				} else if ext == ".md" || ext == ".markdown" || ext == ".html" { //markdown文档，提取文档内容，录入数据库
 					doc := new(mysql.Document)
@@ -522,16 +516,8 @@ func getProjectRoot(fl []filetil.FileList) (root string) {
 }
 
 //查找并替换markdown文件中的路径，把图片链接替换成url的相对路径，把文档间的链接替换成【$+文档标识链接】
-func replaceToAbs(projectRoot string, identify string) {
-	imgBaseUrl := "/uploads/projects/" + identify
-	switch utils.StoreType {
-	case utils.StoreLocal:
-		imgBaseUrl = "/uploads/projects/" + identify
-	case utils.StoreOss:
-		//imgBaseUrl = this.BaseController.OssDomain + "/projects/" + identify
-		imgBaseUrl = "/projects/" + identify
-	}
-	files, _ := filetil.ScanFiles(projectRoot)
+func replaceToAbs(folder string, identify string) {
+	files, _ := filetil.ScanFiles(folder)
 	for _, file := range files {
 		if ext := strings.ToLower(filepath.Ext(file.Path)); ext == ".md" || ext == ".markdown" {
 			//mdb ==> markdown byte
@@ -544,6 +530,7 @@ func replaceToAbs(projectRoot string, identify string) {
 			b, _ := ioutil.ReadFile(file.Path)
 			output := blackfriday.Run(b)
 			doc, _ := goquery.NewDocumentFromReader(strings.NewReader(string(output)))
+			imgUrl := "eco-doc-img/book/" + identify + "/" + strings.TrimPrefix(file.Path, folder)
 
 			//图片链接处理
 			doc.Find("img").Each(func(i int, selection *goquery.Selection) {
@@ -553,7 +540,7 @@ func replaceToAbs(projectRoot string, identify string) {
 					if cnt := strings.Count(src, "../"); cnt < l { //以或者"../"开头的路径
 						newSrc = strings.Join(basePathSlice[0:l-cnt], "/") + "/" + strings.TrimLeft(src, "./")
 					}
-					newSrc = imgBaseUrl + "/" + strings.TrimLeft(strings.TrimPrefix(strings.TrimLeft(newSrc, "./"), projectRoot), "/")
+					newSrc = imgUrl
 					mdCont = strings.Replace(mdCont, src, newSrc, -1)
 				}
 			})
@@ -565,7 +552,7 @@ func replaceToAbs(projectRoot string, identify string) {
 					if cnt := strings.Count(href, "../"); cnt < l {
 						newHref = strings.Join(basePathSlice[0:l-cnt], "/") + "/" + strings.TrimLeft(href, "./")
 					}
-					newHref = strings.TrimPrefix(strings.Trim(newHref, "/"), projectRoot)
+					newHref = strings.TrimPrefix(strings.Trim(newHref, "/"), folder)
 					if !strings.HasPrefix(href, "$") { //原链接不包含$符开头，否则表示已经替换过了。
 						newHref = "$" + strings.Replace(strings.Trim(newHref, "/"), "/", "-", -1)
 						slice := strings.Split(newHref, "$")
@@ -612,8 +599,6 @@ func isFormPermission(c *core.Context) (*mysql.BookResult, error) {
 }
 
 func loadByFolder(bookId int, memberId int, identify, folder string) {
-	fmt.Println(22222)
-
 	mus.Logger.Info("load folder start", zap.Any("bookId", bookId), zap.Int("memberId", memberId), zap.Any("identify", identify), zap.String("folder", folder))
 
 	//说明：
@@ -642,17 +627,13 @@ func loadByFolder(bookId int, memberId int, identify, folder string) {
 	for _, file := range files {
 		if !file.IsDir {
 			ext := strings.ToLower(filepath.Ext(file.Path))
+			imgUrl := "eco-doc-img/book/" + identify + "/" + strings.TrimPrefix(file.Path, folder)
 
 			if ok, _ := imgMap[ext]; ok { //图片，录入oss
-				switch utils.StoreType {
-				case utils.StoreOss:
-					if err := store.ModelStoreOss.MoveToOss(file.Path, "projects/"+identify+strings.TrimPrefix(file.Path, folder), false, false); err != nil {
-						// todo log
-					}
-				case utils.StoreLocal:
-					if err := store.ModelStoreLocal.MoveToStore(file.Path, "uploads/projects/"+identify+strings.TrimPrefix(file.Path, folder)); err != nil {
-						// todo log
-					}
+
+				err = mus.Oss.PutObjectFromFile(imgUrl, file.Path)
+				if err != nil {
+					mus.Logger.Error("file img put to oss error", zap.String("filepath", file.Path), zap.Error(err))
 				}
 			} else if ext == ".md" || ext == ".markdown" { //markdown文档，提取文档内容，录入数据库
 				doc := new(mysql.Document)

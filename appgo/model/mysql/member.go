@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 )
 
 // member

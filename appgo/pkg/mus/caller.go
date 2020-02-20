@@ -5,12 +5,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-resty/resty/v2"
-	"github.com/goecology/muses/pkg/cache/mixcache"
-	mmysql "github.com/goecology/muses/pkg/database/mysql"
-	"github.com/goecology/muses/pkg/logger"
-	"github.com/goecology/muses/pkg/oss"
-	musgin "github.com/goecology/muses/pkg/server/gin"
-	"github.com/goecology/muses/pkg/session/ginsession"
+	"github.com/i2eco/muses/pkg/cache/mixcache"
+	mmysql "github.com/i2eco/muses/pkg/database/mysql"
+	"github.com/i2eco/muses/pkg/logger"
+	"github.com/i2eco/muses/pkg/oss"
+	musgin "github.com/i2eco/muses/pkg/server/gin"
+	"github.com/i2eco/muses/pkg/session/ginsession"
 	"github.com/jinzhu/gorm"
 )
 

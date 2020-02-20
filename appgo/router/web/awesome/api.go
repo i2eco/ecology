@@ -1,8 +1,8 @@
 package awesome
 
 import (
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/router/core"
 )
 
 func Info(c *core.Context) {

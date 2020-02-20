@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"go.uber.org/zap"
 )
 

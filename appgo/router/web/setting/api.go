@@ -2,39 +2,48 @@ package setting
 
 import (
 	"fmt"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/constx"
+	"github.com/i2eco/ecology/appgo/pkg/graphics"
+	"go.uber.org/zap"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/model/mysql/store"
-	"github.com/goecology/ecology/appgo/pkg/code"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/model/mysql/store"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/router/core"
 )
 
-//
-////基本信息
-//func IndexApi(c *core.Context) {
-//	email := strings.TrimSpace(this.GetString("email", ""))
-//	phone := strings.TrimSpace(this.GetString("phone"))
-//	description := strings.TrimSpace(this.GetString("description"))
-//	if email == "" {
-//		c.JSONErrStr(601, "邮箱不能为空")
-//	}
-//	member := c.Member()
-//	member.Email = email
-//	member.Phone = phone
-//	member.Description = description
-//	if err := member.Update(); err != nil {
-//		c.JSONErrStr(602, err.Error())
-//	}
-//	this.SetMember(*member)
-//	c.JSONErrStr(0, "ok")
-//}
+//基本信息
+func Update(c *core.Context) {
+	var req ReqUpdate
+	err := c.Bind(&req)
+	if err != nil {
+		c.JSONErr(code.MsgErr, err)
+		return
+	}
+	if req.Email == "" {
+		c.JSONErrStr(601, "邮箱不能为空")
+		return
+	}
+	member := c.Member()
+	member.Email = req.Email
+	member.Phone = req.Phone
+	member.Description = req.Description
+	if err := member.Update(); err != nil {
+		c.JSONErrStr(602, err.Error())
+		return
+	}
+	c.UpdateUser(member)
+	c.JSONOK()
+}
 
 //修改密码
 func PasswordUpdate(c *core.Context) {
@@ -181,4 +190,75 @@ func QrcodeUpdate(c *core.Context) {
 	}
 	c.JSONOK(data)
 
+}
+
+// Upload 上传图片
+func Upload(c *core.Context) {
+	req := ReqUpload{}
+	err := c.Bind(&req)
+	if err != nil {
+		c.JSONErr(code.MsgErr, err)
+		return
+	}
+
+	var (
+		filePath string
+		fileName string
+	)
+
+	filePath, fileName, err = c.SaveToFileImg("image-file")
+
+	if err != nil {
+		c.JSONErr(code.MsgErr, err)
+		return
+	}
+
+	//剪切图片
+	subImg, err := graphics.ImageCopyFromFile(filePath, int(req.X), int(req.Y), int(req.Width), int(req.Height))
+
+	if err != nil {
+		c.JSONErr(code.MsgErr, err)
+		return
+	}
+
+	defer func(filePath string) {
+		os.Remove(filePath)
+	}(filePath)
+
+	filePath = filepath.Join(conf.Conf.Info.WorkingDirectory, "uploads", time.Now().Format("200601"), fileName)
+
+	err = graphics.ImageResizeSaveFile(subImg, 120, 120, filePath)
+	if err != nil {
+		c.JSONErr(code.MsgErr, err)
+		return
+	}
+
+	dstPath := mus.Oss.GenerateKey(constx.OssUser)
+
+	if member, err := dao.Member.Find(c.Member().MemberId); err == nil {
+		oldAvatar := member.Avatar
+
+		err = mus.Oss.PutObjectFromFile(dstPath, filePath)
+		if err != nil {
+			c.JSONErr(code.UploadCoverErr10, err)
+			return
+		}
+		member.Avatar = dstPath
+		err = dao.Member.UpdateX(c.Context, mus.Db, mysql.Conds{"member_id": c.Member().MemberId}, mysql.Ups{"avatar": dstPath})
+		if err != nil {
+			c.JSONErr(code.MsgErr, err)
+			return
+		}
+		err = mus.Oss.DeleteObject(oldAvatar)
+		if err != nil {
+			mus.Logger.Warn("remove error", zap.Error(err))
+		}
+		err = c.UpdateUser(member)
+		if err != nil {
+			c.JSONErr(code.MsgErr, err)
+			return
+		}
+	}
+
+	c.JSONOK(mus.Oss.ShowImg(dstPath))
 }

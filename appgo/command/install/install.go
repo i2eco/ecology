@@ -3,9 +3,9 @@ package install
 import (
 	"time"
 
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	mmysql "github.com/goecology/muses/pkg/database/mysql"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	mmysql "github.com/i2eco/muses/pkg/database/mysql"
 )
 
 var Models []interface{}

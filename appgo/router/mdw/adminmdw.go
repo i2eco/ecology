@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/router/types"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/router/types"
 )
 
 func init() {
@@ -22,8 +22,6 @@ func LoginRequired() gin.HandlerFunc {
 		// 从session中获取用户信息
 		if user, ok := DefaultSessionUser(c); ok && user.MemberId > 0 {
 			one = user
-		} else {
-
 		}
 		c.Set(types.ContextUser, one)
 		c.Next()

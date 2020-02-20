@@ -14,9 +14,9 @@ import (
 
 	"github.com/TruthHun/gotil/util"
 	"github.com/astaxie/beego/httplib"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/astaxie/beego"

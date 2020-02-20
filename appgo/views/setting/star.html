@@ -146,7 +146,7 @@
             var uploader = WebUploader.create({
                 auto: false,
                 swf: '/static/webuploader/Uploader.swf',
-                server: '{{urlfor "SettingController.Upload"}}',
+                server: '/api/web/setting/update',
                 pick: "#filePicker",
                 fileVal : "image-file",
                 fileNumLimit : 1,

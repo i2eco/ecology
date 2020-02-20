@@ -2,22 +2,24 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/goecology/ecology/appgo/command"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/router/core"
-	"github.com/goecology/ecology/appgo/router/mdw"
-	"github.com/goecology/ecology/appgo/router/web/account"
-	"github.com/goecology/ecology/appgo/router/web/awesome"
-	"github.com/goecology/ecology/appgo/router/web/book"
-	"github.com/goecology/ecology/appgo/router/web/bookMember"
-	"github.com/goecology/ecology/appgo/router/web/document"
-	"github.com/goecology/ecology/appgo/router/web/home"
-	"github.com/goecology/ecology/appgo/router/web/label"
-	"github.com/goecology/ecology/appgo/router/web/localhost"
-	"github.com/goecology/ecology/appgo/router/web/manager"
-	"github.com/goecology/ecology/appgo/router/web/rank"
-	"github.com/goecology/ecology/appgo/router/web/setting"
-	"github.com/goecology/ecology/appgo/router/web/user"
+	"github.com/i2eco/ecology/appgo/command"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/router/mdw"
+	"github.com/i2eco/ecology/appgo/router/web/account"
+	"github.com/i2eco/ecology/appgo/router/web/awesome"
+	"github.com/i2eco/ecology/appgo/router/web/book"
+	"github.com/i2eco/ecology/appgo/router/web/bookMember"
+	"github.com/i2eco/ecology/appgo/router/web/document"
+	"github.com/i2eco/ecology/appgo/router/web/home"
+	"github.com/i2eco/ecology/appgo/router/web/label"
+	"github.com/i2eco/ecology/appgo/router/web/localhost"
+	"github.com/i2eco/ecology/appgo/router/web/manager"
+	"github.com/i2eco/ecology/appgo/router/web/rank"
+	"github.com/i2eco/ecology/appgo/router/web/record"
+	"github.com/i2eco/ecology/appgo/router/web/setting"
+	"github.com/i2eco/ecology/appgo/router/web/tutorial"
+	"github.com/i2eco/ecology/appgo/router/web/user"
 	"github.com/spf13/viper"
 )
 
@@ -89,6 +91,12 @@ func webGrp(r *gin.Engine) {
 			tplGrp.GET("/awesome", core.Handle(awesome.Index))
 		}
 
+		{
+			tplGrp.GET("/tutorial", core.Handle(tutorial.Index))
+			tplGrp.GET("/tutorial/:key", core.Handle(tutorial.Index))
+		}
+		tplGrp.GET("/document/history", core.Handle(document.History))
+
 		//用户中心 【start】
 		tplGrp.GET("/u/:account", core.Handle(user.Index))
 		tplGrp.GET("/u/:account/collection", core.Handle(user.Collection))
@@ -155,6 +163,15 @@ func webGrp(r *gin.Engine) {
 		apiGrp.GET("/manager/updateCate", core.Handle(manager.UpdateCate))
 
 		apiGrp.POST("/setting/password", core.Handle(setting.PasswordUpdate))
+		apiGrp.POST("/setting/upload", core.Handle(setting.Upload))
+		apiGrp.POST("/setting/update", core.Handle(setting.Update))
+
+		{
+			apiGrp.POST("/record/list/:bookId", core.Handle(record.List))
+			apiGrp.POST("/record/clear/:bookId", core.Handle(record.Clear))
+			apiGrp.POST("/record/delete/:docId", core.Handle(record.Delete))
+
+		}
 
 	}
 

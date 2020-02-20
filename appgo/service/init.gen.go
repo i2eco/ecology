@@ -1,8 +1,8 @@
 package service
 
 import (
-	"github.com/goecology/ecology/appgo/dao"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 )
 
 func InitGen() {

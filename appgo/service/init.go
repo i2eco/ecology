@@ -1,6 +1,6 @@
 package service
 
-import "github.com/goecology/ecology/appgo/dao"
+import "github.com/i2eco/ecology/appgo/dao"
 
 func Init() error {
 	dao.Global = dao.NewGlobal()

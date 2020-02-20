@@ -30,7 +30,7 @@ type DocumentHistorySimpleResult struct {
 }
 
 // TableName 获取对应数据库表名.
-func (m *DocumentHistory) TableName() string {
+func (m DocumentHistory) TableName() string {
 	return "document_history"
 }
 

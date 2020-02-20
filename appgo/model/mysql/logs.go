@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/goecology/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
 )
 
 var loggerQueue = &logQueue{channel: make(chan *Logs, 100), isRunning: 0}

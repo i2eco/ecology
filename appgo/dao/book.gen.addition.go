@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/model/mysql/store"
-	"github.com/goecology/ecology/appgo/pkg/conf"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/model/mysql/store"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/core/errors"
 	"go.uber.org/zap"
@@ -415,7 +415,7 @@ func (m *book) HomeData(pageIndex, pageSize int, orderType mysql.BookOrder, book
 
 	bookType = strings.ToLower(bookType)
 	switch bookType {
-	case "original", "opensource", "ecology":
+	case "original", "opensource", "ecology", "tutorial-go", "tutorial-web", "tutorial-vuejs", "tutorial-reactjs", "tutorial-cloud":
 	default:
 		bookType = ""
 	}
@@ -464,7 +464,7 @@ func (m *book) homeData(pageIndex, pageSize int, orderType mysql.BookOrder, book
 	}
 	bookType = strings.ToLower(bookType)
 	switch bookType {
-	case "original", "opensource", "ecology":
+	case "original", "opensource", "ecology", "tutorial-go", "tutorial-web", "tutorial-vuejs", "tutorial-reactjs", "tutorial-cloud":
 	default:
 		bookType = ""
 	}

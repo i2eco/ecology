@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )

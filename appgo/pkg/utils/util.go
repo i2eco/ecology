@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
@@ -29,8 +29,8 @@ import (
 
 	"github.com/TruthHun/html2article"
 	"github.com/alexcesaro/mail/mailer"
-	"github.com/goecology/ecology/appgo/model/mysql/store"
-	"github.com/goecology/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/model/mysql/store"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
 
 	"net/http"
 	"net/mail"

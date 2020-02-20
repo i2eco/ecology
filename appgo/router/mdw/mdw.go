@@ -5,13 +5,13 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/goecology/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/dao"
 
 	"github.com/astaxie/beego"
 	"github.com/gin-gonic/gin"
-	"github.com/goecology/ecology/appgo/pkg/utils"
-	"github.com/goecology/ecology/appgo/router/types"
-	"github.com/goecology/muses/pkg/tpl/tplbeego"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/router/types"
+	"github.com/i2eco/muses/pkg/tpl/tplbeego"
 )
 
 func TplRequired() gin.HandlerFunc {

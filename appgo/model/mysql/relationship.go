@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"github.com/goecology/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
 )
 
 type Relationship struct {

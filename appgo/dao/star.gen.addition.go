@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 )
 
 //收藏或者取消收藏

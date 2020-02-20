@@ -17,7 +17,7 @@
         window.editURI = "/api/web/document/content/{{.Model.Identify}}/";
         window.releaseURL = "/api/web/book/release/{{.Model.Identify}}";
         window.sortURL = "/api/web/book/sort/{{.Model.Identify}}";
-        window.historyURL = "{{urlfor "DocumentController.History"}}";
+        window.historyURL = "/document/history";
         window.removeAttachURL = "{{urlfor "DocumentController.RemoveAttachment"}}";
         window.onpop=false;
     </script>
@@ -27,7 +27,7 @@
     <link href="{{$.StaticDomain}}/static/jstree/3.3.4/themes/default/style.min.css" rel="stylesheet">
     <link href="{{$.StaticDomain}}/static/editor.md/css/editormd.css" rel="stylesheet">
     <link href="{{$.StaticDomain}}/static/css/jstree.css" rel="stylesheet">
-    <link href="{{$.StaticDomain}}/static/highlight/styles/github.css" rel="stylesheet">
+    <link href="{{$.StaticDomain}}/static/highlight/styles/monokai-sublime.css" rel="stylesheet">
     <link href="{{$.StaticDomain}}/static/webuploader/webuploader.css" rel="stylesheet">
     <link href="/static/css/markdown.css?version={{$.Version}}" rel="stylesheet">
     <link href="/static/css/markdown.preview.css?version={{$.Version}}" rel="stylesheet">

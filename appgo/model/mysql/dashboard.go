@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 )
 
 type Dashboard struct {

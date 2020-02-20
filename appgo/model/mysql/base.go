@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 )
 
 type period string

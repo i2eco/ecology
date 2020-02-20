@@ -30,7 +30,7 @@
                         </label>
                     </div>
                     <div class="form-left">
-                        <form role="form" method="post" id="memberInfoForm">
+                        <form role="form" method="post" id="memberInfoForm" action="/api/web/setting/update">
                             <div class="form-group">
                                 <label>用户名</label>
                                 <input type="text" class="form-control" value="{{.Member.Account}}" disabled>
@@ -142,7 +142,7 @@
             var uploader = WebUploader.create({
                 auto: false,
                 swf: '/static/webuploader/Uploader.swf',
-                server: '{{urlfor "SettingController.Upload"}}',
+                server: '/api/web/setting/upload',
                 pick: "#filePicker",
                 fileVal : "image-file",
                 fileNumLimit : 1,

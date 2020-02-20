@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 )
 
 //定义书籍排序类型

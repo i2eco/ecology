@@ -5,9 +5,9 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
-	"github.com/goecology/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 )
 
 func (m *attachment) FindListByDocumentId(docId int) (attaches []*mysql.Attachment, err error) {

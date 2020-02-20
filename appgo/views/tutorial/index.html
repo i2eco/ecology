@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    {{template "widgets/head.html" .}}
+</head>
+<style>
+.home-list-item {
+    display: flex;
+    padding: 25px;
+    box-sizing: border-box;
+    background-color: #fff;
+    position: relative;
+    border-bottom: 1px solid #e6e8e8;
+}
+.home-list-item .book-cover {
+    width: 100px;
+    height: 140px;
+    flex-shrink: 0;
+    box-shadow: 3px 4px 12px 0 rgba(0,0,0,.2);
+    overflow: hidden;
+    background-color: #fff;
+}
+.home-list-item .book-info {
+    flex-grow: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #2e3135;
+    padding-left: 22px;
+}
+.home-list-item .book-desc {
+    margin-top: 5px;
+    line-height: 20px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    -webkit-line-clamp: 1;
+    color: #71777c;
+    white-space: nowrap;
+}
+.home-list-item .book-author {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.home-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    margin-right: 4px;
+    background-position: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+}
+.home-panel {
+    display: block;
+    margin-top:45px;
+}
+.home-panel-title {
+    height: 50px;
+    font-weight: 600;
+    line-height: 50px;
+    color: #404040;
+    font-size: 1.35rem;
+}
+.home-panel-contact {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 17px 0px 20px;
+    background-size: 100%;
+    background: #f8f9fd;
+    border-radius: 5px;
+}
+    .home-panel-contact-item {
+        padding: 5px 15px;
+    }
+
+.home-button {
+    border: none;
+    outline: none;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    width: 92px;
+    height: 33px;
+    color: #fff;
+    background: #fa8919;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 400;
+}
+.home-footer-content {
+    color: #888;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+    .home-active {
+        font-weight: 500;
+        color: #fa8919;
+        background: #fbf5ee;
+        position: relative;
+        margin-right: 5px;
+        margin-bottom: 12px;
+        padding: 0 12px;
+        height: 22px;
+        line-height: 22px;
+        font-size: 15px;
+        border-radius: 14px;
+        white-space: nowrap;
+    }
+    .navbar-tutorial {
+        display: flex;
+        padding: 20px;
+        justify-content: space-between !important;
+    }
+    .navbar-tutorial-img {
+        width: 20px;
+        height: auto;
+        margin-right: 10px;
+        vertical-align: middle;
+        border-style: none;
+
+}
+.top-bar h2 {
+    line-height: 1.4;
+    font-size: 3rem;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    margin-top: 0px;
+    clear: both;
+    text-align: center;
+}
+}
+</style>
+<body>
+<div class="manual-reader manual-container">
+    {{template "widgets/header.html" .}}
+    <div class="container manual-body">
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-8">
+                <div class="navbar-tutorial">
+                    <div class="nav-item">
+                        <a class="nav-link" href="/tutorial/go">
+                            <img class="navbar-tutorial-img" alt="golang logo" src="https://images.tutorialedge.net/images/golang.svg">Golang</a>
+                    </div>
+                    <div class="nav-item">
+                        <a class="nav-link" href="/tutorial/web">
+                            <img class="navbar-tutorial-img" alt="webdev logo" src="https://images.tutorialedge.net/images/logo.svg">Web Dev</a></div>
+                    <div class="nav-item"><a class="nav-link" href="/tutorial/vuejs"><img class="navbar-tutorial-img" alt="vuejs logo" src="https://images.tutorialedge.net/images/vuejs.svg" data-src="https://images.tutorialedge.net/images/vuejs.svg">VueJS</a></div>
+                    <div class="nav-item"><a class="nav-link" href="/tutorial/reactjs"><img class="navbar-tutorial-img" alt="rust logo" src="https://images.tutorialedge.net/images/react.svg" data-src="https://images.tutorialedge.net/images/react.svg">React.JS</a></div>
+                    <div class="nav-item"><a class="nav-link" href="/tutorial/cloud"><img class="navbar-tutorial-img" alt="cloud logo" src="https://images.tutorialedge.net/images/cloud.svg" data-src="https://images.tutorialedge.net/images/cloud.svg"> Cloud</a></div>
+                </div>
+                {{if eq $.TutorialType "tutorial-go"}}
+                    <div class="top-bar"><h2>Golang</h2></div>
+                    <div>
+                        <p>Go 语言是谷歌为充分利用现代硬件性能又兼顾开发效率而设计的一种全新语言。</p>
+
+                        <p>Go 是一种跨平台（Mac OS、Windows、Linux 等）静态编译型语言。拥有媲美 C 语言的强大性能，支持静态类型安全，在普通计算机上能几秒内快速编译一个大项目，开发效率跟动态语言相差无几。</p>
+
+                        <p>在这个教程里会给大家介绍Go的使用方式</p>
+                    </div>
+                {{end}}
+                {{if eq $.TutorialType "tutorial-web"}}
+                    <div class="top-bar"><h2>Web</h2></div>
+                {{end}}
+                {{if eq $.TutorialType "tutorial-reactjs"}}
+                    <div class="top-bar"><h2>React</h2></div>
+                {{end}}
+                {{if eq $.TutorialType "tutorial-vuejs"}}
+                    <div class="top-bar"><h2>Vue</h2></div>
+                {{end}}
+                {{if eq $.TutorialType "tutorial-cloud"}}
+                    <div class="top-bar"><h2>Cloud</h2></div>
+                {{end}}
+                {{range $index,$item := .Lists}}
+                    <div class="home-list-item clearfix">
+                        <div class="book-cover" style="padding-left: 0px">
+                            <a class="" href="/books/{{$item.Identify}}"  target="_blank" title="查看文档" data-toggle="tooltip">
+                                <img style="height:140px"  onerror="this.src='/static/images/book.png'"  class="img-responsive" src="{{$item.Cover}}" alt="{{$item.BookName}}">
+                            </a>
+                        </div>
+                        <div class="book-info">
+                            <a class="" href="/books/{{$item.Identify}}"  target="_blank" title="查看文档" data-toggle="tooltip">
+                                {{$item.BookName}}
+                            </a>
+                            <div class="book-desc">
+                                {{$item.Description}}
+                            </div>
+                            <div class="book-author">
+                                <div class="author-info">
+                                    <a href="/u/{{$item.UserName}}" target="_blank" class="user">
+                                        <img class="home-avatar"  onerror="this.src='/static/images/avatar.png'"  class="img-responsive" src="{{$item.Avatar}}">
+                                        <span>{{$item.UserName}}</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div style="height:30px">
+
+                            </div>
+                            <div class="footer-bar" style="display: flex;height: 35px;    justify-content: space-between;">
+                                <p style="display: flex;height: 35px;line-height:35px"> <span class="home-footer-content">{{$item.DocCount}}篇课程<span class="dot">·</span>{{$item.Vcnt}}阅读</span></p>
+                                <a style="    color: #fff;" href="/books/{{$item.Identify}}" title="查看文档" target="_blank"><button class="home-button">
+                                        开始阅读</button></a>
+                            </div>
+                        </div>
+                    </div>
+                {{end}}
+                {{if (ads "explore-before-pagination" $.IsMobile)}}
+                        <div class="ap ap-explore-before-pagination">
+                            {{str2html (ads "explore-before-pagination" $.IsMobile)}}
+                        </div>
+                {{end}}
+                <nav class="pagination-container">
+                    {{if gt .TotalPages 1}}
+                    {{.PageHtml}}
+                    {{end}}
+                    <div class="clearfix"></div>
+                </nav>
+                {{if (ads "explore-under-pagination" $.IsMobile)}}
+                    <div class="ap ap-explore-under-pagination">
+                        {{str2html (ads "explore-under-pagination" $.IsMobile)}}
+                    </div>
+                {{end}}
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4">
+                <div class="home-panel" style="margin-top:0px">
+                    <div class="home-panel-title">
+                        关注我们
+                    </div>
+                    <div class="home-panel-contact">
+                        <div class="home-panel-contact-item">
+                            Github组织：<a href="https://github.com/i2eco" target="_blank">GoEcology</a>
+                        </div>
+                        <div class="home-panel-contact-item">
+                            商城项目：<a href="https://github.com/i2eco/egoshop" target="_blank">EGoShopy</a>
+                        </div>
+                        <div class="home-panel-contact-item">
+                            技术网站项目：<a href="https://github.com/i2eco/ecology" target="_blank">Ecology</a>
+                        </div>
+                        <div class="home-panel-contact-item">
+                            脚手架项目：<a href="https://github.com/i2eco/muses" target="_blank">Muses</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="home-panel">
+                    <div class="home-panel-title">
+                        加入我们
+                    </div>
+                    <div class="home-panel-content">
+                        <img src="http://static.yitum.com/eco-doc-img/202002/37af57e2cc2c4932aafd5ae5ee03fb5f.jpg" style="width:180px;margin-left: auto; margin-right: auto; display: block;">
+                    </div>
+                </div>
+            </div>
+</div>
+{{template "widgets/footer.html" .}}
+</body>
+</html>

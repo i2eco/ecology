@@ -4,9 +4,9 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/goecology/ecology/appgo/model/constx"
-	"github.com/goecology/ecology/appgo/model/mysql"
-	"github.com/goecology/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/model/constx"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/robfig/cron"
 )
 
