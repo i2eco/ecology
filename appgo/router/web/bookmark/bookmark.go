@@ -1,13 +1,13 @@
 package bookmark
 
 import (
-	"strconv"
-	"time"
-
 	"github.com/astaxie/beego"
+	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/router/core"
+	"strconv"
+	"time"
 )
 
 //添加或者移除书签
@@ -17,7 +17,7 @@ func Bookmark(c *core.Context) {
 		c.JSONErrStr(1, "收藏失败，文档id参数错误")
 	}
 
-	insert, err := new(mysql.Bookmark).InsertOrDelete(c.Member().MemberId, docId)
+	insert, err := dao.Bookmark.InsertOrDelete(c.Member().MemberId, docId)
 	if err != nil {
 		mus.Logger.Error(err.Error())
 		if insert {
@@ -43,7 +43,7 @@ func List(c *core.Context) {
 		return
 	}
 
-	bl, rows, err := new(mysql.Bookmark).List(c.Member().MemberId, bookId)
+	bl, rows, err := dao.Bookmark.ListXX(c.Member().MemberId, bookId)
 	if err != nil {
 		mus.Logger.Error(err.Error())
 		c.JSONErrStr(1, "获取书签列表失败")

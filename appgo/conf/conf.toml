@@ -62,6 +62,15 @@ qqAccesstoken="https://graph.qq.com/oauth2.0/token"
 qqOpenId="https://graph.qq.com/oauth2.0/me"
 qqUserInfo="https://graph.qq.com/user/get_user_info"
 
+
+[email]
+    isEnable = true
+    host = "smtp.exmail.qq.com"
+    port = 465
+
+    mailExpired = 3600
+    mailMaxNum = 3
+
 [muses]
     [muses.app]
         name = "i2eco"

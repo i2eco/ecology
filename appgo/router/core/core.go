@@ -54,7 +54,7 @@ func (c *Context) Tpl() *tplbeego.Tmpl {
 //@param			defSeo			默认的seo的map，必须有title、keywords和description字段
 func (c *Context) GetSeoByPage(page string, defSeo map[string]string) {
 	var seo mysql.Seo
-	//orm.NewOrm().QueryTable(mysql.TableSeo).Filter("Page", page).One(&seo)
+
 	defSeo["sitename"] = dao.Global.Get(constx.SITE_NAME)
 	if seo.Id > 0 {
 		for k, v := range defSeo {
@@ -66,6 +66,17 @@ func (c *Context) GetSeoByPage(page string, defSeo map[string]string) {
 	c.Tpl().Data["SeoTitle"] = seo.Title
 	c.Tpl().Data["SeoKeywords"] = seo.Keywords
 	c.Tpl().Data["SeoDescription"] = seo.Description
+}
+
+func (c *Context) GetSeoPage() {
+	var seo mysql.Seo
+	mus.Db.Where("page = ?", c.Request.URL.Path).Find(&seo)
+	if seo.Id > 0 {
+		c.Tpl().Data["SeoTitle"] = seo.Title
+		c.Tpl().Data["SeoKeywords"] = seo.Keywords
+		c.Tpl().Data["SeoDescription"] = seo.Description
+	}
+
 }
 
 func (c *Context) Html(path string) {
@@ -80,6 +91,20 @@ func (c *Context) Html(path string) {
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	c.Writer.Write(rb)
 }
+
+//
+//func (c *Context) CreateCaptcha() template.HTML {
+//	captchaId := captcha.New()
+//	if captchaId == "" {
+//		return ""
+//	}
+//	fmt.Println("captchaId------>", captchaId)
+//	// create html
+//	return template.HTML(fmt.Sprintf(`<input type="hidden" name="%s" value="%s">`+
+//		`<a class="captcha" href="javascript:">`+
+//		`<img onclick="this.src=('%s%s.png?reload='+(new Date()).getTime())" class="captcha-img" src="%s%s.png">`+
+//		`</a>`, "captchaId", captchaId, "/captcha/", captchaId, "/captcha/", captchaId))
+//}
 
 func (c *Context) Html404() {
 	c.Tpl().SetTplPath("errors/404")
@@ -151,6 +176,17 @@ func (c *Context) JSONErr(Code int, err error) {
 	return
 }
 
+func (c *Context) JSONErrTips(msg string, err error) {
+	result := new(JSONResult)
+	result.Code = code.MsgErr
+	if err != nil {
+		fmt.Println("info is", result.Message, "============== err is", err.Error())
+	}
+	result.Message = msg
+	c.JSON(http.StatusOK, result)
+	return
+}
+
 func (c *Context) JSONErrStr(Code int, err string) {
 	c.JSONErr(Code, errors.New(err))
 	return
@@ -183,7 +219,7 @@ func (c *Context) UpdateUser(a *mysql.Member) error {
 	s := sessions.Default(c.Context)
 	s.Options(sessions.Options{
 		Path:     "/",
-		MaxAge:   24 * 3600,
+		MaxAge:   24 * 3600 * 30,
 		Secure:   false,
 		HttpOnly: true,
 	})

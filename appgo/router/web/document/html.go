@@ -95,7 +95,7 @@ func isReadable(c *core.Context, identify, token string) (resp *mysql.BookResult
 	if c.Member() != nil {
 		rel, err := dao.Relationship.FindByBookIdAndMemberId(bookResult.BookId, c.Member().MemberId)
 		if err == nil {
-			bookResult.MemberId = book.MemberId
+			bookResult.MemberId = rel.MemberId
 			bookResult.RoleId = rel.RoleId
 			bookResult.RelationshipId = rel.RelationshipId
 		}
@@ -376,6 +376,9 @@ func ReadHtml(c *core.Context) {
 	if wd, _ := c.GetQuery("wd"); strings.TrimSpace(wd) != "" {
 		c.Tpl().Data["Keywords"] = dao.NewElasticSearchClient().SegWords(wd)
 	}
+
+	fmt.Println("bookResult------>", bookResult.MemberId)
+
 	c.Tpl().Data["Bookmark"] = existBookmark
 	c.Tpl().Data["Model"] = bookResult
 	c.Tpl().Data["Book"] = bookResult //文档下载需要用到Book变量

@@ -28,12 +28,8 @@ import (
 	html1 "html/template"
 
 	"github.com/TruthHun/html2article"
-	"github.com/alexcesaro/mail/mailer"
 	"github.com/i2eco/ecology/appgo/model/mysql/store"
-	"github.com/i2eco/ecology/appgo/pkg/conf"
-
 	"net/http"
-	"net/mail"
 	"net/url"
 
 	"path/filepath"
@@ -130,29 +126,6 @@ func SegWord(str interface{}) (wds string) {
 //评分处理
 func ScoreFloat(score int) string {
 	return fmt.Sprintf("%1.1f", float32(score)/10.0)
-}
-
-//@param            conf            邮箱配置
-//@param            subject         邮件主题
-//@param            email           收件人
-//@param            body            邮件内容
-func SendMail(conf *conf.SmtpConf, subject, email string, body string) error {
-	msg := &mail.Message{
-		Header: mail.Header{
-			"From":         {conf.FormUserName},
-			"To":           {email},
-			"Reply-To":     {conf.ReplyUserName},
-			"Subject":      {subject},
-			"Content-Type": {"text/html"},
-		},
-		Body: strings.NewReader(body),
-	}
-	port := conf.SmtpPort
-	host := conf.SmtpHost
-	username := conf.FormUserName
-	password := conf.SmtpPassword
-	m := mailer.NewMailer(host, username, password, port)
-	return m.Send(msg)
 }
 
 //渲染markdown为html并录入数据库

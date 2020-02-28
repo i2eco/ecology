@@ -110,6 +110,10 @@ func (g *global) GetSiteName() string {
 	return g.Get(constx.SITE_NAME)
 }
 
+func (g *global) IsEnabledCaptcha() bool {
+	return g.Get("ENABLED_CAPTCHA") == "true"
+}
+
 func (g *global) IsEnableAnonymous() bool {
 	return g.Get("ENABLE_ANONYMOUS") == "true"
 }

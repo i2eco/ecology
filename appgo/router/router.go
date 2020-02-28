@@ -10,6 +10,8 @@ import (
 	"github.com/i2eco/ecology/appgo/router/web/awesome"
 	"github.com/i2eco/ecology/appgo/router/web/book"
 	"github.com/i2eco/ecology/appgo/router/web/bookMember"
+	"github.com/i2eco/ecology/appgo/router/web/bookmark"
+	"github.com/i2eco/ecology/appgo/router/web/captcha"
 	"github.com/i2eco/ecology/appgo/router/web/document"
 	"github.com/i2eco/ecology/appgo/router/web/home"
 	"github.com/i2eco/ecology/appgo/router/web/label"
@@ -38,6 +40,9 @@ func InitRouter() *gin.Engine {
 
 func webGrp(r *gin.Engine) {
 	r.Static("/static", "static")
+
+	r.GET("/captcha/:captchaId", captcha.CaptchaPng)
+
 	r.Use(mus.Session)
 	tplGrp := r.Group("", mdw.LoginRequired(), mdw.TplRequired())
 	{
@@ -172,7 +177,9 @@ func webGrp(r *gin.Engine) {
 			apiGrp.POST("/record/delete/:docId", core.Handle(record.Delete))
 
 		}
-
+		apiGrp.POST("/bookmark/info/:id", core.Handle(bookmark.Bookmark))
+		apiGrp.POST("/bookmark/list/:book_id", core.Handle(bookmark.List))
+		apiGrp.POST("/account/findPassword", core.Handle(account.FindPasswordApi))
 	}
 
 }

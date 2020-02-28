@@ -2,26 +2,34 @@ package register
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/cache"
+	"github.com/dchest/captcha"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/pkg/captcha"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/muses/pkg/tpl/tplbeego"
+	"html/template"
+	"strings"
 )
 
-var cpt *captcha.Captcha
-
 func Init() (err error) {
-	fc := &cache.FileCache{CachePath: "./cache/captcha"}
-	cpt = captcha.NewWithFilter("/captcha/", fc)
 	err = tplbeego.AddFuncMap("config", dao.Global.FindByKey)
 	if err != nil {
 		panic(err)
 	}
+
+	err = tplbeego.AddFuncMap("createcaptcha", func() template.HTML {
+		captchaId := captcha.New()
+		if captchaId == "" {
+			return ""
+		}
+		// create html
+		return template.HTML(fmt.Sprintf(`<input type="hidden" name="%s" value="%s">`+
+			`<a class="captcha" href="javascript:">`+
+			`<img onclick="this.src=('%s%s.png?reload='+(new Date()).getTime())" class="captcha-img" src="%s%s.png">`+
+			`</a>`, "captchaId", captchaId, "/captcha/", captchaId, "/captcha/", captchaId))
+	})
+
 	err = tplbeego.AddFuncMap("cdn", func(p string) string {
 		cdn := beego.AppConfig.DefaultString("cdn", "")
 		if strings.HasPrefix(p, "/") && strings.HasSuffix(cdn, "/") {

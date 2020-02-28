@@ -1,17 +1,15 @@
 package localhost
 
 import (
-	"strconv"
-	"strings"
-	"time"
-
 	"github.com/PuerkitoBio/goquery"
-	"github.com/astaxie/beego/orm"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/router/core"
 	"go.uber.org/zap"
+	"strconv"
+	"strings"
+	"time"
 )
 
 //渲染markdown.
@@ -59,7 +57,7 @@ func RenderMarkdownApi(c *core.Context) {
 	}
 
 	content = c.ReplaceLinks(book.Identify, content)
-	mus.Db.Model(mysql.Document{}).Where("document_id = ?", id).Update(orm.Params{
+	mus.Db.Model(mysql.Document{}).Where("document_id = ?", id).Update(mysql.Ups{
 		"release":     content,
 		"modify_time": time.Now(),
 	})

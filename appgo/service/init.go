@@ -8,5 +8,6 @@ func Init() error {
 	InitGen()
 	dao.ReadRecord.UpdateReadingRule()
 	dao.GithubApi = dao.NewGithubApi()
+	InitMailer()
 	return nil
 }

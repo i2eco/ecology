@@ -5,6 +5,9 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
+	"github.com/dchest/captcha"
+	"github.com/i2eco/ecology/appgo/service"
+	"github.com/spf13/viper"
 	"regexp"
 	"strconv"
 	"strings"
@@ -210,34 +213,28 @@ func loginByMemberId(c *core.Context, memberId int) (err error) {
 }
 
 func FindPasswordApi(c *core.Context) {
-	email := c.GetString("email")
-	mailConf := conf.GetMailConfig()
-
+	email := c.PostForm("email")
 	if email == "" {
 		c.JSONErrStr(6005, "邮箱地址不能为空")
 		return
 	}
-	if !mailConf.EnableMail {
+	if !viper.GetBool("email.isEnable") {
 		c.JSONErrStr(6004, "未启用邮件服务")
 		return
 	}
-
-	//captcha := this.GetString("code")
-	//如果开启了验证码
-	//if v, ok := this.Option["ENABLED_CAPTCHA"]; ok && strings.EqualFold(v, "true") {
-	//	v, ok := this.GetSession(conf.CaptchaSessionName).(string)
-	//	if !ok || !strings.EqualFold(v, captcha) {
-	//		c.JSONErrStr(6001, "验证码不正确")
-	//	}
-	//}
-
-	//if !cpt.VerifyReq(c.Context.Request) {
-	//	c.JSONErrStr(6001, "验证码不正确")
-	//}
+	captchaId := c.PostForm("captchaId")
+	captchaValue := c.PostForm("captcha")
+	fmt.Println("captchaId------>", captchaId)
+	fmt.Println("captchaValue------>", captchaValue)
+	// 如果开启了验证码
+	if dao.Global.IsEnabledCaptcha() && !captcha.VerifyString(captchaId, captchaValue) {
+		c.JSONErrStr(6001, "验证码不正确")
+		return
+	}
 
 	member, err := dao.Member.FindByFieldFirst("email", email)
 	if err != nil {
-		c.JSONErrStr(6006, "邮箱不存在")
+		c.JSONErrTips("邮箱不存在", err)
 		return
 	}
 	if member.Status != 0 {
@@ -249,25 +246,36 @@ func FindPasswordApi(c *core.Context) {
 		return
 	}
 
-	count, err := mysql.NewMemberToken().FindSendCount(email, time.Now().Add(-1*time.Hour), time.Now())
+	count, err := dao.MemberToken.FindSendCount(email, time.Now().Add(-1*time.Hour), time.Now())
 
 	if err != nil {
 		c.JSONErrStr(6008, "发送邮件失败")
 		return
 	}
-	if count > mailConf.MailNumber {
+	if count > viper.GetInt("email.mailMaxNum") {
 		c.JSONErrStr(6008, "发送次数太多，请稍候再试")
 		return
 	}
+	//
+	//memberToken := mysql.NewMemberToken()
+	//
+	//memberToken.Token = string(utils.Krand(32, utils.KC_RAND_KIND_ALL))
+	//memberToken.Email = email
+	//memberToken.MemberId = member.MemberId
+	//memberToken.IsValid = false
 
-	memberToken := mysql.NewMemberToken()
+	memberToken := mysql.MemberToken{
+		MemberId: member.MemberId,
+		Token:    string(utils.Krand(32, utils.KC_RAND_KIND_ALL)),
+		Email:    email,
+		IsValid:  false,
+		// todo fix
+		ValidTime: time.Date(1970, 1, 1, 0, 0, 01, 0, time.Local),
+		SendTime:  time.Now(),
+	}
 
-	memberToken.Token = string(utils.Krand(32, utils.KC_RAND_KIND_ALL))
-	memberToken.Email = email
-	memberToken.MemberId = member.MemberId
-	memberToken.IsValid = false
-	if _, err := memberToken.InsertOrUpdate(); err != nil {
-		c.JSONErrStr(6009, "邮件发送失败")
+	if err := dao.MemberToken.InsertOrUpdate(mus.Db, &memberToken); err != nil {
+		c.JSONErrTips("邮件发送失败", err)
 		return
 	}
 
@@ -277,13 +285,14 @@ func FindPasswordApi(c *core.Context) {
 		"url": c.BaseUrl() + "/find_password?token=" + memberToken.Token + "&mail=" + email,
 	}
 
-	body, err := c.ExecuteViewPathTemplate("account/mail_template", data)
+	body, err := c.ExecuteViewPathTemplate("account/mail_template.html", data)
 	if err != nil {
 		c.JSONErrStr(6003, "邮件发送失败")
 		return
 	}
 
-	if err = utils.SendMail(mailConf, "找回密码", email, body); err != nil {
+	err = service.Mailer.Send("找回密码", email, body, "")
+	if err != nil {
 		c.JSONErrStr(6003, "邮件发送失败")
 		return
 	}
@@ -318,7 +327,6 @@ func ValidEmail(c *core.Context) {
 	//	c.JSONErrStr(6001, "验证码不正确")
 	//}
 
-	mailConf := conf.GetMailConfig()
 	memberToken, err := dao.MemberToken.FindByFieldFirst("token", token)
 
 	if err != nil {
@@ -327,7 +335,7 @@ func ValidEmail(c *core.Context) {
 	}
 	subTime := memberToken.SendTime.Sub(time.Now())
 
-	if !strings.EqualFold(memberToken.Email, mail) || subTime.Minutes() > float64(mailConf.MailExpired) || !memberToken.ValidTime.IsZero() {
+	if !strings.EqualFold(memberToken.Email, mail) || subTime.Minutes() > float64(viper.GetInt("email.mailExpired")) || !memberToken.ValidTime.IsZero() {
 		c.JSONErrStr(6008, "验证码已过期，请重新操作。")
 		return
 	}

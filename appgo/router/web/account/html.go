@@ -1,15 +1,13 @@
 package account
 
 import (
+	"github.com/spf13/viper"
 	"strings"
 	"time"
 
 	"github.com/i2eco/ecology/appgo/dao"
 
 	"github.com/astaxie/beego"
-	"github.com/i2eco/ecology/appgo/model/constx"
-	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/oauth"
 	"github.com/i2eco/ecology/appgo/router/core"
 )
@@ -251,28 +249,17 @@ func LoginHtml(c *core.Context) {
 	c.Tpl().Data["QQClientId"] = beego.AppConfig.String("oauth::qqClientId")
 	c.Tpl().Data["QQCallback"] = beego.AppConfig.String("oauth::qqCallback")
 	c.Tpl().Data["RandomStr"] = time.Now().Unix()
-	c.GetSeoByPage("login", map[string]string{
-		"title":       "登录 - " + dao.Global.Get(constx.SITE_NAME),
-		"keywords":    "登录," + dao.Global.Get(constx.SITE_NAME),
-		"description": dao.Global.Get(constx.SITE_NAME) + "专注于文档在线写作、协作、分享、阅读与托管，让每个人更方便地发布、分享和获得知识。",
-	})
+
 	c.Html("account/login")
 }
 
 //找回密码.
 func FindPasswordHtml(c *core.Context) {
-	mailConf := conf.GetMailConfig()
-	c.GetSeoByPage("findpwd", map[string]string{
-		"title":       "找回密码 - " + dao.Global.GetSiteName(),
-		"keywords":    "找回密码",
-		"description": dao.Global.GetSiteName() + "专注于文档在线写作、协作、分享、阅读与托管，让每个人更方便地发布、分享和获得知识。",
-	})
-
 	token := c.GetString("token")
 	mail := c.GetString("mail")
 
 	if token != "" && mail != "" {
-		memberToken, err := mysql.NewMemberToken().FindByFieldFirst("token", token)
+		memberToken, err := dao.MemberToken.FindByFieldFirst("token", token)
 		if err != nil {
 			c.Tpl().Data["ErrorMessage"] = "邮件已失效"
 			c.Html("errors/error")
@@ -280,7 +267,7 @@ func FindPasswordHtml(c *core.Context) {
 		}
 		subTime := memberToken.SendTime.Sub(time.Now())
 
-		if !strings.EqualFold(memberToken.Email, mail) || subTime.Minutes() > float64(mailConf.MailExpired) || !memberToken.ValidTime.IsZero() {
+		if !strings.EqualFold(memberToken.Email, mail) || subTime.Minutes() > float64(viper.GetInt("email.mailExpired")) || !memberToken.ValidTime.IsZero() {
 			c.Tpl().Data["ErrorMessage"] = "验证码已过期，请重新操作。"
 			c.Html("errors/error")
 			return
@@ -289,8 +276,6 @@ func FindPasswordHtml(c *core.Context) {
 		c.Tpl().Data["Token"] = memberToken.Token
 		c.Html("account/find_password_setp2")
 		return
-
 	}
 	c.Html("account/find_password_setp1")
-
 }
