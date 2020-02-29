@@ -38,7 +38,7 @@ func main() {
 		cobraCommand.PersistentFlags().StringVar(&command.Mode, "mode", "all", "设置启动模式")
 	})
 	app.SetGinRouter(router.InitRouter)
-	app.SetPreRun(register.Init)
+	app.SetPreRun(register.Init, register.InitDictionary)
 	app.SetPostRun(conf.Init, register.Init, mus.Init, service.Init)
 	err := app.Run()
 	if err != nil {

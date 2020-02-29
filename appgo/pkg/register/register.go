@@ -106,3 +106,11 @@ func Init() (err error) {
 	err = tplbeego.AddFuncMap("add", func(a, b int) int { return a + b })
 	return
 }
+
+//加载分词字典
+func InitDictionary() error {
+	go func() {
+		utils.Segmenter.LoadDictionary("./dictionary/dictionary.txt")
+	}()
+	return nil
+}

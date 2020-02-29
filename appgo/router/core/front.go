@@ -1,8 +1,6 @@
 package core
 
 import (
-	"strings"
-
 	"github.com/astaxie/beego"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -10,8 +8,10 @@ import (
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/muses/pkg/system"
 	"github.com/i2eco/muses/pkg/tpl/tplbeego"
 	"github.com/spf13/viper"
+	"strings"
 )
 
 func FrontTplRequired() gin.HandlerFunc {
@@ -28,7 +28,7 @@ func FrontTplRequired() gin.HandlerFunc {
 		tpl.Data["Member"] = FrontContextUser(c)
 		tpl.Data["BaseUrl"] = BaseUrl(c)
 		tpl.Data["BaiduTongji"] = viper.GetString("app.baidutongji")
-		tpl.Data["Version"] = utils.Version
+		tpl.Data["Version"] = system.BuildInfo.Version
 		isMobile := utils.IsMobile(c.Request.UserAgent())
 		tpl.Data["IsMobile"] = isMobile
 		//this.Member = mysql.NewMember() //初始化
