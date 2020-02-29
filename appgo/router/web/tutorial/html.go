@@ -1,13 +1,14 @@
 package tutorial
 
 import (
+	"math"
+
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/constx"
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/ecology/appgo/router/core"
-	"math"
 )
 
 func Index(c *core.Context) {

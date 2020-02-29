@@ -1,6 +1,9 @@
 package install
 
 import (
+	"fmt"
+	"github.com/i2eco/ecology/appgo/pkg/util"
+	"github.com/jinzhu/gorm"
 	"time"
 
 	"github.com/i2eco/ecology/appgo/model/mysql"
@@ -43,6 +46,7 @@ func init() {
 		&mysql.Fans{},
 		&mysql.Awesome{},
 		&mysql.AwesomeCate{},
+		&mysql.User{},
 	}
 }
 func Create(isClear bool) error {
@@ -76,7 +80,7 @@ func Mock() error {
 			OptionName:  "ENABLE_DOCUMENT_HISTORY",
 			OptionTitle: "版本控制",
 		}, {
-			OptionValue: "false",
+			OptionValue: "true",
 			OptionName:  "ENABLED_CAPTCHA",
 			OptionTitle: "是否启用验证码",
 		}, {
@@ -254,6 +258,27 @@ func Mock() error {
 		TotalContinuousSign:        0,
 		HistoryTotalContinuousSign: 0,
 	})
-
+	createAdminUser(db)
 	return nil
+}
+
+func createAdminUser(db *gorm.DB) {
+	pwdHash, err := util.Hash("123456")
+	if err != nil {
+		fmt.Println("err", err)
+		return
+	}
+	user := mysql.User{
+		Name:          "ecologyadmin",
+		Password:      pwdHash,
+		Status:        1,
+		CreatedAt:     time.Now(),
+		UpdatedAt:     time.Now(),
+		LastLoginIP:   "127.0.0.1",
+		LastLoginTime: time.Now(),
+	}
+	if err = db.Create(&user).Error; err != nil {
+		fmt.Println("err", err)
+		return
+	}
 }

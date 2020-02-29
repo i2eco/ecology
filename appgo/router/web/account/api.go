@@ -5,14 +5,12 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
-	"github.com/dchest/captcha"
-	"github.com/i2eco/ecology/appgo/service"
-	"github.com/spf13/viper"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/dchest/captcha"
 	"github.com/gin-gonic/gin"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model"
@@ -22,6 +20,8 @@ import (
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/ecology/appgo/router/core"
+	"github.com/i2eco/ecology/appgo/service"
+	"github.com/spf13/viper"
 )
 
 func LoginApi(c *core.Context) {
@@ -224,8 +224,7 @@ func FindPasswordApi(c *core.Context) {
 	}
 	captchaId := c.PostForm("captchaId")
 	captchaValue := c.PostForm("captcha")
-	fmt.Println("captchaId------>", captchaId)
-	fmt.Println("captchaValue------>", captchaValue)
+
 	// 如果开启了验证码
 	if dao.Global.IsEnabledCaptcha() && !captcha.VerifyString(captchaId, captchaValue) {
 		c.JSONErrStr(6001, "验证码不正确")
@@ -256,13 +255,6 @@ func FindPasswordApi(c *core.Context) {
 		c.JSONErrStr(6008, "发送次数太多，请稍候再试")
 		return
 	}
-	//
-	//memberToken := mysql.NewMemberToken()
-	//
-	//memberToken.Token = string(utils.Krand(32, utils.KC_RAND_KIND_ALL))
-	//memberToken.Email = email
-	//memberToken.MemberId = member.MemberId
-	//memberToken.IsValid = false
 
 	memberToken := mysql.MemberToken{
 		MemberId: member.MemberId,
@@ -281,8 +273,7 @@ func FindPasswordApi(c *core.Context) {
 
 	data := map[string]interface{}{
 		"SITE_NAME": dao.Global.GetSiteName(),
-		//"url":       c.BaseUrl() + beego.URLFor("AccountController.FindPassword", "token", memberToken.Token, "mail", email),
-		"url": c.BaseUrl() + "/find_password?token=" + memberToken.Token + "&mail=" + email,
+		"url":       c.BaseUrl() + "/find_password?token=" + memberToken.Token + "&mail=" + email,
 	}
 
 	body, err := c.ExecuteViewPathTemplate("account/mail_template.html", data)

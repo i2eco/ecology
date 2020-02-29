@@ -38,6 +38,7 @@ require (
 	github.com/spf13/pflag v1.0.3
 	github.com/spf13/viper v1.6.2
 	github.com/syndtr/goleveldb v1.0.0 // indirect
+	github.com/thoas/go-funk v0.5.0
 	github.com/zsais/go-gin-prometheus v0.1.0 // indirect
 	go.uber.org/zap v1.13.0
 	golang.org/x/tools v0.0.0-20200221224223-e1da425f72fd // indirect

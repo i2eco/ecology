@@ -25,7 +25,6 @@ import (
 	"github.com/i2eco/ecology/appgo/pkg/code"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
-	"github.com/i2eco/ecology/appgo/router/types"
 	"github.com/i2eco/muses/pkg/tpl/tplbeego"
 	"go.uber.org/zap"
 )
@@ -46,7 +45,7 @@ type Context struct {
 }
 
 func (c *Context) Tpl() *tplbeego.Tmpl {
-	return c.MustGet(types.TPL).(*tplbeego.Tmpl)
+	return c.MustGet(TPL).(*tplbeego.Tmpl)
 }
 
 //根据页面获取seo
@@ -91,20 +90,6 @@ func (c *Context) Html(path string) {
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	c.Writer.Write(rb)
 }
-
-//
-//func (c *Context) CreateCaptcha() template.HTML {
-//	captchaId := captcha.New()
-//	if captchaId == "" {
-//		return ""
-//	}
-//	fmt.Println("captchaId------>", captchaId)
-//	// create html
-//	return template.HTML(fmt.Sprintf(`<input type="hidden" name="%s" value="%s">`+
-//		`<a class="captcha" href="javascript:">`+
-//		`<img onclick="this.src=('%s%s.png?reload='+(new Date()).getTime())" class="captcha-img" src="%s%s.png">`+
-//		`</a>`, "captchaId", captchaId, "/captcha/", captchaId, "/captcha/", captchaId))
-//}
 
 func (c *Context) Html404() {
 	c.Tpl().SetTplPath("errors/404")
@@ -223,7 +208,7 @@ func (c *Context) UpdateUser(a *mysql.Member) error {
 		Secure:   false,
 		HttpOnly: true,
 	})
-	s.Set(types.SessionDefaultKey, a)
+	s.Set(FrontSessionKey, a)
 	return s.Save()
 }
 
@@ -237,13 +222,13 @@ func (c *Context) Logout() error {
 		HttpOnly: true,
 	})
 
-	s.Delete(types.SessionDefaultKey)
+	s.Delete(FrontSessionKey)
 	return s.Save()
 }
 
 func (c *Context) Member() *mysql.Member {
 	var resp *mysql.Member
-	respI, flag := c.Get(types.ContextUser)
+	respI, flag := c.Get(FrontContextKey)
 	if flag {
 		resp = respI.(*mysql.Member)
 	}
@@ -528,5 +513,25 @@ func (c *Context) SaveToFileImg(fromfile string) (tofile string, name string, er
 	}
 	defer f.Close()
 	io.Copy(f, file)
+	return
+}
+
+func (c *Context) JSONList(data interface{}, current, pageSize, total int) {
+	j := new(JSONResult)
+	j.Code = 0
+	j.Message = "ok"
+	j.Data = RespList{
+		List: data,
+		Pagination: struct {
+			Current  int `json:"current"`
+			PageSize int `json:"pageSize"`
+			Total    int `json:"total"`
+		}{
+			Current:  current,
+			PageSize: pageSize,
+			Total:    total,
+		},
+	}
+	c.JSON(http.StatusOK, j)
 	return
 }

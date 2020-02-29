@@ -3,14 +3,15 @@ package captcha
 import (
 	"bytes"
 	"fmt"
-	"github.com/dchest/captcha"
-	"github.com/gin-gonic/gin"
-	"github.com/i2eco/ecology/appgo/pkg/code"
-	"github.com/i2eco/ecology/appgo/router/core"
 	"net/http"
 	"path"
 	"strings"
 	"time"
+
+	"github.com/dchest/captcha"
+	"github.com/gin-gonic/gin"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/router/core"
 )
 
 type CaptchaResponse struct {

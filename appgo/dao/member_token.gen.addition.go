@@ -1,10 +1,11 @@
 package dao
 
 import (
+	"time"
+
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/jinzhu/gorm"
-	"time"
 )
 
 func (m *memberToken) FindByFieldFirst(field string, value interface{}) (resp *mysql.MemberToken, err error) {

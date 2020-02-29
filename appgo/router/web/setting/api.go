@@ -2,15 +2,16 @@ package setting
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/constx"
 	"github.com/i2eco/ecology/appgo/pkg/graphics"
 	"go.uber.org/zap"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
 
 	"github.com/astaxie/beego"
 	"github.com/i2eco/ecology/appgo/model/mysql"

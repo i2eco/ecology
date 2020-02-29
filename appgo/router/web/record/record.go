@@ -1,10 +1,11 @@
 package record
 
 import (
-	"github.com/i2eco/ecology/appgo/dao"
-	"github.com/i2eco/ecology/appgo/pkg/code"
 	"strconv"
 	"time"
+
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/pkg/code"
 
 	"github.com/astaxie/beego"
 	"github.com/i2eco/ecology/appgo/model/mysql"

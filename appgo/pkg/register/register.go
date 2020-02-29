@@ -2,14 +2,15 @@ package register
 
 import (
 	"fmt"
+	"html/template"
+	"strings"
+
 	"github.com/astaxie/beego"
 	"github.com/dchest/captcha"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/muses/pkg/tpl/tplbeego"
-	"html/template"
-	"strings"
 )
 
 func Init() (err error) {

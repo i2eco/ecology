@@ -1,9 +1,10 @@
 package awesome
 
 import (
+	"math"
+
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/jinzhu/gorm"
-	"math"
 
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/constx"

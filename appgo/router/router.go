@@ -4,8 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/i2eco/ecology/appgo/command"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/router/admin/adminuser"
+	"github.com/i2eco/ecology/appgo/router/admin/auth"
 	"github.com/i2eco/ecology/appgo/router/core"
-	"github.com/i2eco/ecology/appgo/router/mdw"
 	"github.com/i2eco/ecology/appgo/router/web/account"
 	"github.com/i2eco/ecology/appgo/router/web/awesome"
 	"github.com/i2eco/ecology/appgo/router/web/book"
@@ -32,6 +33,7 @@ func InitRouter() *gin.Engine {
 		webGrp(r) // 小程序api路由组
 	}
 	if command.Mode == "all" || command.Mode == "admin" {
+		adminGrp(r)
 	}
 	r.Static("/"+viper.GetString("app.osspic"), viper.GetString("app.osspic"))
 
@@ -44,7 +46,7 @@ func webGrp(r *gin.Engine) {
 	r.GET("/captcha/:captchaId", captcha.CaptchaPng)
 
 	r.Use(mus.Session)
-	tplGrp := r.Group("", mdw.LoginRequired(), mdw.TplRequired())
+	tplGrp := r.Group("", core.FrontLoginRequired(), core.FrontTplRequired())
 	{
 		//tplGrp.GET("/", core.Handle(cate.index))
 		tplGrp.GET("/", core.Handle(home.Home))
@@ -114,7 +116,7 @@ func webGrp(r *gin.Engine) {
 		tplGrp.GET("/local-render-cover", core.Handle(localhost.RenderCover))
 	}
 
-	apiGrp := r.Group("/api/web", mdw.LoginRequired())
+	apiGrp := r.Group("/api/web", core.FrontLoginRequired())
 	{
 
 		apiGrp.GET("/awesome/info", core.Handle(awesome.Info))
@@ -182,4 +184,28 @@ func webGrp(r *gin.Engine) {
 		apiGrp.POST("/account/findPassword", core.Handle(account.FindPasswordApi))
 	}
 
+}
+
+func adminGrp(r *gin.Engine) {
+	adGrp := r.Group("/admin", mus.Session)
+	adGrp.POST("/auth/login", mus.Session, core.Handle(auth.Login))
+
+	// TODO 路由规范
+	// 权限模块
+	authGrp := adGrp.Group("/auth")
+	authGrp.Use(core.AdminLoginRequired())
+	{
+		authGrp.GET("/self", core.Handle(auth.Self))
+		authGrp.GET("/logout", core.Handle(auth.Logout))
+	}
+
+	// 参考 https://github.com/gin-gonic/gin#parameters-in-path
+	// TODO 路由规范
+
+	// 用户模块
+	usersGrp := adGrp.Group("/users")
+	usersGrp.Use(core.AdminLoginRequired())
+	{
+		usersGrp.GET("/list", core.Handle(adminuser.List)) // 获取所有用户
+	}
 }

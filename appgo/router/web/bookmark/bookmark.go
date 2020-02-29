@@ -1,13 +1,14 @@
 package bookmark
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/router/core"
-	"strconv"
-	"time"
 )
 
 //添加或者移除书签
