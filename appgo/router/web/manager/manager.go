@@ -3,20 +3,17 @@ package manager
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
-
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/ecology/appgo/router/core"
+	"html/template"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 )
 
 func Index(c *core.Context) {
@@ -90,7 +87,7 @@ func Tags(c *core.Context) {
 		return
 	}
 	if totalCount > 0 {
-		c.Tpl().Data["PageHtml"] = utils.NewPaginations(conf.RollPage, int(totalCount), size, pageIndex, beego.URLFor("ManagerController.Tags"), "")
+		c.Tpl().Data["PageHtml"] = utils.NewPaginations(conf.RollPage, int(totalCount), size, pageIndex, "/manager/tags", "")
 	} else {
 		c.Tpl().Data["PageHtml"] = ""
 	}
@@ -159,7 +156,7 @@ func Books(c *core.Context) {
 	}
 
 	if totalCount > 0 {
-		c.Tpl().Data["PageHtml"] = utils.NewPaginations(conf.RollPage, totalCount, conf.PageSize, pageIndex, beego.URLFor("ManagerController.Books"), fmt.Sprintf("&private=%v", private))
+		c.Tpl().Data["PageHtml"] = utils.NewPaginations(conf.RollPage, totalCount, conf.PageSize, pageIndex, "/manager/books", fmt.Sprintf("&private=%v", private))
 	} else {
 		c.Tpl().Data["PageHtml"] = ""
 	}
@@ -190,7 +187,7 @@ func EditBookHtml(c *core.Context) {
 	}
 
 	if book.PrivateToken != "" {
-		book.PrivateToken = c.BaseUrl() + beego.URLFor("DocumentController.Index", ":key", book.Identify, "token", book.PrivateToken)
+		book.PrivateToken = c.BaseUrl() + "/document/content/" + book.Identify + "?token=" + book.PrivateToken
 	}
 	c.Tpl().Data["Model"] = book
 
@@ -262,13 +259,12 @@ func CreateToken(c *core.Context) {
 		}
 
 		book.PrivateToken = string(utils.Krand(conf.GetTokenSize(), utils.KC_RAND_KIND_ALL))
-		if err := mus.Db.UpdateColumns(book); err != nil {
-			logs.Error("生成阅读令牌失败 => ", err)
-			c.JSONErrStr(6003, "生成阅读令牌失败")
+		if err := mus.Db.Where("book_id = ?", book.BookId).UpdateColumns(book).Error; err != nil {
+			c.JSONErrTips("生成阅读令牌失败", err)
 			return
 		}
 		c.JSONOK()
-		c.JSONOK(c.BaseUrl() + beego.URLFor("DocumentController.Index", ":key", book.Identify, "token", book.PrivateToken))
+		//c.JSONOK(c.BaseUrl() + beego.URLFor("DocumentController.Index", ":key", book.Identify, "token", book.PrivateToken))
 	}
 
 	book.PrivateToken = ""

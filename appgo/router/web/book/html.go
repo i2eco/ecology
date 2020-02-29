@@ -3,18 +3,14 @@ package book
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
-	"strconv"
-
-	"github.com/i2eco/ecology/appgo/pkg/mus"
-
-	"github.com/i2eco/ecology/appgo/model/mysql"
-
-	"github.com/astaxie/beego"
 	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/ecology/appgo/router/core"
+	"html/template"
+	"strconv"
 )
 
 func Index(c *core.Context) {
@@ -33,14 +29,12 @@ func Index(c *core.Context) {
 	c.Tpl().Data["Private"] = req.Private //是否是私有文档
 	pageIndex := req.Page
 	books, totalCount, err := dao.Book.FindToPager(pageIndex, conf.Conf.Info.PageSize, c.Member().MemberId, req.Private)
-	fmt.Println("books------>", books)
 	if err != nil {
 		c.Html404()
 		return
 	}
 	if totalCount > 0 {
-		//c.Tpl().Data["PageHtml"] = utils.GetPagerHtml(c.Context.Request.RequestURI, pageIndex, conf.PageSize, totalCount)
-		c.Tpl().Data["PageHtml"] = utils.NewPaginations(conf.RollPage, totalCount, conf.PageSize, pageIndex, beego.URLFor("BookController.Index"), fmt.Sprintf("&private=%v", req.Private))
+		c.Tpl().Data["PageHtml"] = utils.NewPaginations(conf.RollPage, totalCount, conf.PageSize, pageIndex, "/book", fmt.Sprintf("&private=%v", req.Private))
 	} else {
 		c.Tpl().Data["PageHtml"] = ""
 	}
