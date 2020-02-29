@@ -67,7 +67,9 @@ qqUserInfo="https://graph.qq.com/user/get_user_info"
     isEnable = true
     host = "smtp.exmail.qq.com"
     port = 465
-
+    username = ""
+    password = ""
+    from = ""
     mailExpired = 3600
     mailMaxNum = 3
 

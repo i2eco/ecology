@@ -10,7 +10,7 @@ export default {
   menu: {
     locale: true,
   },
-  title: 'Pintuan0.1',
+  title: 'Ecology0.1',
   pwa: false,
   iconfontUrl: '',
 };

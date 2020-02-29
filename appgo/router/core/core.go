@@ -80,6 +80,7 @@ func (c *Context) GetSeoPage() {
 
 func (c *Context) Html(path string) {
 	c.Tpl().SetTplPath(path)
+	c.GetSeoPage()
 	rb, err := c.Tpl().RenderBytes()
 	if err != nil {
 		mus.Logger.Error("html error", zap.Error(err))

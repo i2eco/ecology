@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/i2eco/ecology/appgo/command"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/router/admin/adminseo"
 	"github.com/i2eco/ecology/appgo/router/admin/adminuser"
 	"github.com/i2eco/ecology/appgo/router/admin/auth"
 	"github.com/i2eco/ecology/appgo/router/core"
@@ -207,5 +208,15 @@ func adminGrp(r *gin.Engine) {
 	usersGrp.Use(core.AdminLoginRequired())
 	{
 		usersGrp.GET("/list", core.Handle(adminuser.List)) // 获取所有用户
+	}
+
+	// 用户模块
+	seoGrp := adGrp.Group("/seo")
+	seoGrp.Use(core.AdminLoginRequired())
+	{
+		seoGrp.GET("/list", core.Handle(adminseo.List))
+		seoGrp.GET("/info", core.Handle(adminseo.Info))
+		seoGrp.POST("/create", core.Handle(adminseo.Create))
+		seoGrp.POST("/update", core.Handle(adminseo.Update))
 	}
 }
