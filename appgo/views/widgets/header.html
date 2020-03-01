@@ -1,30 +1,37 @@
 <style>
     .header-active a{
-        color: #fa8919;
+        /*color: #fa8919;*/
+        color: #739ffc;
     }
     .navbar-nav a:hover{
-        color: #fa8919;
-        background: #fff;
+        /*color: #fa8919;*/
+        /*background: #fff;*/
+        background: rgba(214,72,93,.98);
     }
     .navbar-nav li:hover{
-        color: #fa8919;
-        background: #fff;
+        color: #739ffc;
+        /*color: #fa8919;*/
+        /*background: #fff;*/
+        /*background: rgba(214,72,93,.98);*/
     }
     </style>
 <header class="navbar navbar-static-top navbar-fixed-top manual-header" role="banner">
     <div class="container" style="position: relative;">
-        <div class="navbar-header col-sm-12 col-md-10 col-lg-10">
+        <div class="navbar-header col-sm-12 col-md-10git_name col-lg-10">
             <div class="btn-group dropdown-menu-right pull-right slidebar visible-xs-inline-block visible-sm-inline-block">
                 <button class="btn btn-default dropdown-toggle hidden-lg" type="button" data-toggle="dropdown"><i class="fa fa-align-justify"></i></button>
                 <ul class="dropdown-menu" role="menu">
                     <li>
                         <a href="/" class="visible-xs" title="首页">看书</a>
                     </li>
-                    <li {{if .IsAwesome}}class="active"{{end}}>
-                        <a href="/awesome" title="awesome"><img src="/static/images/rank.png" alt="">Awesome</a>
+                    <li {{if .IsAwesome}}class="header-active"{{end}}>
+                        <a href="/awesome" title="awesome">Awesome</a>
                     </li>
-                    <li {{if .IsTutorial}}class="active"{{end}}>
-                        <a href="/tutorial" title="awesome"><i class="fa fa-check-square-o"></i>教程</a>
+                    <li {{if .IsTutorial}}class="header-active"{{end}}>
+                        <a href="/tutorial" title="awesome">教程</a>
+                    </li>
+                    <li {{if .IsTool}}class="header-active"{{end}}>
+                        <a href="/tool" title="awesome">工具</a>
                     </li>
 {{/*                    <li>*/}}
 {{/*                        <a href="{{urlfor "SearchController.Search"}}" class="visible-xs visible-sm" title="搜索"><i class="fa fa-search"></i> 搜索</a>*/}}
@@ -80,6 +87,9 @@
                     </li>
                     <li {{if .IsTutorial}}class="header-active"{{end}}>
                         <a href="/tutorial" title="awesome">教程</a>
+                    </li>
+                    <li {{if .IsTool}}class="header-active"{{end}}>
+                        <a href="/tool" title="awesome">工具</a>
                     </li>
 {{/*                    {{if eq .HideTag false}}*/}}
 {{/*                    <li class="{{if .IsLabel}}active{{end}}">*/}}

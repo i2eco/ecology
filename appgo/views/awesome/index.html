@@ -46,66 +46,6 @@
     overflow: hidden;
     white-space: nowrap;
 }
-.home-avatar {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    margin-right: 4px;
-    background-position: 50%;
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-}
-.home-panel {
-    display: block;
-    margin-top:45px;
-}
-.home-panel-title {
-    height: 50px;
-    font-weight: 600;
-    line-height: 50px;
-    color: #404040;
-    font-size: 1.35rem;
-}
-.home-panel-contact {
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    padding: 17px 0px 20px;
-    background-size: 100%;
-    background: #f8f9fd;
-    border-radius: 5px;
-}
-    .home-panel-contact-item {
-        padding: 5px 15px;
-    }
-
-.home-button {
-    border: none;
-    outline: none;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    width: 92px;
-    height: 33px;
-    color: #fff;
-    background: #fa8919;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: 400;
-}
-.home-footer-content {
-    color: #888;
-    font-size: 13px;
-    font-weight: 400;
-    letter-spacing: 1px;
-}
     .home-active {
         font-weight: 500;
         color: #fa8919;
@@ -121,12 +61,13 @@
         white-space: nowrap;
     }
 </style>
+<link href="/static/my/card.css" rel="stylesheet">
 <body>
 <div class="manual-reader manual-container">
     {{template "widgets/header.html" .}}
     <div class="container manual-body">
         <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-8">
+            <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="col-xs-12 mgt-15px" style="line-height: 200%;">
                     {{if (ads "explore-under-nav" $.IsMobile)}}
                         <div class="ap ap-explore-under-nav mgb-15px">
@@ -139,86 +80,80 @@
 {{/*                        <a {{if eq $.Type "popular"}}class="home-active"{{end}} href="/awesome?type=popular">热门</a>*/}}
                     </div>
                 </div>
-
-
-                {{range $index,$item := .Lists}}
-                    <div class="home-list-item clearfix">
-                        <div class="book-info">
-                            <a class="" href="{{$item.HtmlUrl}}"  target="_blank" title="查看文档" data-toggle="tooltip">
-                                <img class="home-avatar"  onerror="this.src='/static/images/avatar.png'"  class="img-responsive" src="{{$item.OwnerAvatarUrl}}">
-                                <span>{{$item.GitName}}</span>
-                            </a>
-                            <div class="book-desc">
-                                {{$item.Desc}}
-                            </div>
-                            <div class="book-author">
-                                <div class="author-info">
-                                    <span>协议：{{$item.LicenseName}}<span class="dot"> · </span>语言：{{$item.Language}}<span class="dot"> · </span>最近更新时间：{{$item.GitUpdatedAt}}</span>
+                <div class="row">
+                    <div class="card-section clearfix">
+                        {{range $index,$item := .Lists}}
+                            <div class="card-container">
+                                <header>
+                                    <div class="logo">
+                                        <img onerror="this.src='/static/images/avatar.png'"  class="img-responsive" src="{{$item.OwnerAvatarUrl}}">
+                                    </div>
+                                    <div class="title">
+                                        <a class="show-loader" href="{{$item.HtmlUrl}}" >
+                                            <h4 title="apple/swift">{{$item.Name}}</h4>
+                                        </a>
+                                    </div>
+                                    <div class="star-bg"></div>
+                                    <div class="star">
+                                        <span>{{$item.StarCount}}</span>
+                                        <img src="/static/myicon/star.svg">
+                                    </div>
+                                </header>
+                                <div class="body">
+                                    <p>{{$item.Desc}}</p>
                                 </div>
-                            </div>
-                            <div style="height:30px">
-
-                            </div>
-                            <div class="footer-bar" style="display: flex;height: 35px;    justify-content: space-between;">
-                                <p style="display: flex;height: 35px;line-height:35px"> <span class="home-footer-content">{{$item.StarCount}}点赞<span class="dot"> · </span>{{$item.WatcherCount}}关注<span class="dot"> · </span>{{$item.ForkCount}}Fork<span class="dot"> · </span>{{$item.ReadCount}}访问</span></p>
-                                <div style="display: flex;height: 35px;">
-                                {{if ne $item.HomePage ""}}
-                                    <a style="color: #fff;" href="/api/web/awesome/click?q2={{$item.HomePage}}" title="查看文档" target="_blank"><button class="home-button">
-                                    官网</button></a>
-                                {{end}}
-                                    <a style="    color: #fff;" href="/api/web/awesome/click?q1={{$item.HtmlUrl}}" title="查看文档" target="_blank"><button class="home-button" style="margin-left: 10px">
-                                        Github</button></a>
+                                <div class="book-author">
+                                    <div class="author-info">
+                                        <span>协议：{{$item.LicenseName}}<span class="dot"> · </span>语言：{{$item.Language}}<span class="dot"> · </span>最近更新时间：{{$item.GitUpdatedAt}}</span>
+                                    </div>
                                 </div>
+                                <footer>
+                                    <ul>
+                                        <li>
+                                            <img src="/static/myicon/forks.svg">
+                                            <span>{{$item.ForkCount}}</span>
+                                        </li>
+                                        <li>
+                                            <img src="/static/myicon/github.svg" >
+                                            <span>{{$item.ReadCount}}</span>
+                                        </li>
+                                    </ul>
+                                    <div style="display: flex;">
+                                        {{if ne $item.HomePage ""}}
+                                            <a  style="margin-right: 10px" class="view show-loader" href="/api/web/awesome/click?q2={{$item.HomePage}}" title="查看文档" target="_blank">官网</a>
+                                        {{end}}
+                                        <a class="view show-loader"  href="/api/web/awesome/click?q1={{$item.HtmlUrl}}" title="查看文档" target="_blank">Github</a>
+                                    </div>
+                                </footer>
                             </div>
-                        </div>
+                        {{end}}
                     </div>
-                {{end}}
-                {{if (ads "explore-before-pagination" $.IsMobile)}}
-                        <div class="ap ap-explore-before-pagination">
-                            {{str2html (ads "explore-before-pagination" $.IsMobile)}}
-                        </div>
-                {{end}}
+                </div>
+
                 <nav class="pagination-container">
                     {{if gt .TotalPages 1}}
                     {{.PageHtml}}
                     {{end}}
                     <div class="clearfix"></div>
                 </nav>
-                {{if (ads "explore-under-pagination" $.IsMobile)}}
-                    <div class="ap ap-explore-under-pagination">
-                        {{str2html (ads "explore-under-pagination" $.IsMobile)}}
-                    </div>
-                {{end}}
+
+{{/*                <div class="row">*/}}
+{{/*                    <div class="pagination-wrapper">*/}}
+{{/*                        <ul class="pagination text-center">*/}}
+{{/*                            <li class="disabled"><a>&lt;</a></li>*/}}
+{{/*                            <li class="active"><a>1</a></li>*/}}
+{{/*                            <li><a class="show-loader" href="/topics/swift?p=2&amp;s=">2</a></li>*/}}
+{{/*                            <li><a class="show-loader" href="/topics/swift?p=3&amp;s=">3</a></li>*/}}
+{{/*                            <li><a class="show-loader" href="/topics/swift?p=4&amp;s=">4</a></li>*/}}
+{{/*                            <li><a class="show-loader" href="/topics/swift?p=5&amp;s=">5</a></li>*/}}
+{{/*                            <li class="disabled"><a>...</a></li>*/}}
+{{/*                            <li><a class="show-loader" href="/topics/swift?p=34&amp;s=">&gt;</a></li>*/}}
+{{/*                        </ul>*/}}
+{{/*                    </div>*/}}
+{{/*                </div>*/}}
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-4">
-                <div class="home-panel" style="margin-top:0px">
-                    <div class="home-panel-title">
-                        关注我们
-                    </div>
-                    <div class="home-panel-contact">
-                        <div class="home-panel-contact-item">
-                            Github组织：<a href="https://github.com/i2eco" target="_blank">GoEcology</a>
-                        </div>
-                        <div class="home-panel-contact-item">
-                            商城项目：<a href="https://github.com/i2eco/egoshop" target="_blank">EGoShopy</a>
-                        </div>
-                        <div class="home-panel-contact-item">
-                            技术网站项目：<a href="https://github.com/i2eco/ecology" target="_blank">Ecology</a>
-                        </div>
-                        <div class="home-panel-contact-item">
-                            脚手架项目：<a href="https://github.com/i2eco/muses" target="_blank">Muses</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="home-panel">
-                    <div class="home-panel-title">
-                        加入我们
-                    </div>
-                    <div class="home-panel-content">
-                        <img src="http://static.yitum.com/eco-doc-img/202002/37af57e2cc2c4932aafd5ae5ee03fb5f.jpg" style="width:180px;margin-left: auto; margin-right: auto; display: block;">
-                    </div>
-                </div>
-            </div>
+        </div>
+    </div>
 </div>
 {{template "widgets/footer.html" .}}
 </body>

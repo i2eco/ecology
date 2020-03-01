@@ -2,9 +2,10 @@ package install
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/i2eco/ecology/appgo/pkg/util"
 	"github.com/jinzhu/gorm"
-	"time"
 
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
@@ -47,6 +48,7 @@ func init() {
 		&mysql.Awesome{},
 		&mysql.AwesomeCate{},
 		&mysql.User{},
+		&mysql.Tool{},
 	}
 }
 func Create(isClear bool) error {
@@ -259,6 +261,7 @@ func Mock() error {
 		HistoryTotalContinuousSign: 0,
 	})
 	createAdminUser(db)
+	CreateTool(db)
 	return nil
 }
 
@@ -281,4 +284,19 @@ func createAdminUser(db *gorm.DB) {
 		fmt.Println("err", err)
 		return
 	}
+}
+
+func CreateTool(db *gorm.DB) {
+	db.Create(&mysql.Tool{
+		Name:     "时间戳转换工具",
+		Desc:     "时间戳转换工具",
+		Identify: "timestamp",
+		Cover:    "",
+	})
+	db.Create(&mysql.Tool{
+		Name:     "Go的Json To Struct",
+		Desc:     "Go Json的转换工具",
+		Identify: "jsontostruct",
+		Cover:    "",
+	})
 }

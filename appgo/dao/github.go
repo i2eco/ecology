@@ -3,6 +3,8 @@ package dao
 import (
 	"encoding/json"
 	"errors"
+	"github.com/gomodule/redigo/redis"
+	"github.com/spf13/viper"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -127,12 +129,21 @@ type GithubInfoResp struct {
 	} `json:"items"`
 }
 
+// https://developer.github.com/v3/search/#search-repositories
+// https://developer.github.com/v3/projects/#get-a-project
 func (*githubApi) Info(name string) (output mysql.Awesome, err error) {
+	timeReset, _ := redis.Int(mus.Mixcache.Get("search_X-Ratelimit-Reset"))
+	remainCnt, _ := redis.Int(mus.Mixcache.Get("search_X-Ratelimit-Remaining"))
+	if remainCnt <= 2 && time.Now().Unix() <= int64(timeReset) {
+		return
+	}
+
 	var info *resty.Response
-	info, err = mus.JsonRestyClient.R().Get(githubInfoApi + name)
+	info, err = mus.JsonRestyClient.SetHeader("Authorization", "token "+viper.GetString("github.token")).R().Get(githubInfoApi + name)
 	if err != nil {
 		return
 	}
+
 	var resp GithubInfoResp
 	err = json.Unmarshal(info.Body(), &resp)
 	if err != nil {
@@ -169,6 +180,17 @@ func (*githubApi) Info(name string) (output mysql.Awesome, err error) {
 		LicenseName:    resp.Items[0].License.Name,
 		LicenseUrl:     resp.Items[0].License.URL,
 	}
+
+	headers := info.Header()
+	_, err = mus.Mixcache.Set("search_X-Ratelimit-Limit", headers["X-Ratelimit-Limit"][0], 0)
+	if err != nil {
+		return
+	}
+	_, err = mus.Mixcache.Set("search_X-Ratelimit-Remaining", headers["X-Ratelimit-Remaining"][0], 0)
+	if err != nil {
+		return
+	}
+	_, err = mus.Mixcache.Set("search_X-Ratelimit-Reset", headers["X-Ratelimit-Reset"][0], 0)
 	return
 }
 
@@ -211,6 +233,8 @@ func (g *githubApi) All() (err error) {
 				"version": version,
 			})
 			mysqlInfo, err = g.Info(value.Name)
+
+			time.Sleep(3 * time.Second)
 			if err != nil {
 				mus.Logger.Error("api info err", zap.String("name", value.Name), zap.Error(err))
 				continue

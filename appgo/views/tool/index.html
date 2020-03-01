@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    {{template "widgets/head.html" .}}
+</head>
+<style>
+.home-list-item {
+    display: flex;
+    padding: 25px;
+    box-sizing: border-box;
+    background-color: #fff;
+    position: relative;
+    border-bottom: 1px solid #e6e8e8;
+}
+.home-list-item .book-cover {
+    width: 100px;
+    height: 140px;
+    flex-shrink: 0;
+    box-shadow: 3px 4px 12px 0 rgba(0,0,0,.2);
+    overflow: hidden;
+    background-color: #fff;
+}
+.home-list-item .book-info {
+    flex-grow: 1;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-size: 14px;
+    color: #2e3135;
+    padding-left: 22px;
+}
+.home-list-item .book-desc {
+    margin-top: 5px;
+    line-height: 20px;
+    height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    -webkit-line-clamp: 1;
+    color: #71777c;
+    white-space: nowrap;
+}
+.home-list-item .book-author {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+</style>
+<link href="/static/my/card.css" rel="stylesheet">
+<body>
+<div class="manual-reader manual-container">
+    {{template "widgets/header.html" .}}
+    <div class="container manual-body">
+        <div class="row">
+            <div class="card-section clearfix">
+                {{range $index,$item := .Lists}}
+                <div class="card-container">
+                    <header>
+                        <div class="logo">
+                            <img onerror="this.src='/static/images/avatar.png'"  class="img-responsive" src="{{$item.Cover}}">
+                        </div>
+                        <div class="title">
+                            <a class="show-loader" href="/info/apple/swift/44838949">
+                                <h4 title="apple/swift">{{$item.Name}}</h4>
+                            </a>
+                        </div>
+                        <div class="star-bg"></div>
+                        <div class="star">
+                            <span>50.7k</span>
+                            <img src="/static/myicon/star.svg">
+                        </div>
+                    </header>
+                    <div class="body">
+                        <p>{{$item.Desc}}</p>
+                    </div>
+                    <footer>
+                        <ul>
+                            <li>
+                                <img src="/svg/forks.svg">
+                                <span>8.2k</span>
+                            </li>
+                            <li>
+                                <a href="https://github.com/apple/swift" target="_blank">
+                                    <img src="/svg/github.svg" class="github-view">
+                                </a>
+                            </li>
+                        </ul>
+                        <a class="view show-loader" href="/info/apple/swift/44838949">进入</a>
+                    </footer>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+</div>
+{{template "widgets/footer.html" .}}
+</body>
+</html>

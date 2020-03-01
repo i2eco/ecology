@@ -30,3 +30,7 @@ make all # 全部编译
 ## 5 加入我们
 
 ![wechat](./docs/img/wechat.jpg)
+
+
+https://segmentfault.com/a/1190000015144126?utm_source=tag-newest
+https://github.com/google/go-github

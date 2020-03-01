@@ -1,6 +1,8 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/astaxie/beego"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -10,7 +12,6 @@ import (
 	"github.com/i2eco/muses/pkg/system"
 	"github.com/i2eco/muses/pkg/tpl/tplbeego"
 	"github.com/spf13/viper"
-	"strings"
 )
 
 func FrontTplRequired() gin.HandlerFunc {

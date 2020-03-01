@@ -1,6 +1,7 @@
 package command
 
 import (
+	"github.com/i2eco/ecology/appgo/model/csv"
 	"os"
 	"time"
 
@@ -16,11 +17,6 @@ var AwesomeCmd = &cobra.Command{
 	Use:  "awesome",
 	Long: `Show awesome information`,
 	Run:  awesomeCmd,
-}
-
-type GithubItem struct {
-	Name string `csv:"name"`
-	Desc string `csv:"desc"`
 }
 
 type CateItem struct {
@@ -52,7 +48,7 @@ func awesomeCmd(cmd *cobra.Command, args []string) {
 			}
 
 			defer f.Close()
-			var out []*GithubItem
+			var out []*csv.GithubItem
 			if err = gocsv.UnmarshalFile(f, &out); err != nil {
 				return err
 			}

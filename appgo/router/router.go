@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/i2eco/ecology/appgo/command"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/router/admin/adminawesome"
 	"github.com/i2eco/ecology/appgo/router/admin/adminseo"
 	"github.com/i2eco/ecology/appgo/router/admin/adminuser"
 	"github.com/i2eco/ecology/appgo/router/admin/auth"
@@ -22,6 +23,7 @@ import (
 	"github.com/i2eco/ecology/appgo/router/web/rank"
 	"github.com/i2eco/ecology/appgo/router/web/record"
 	"github.com/i2eco/ecology/appgo/router/web/setting"
+	"github.com/i2eco/ecology/appgo/router/web/tool"
 	"github.com/i2eco/ecology/appgo/router/web/tutorial"
 	"github.com/i2eco/ecology/appgo/router/web/user"
 	"github.com/spf13/viper"
@@ -36,6 +38,10 @@ func InitRouter() *gin.Engine {
 	if command.Mode == "all" || command.Mode == "admin" {
 		adminGrp(r)
 	}
+	if command.Mode == "all" {
+		toolGrp(r)
+	}
+
 	r.Static("/"+viper.GetString("app.osspic"), viper.GetString("app.osspic"))
 
 	return r
@@ -214,7 +220,7 @@ func adminGrp(r *gin.Engine) {
 		usersGrp.GET("/list", core.Handle(adminuser.List)) // 获取所有用户
 	}
 
-	// 用户模块
+	// Seo模块
 	seoGrp := adGrp.Group("/seo")
 	seoGrp.Use(core.AdminLoginRequired())
 	{
@@ -222,5 +228,24 @@ func adminGrp(r *gin.Engine) {
 		seoGrp.GET("/info", core.Handle(adminseo.Info))
 		seoGrp.POST("/create", core.Handle(adminseo.Create))
 		seoGrp.POST("/update", core.Handle(adminseo.Update))
+	}
+
+	// Awesome模块
+	awesomeGrp := adGrp.Group("/awesome")
+	awesomeGrp.Use(core.AdminLoginRequired())
+	{
+		awesomeGrp.GET("/list", core.Handle(adminawesome.List))
+		awesomeGrp.GET("/info", core.Handle(adminawesome.Info))
+		awesomeGrp.POST("/create", core.Handle(adminawesome.Create))
+		awesomeGrp.POST("/update", core.Handle(adminawesome.Update))
+		awesomeGrp.POST("/upload", core.Handle(adminawesome.Upload))
+	}
+}
+
+func toolGrp(r *gin.Engine) {
+	r.Use(mus.Session)
+	tplGrp := r.Group("", core.FrontLoginRequired(), core.FrontTplRequired())
+	{
+		tplGrp.GET("/tool", core.Handle(tool.Index))
 	}
 }

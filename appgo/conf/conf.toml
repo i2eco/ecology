@@ -74,6 +74,9 @@ qqUserInfo="https://graph.qq.com/user/get_user_info"
     mailExpired = 3600
     mailMaxNum = 3
 
+[github]
+    token = ""
+
 [muses]
     [muses.app]
         name = "i2eco"

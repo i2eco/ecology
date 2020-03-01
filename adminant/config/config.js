@@ -109,6 +109,7 @@ export default {
             },
             { name: '用户列表', path: '/users/list', component: './users/list'},
             { name: 'SEO列表', path: '/seo/list', component: './seo/list'},
+            { name: 'Awesome列表', path: '/awesome/list', component: './awesome/list'},
             // { name: 'SEO列表', path: '/seo/create', component: './seo/list'},
             // { name: 'SEO列表', path: '/seo/update', component: './seo/list'},
             {
