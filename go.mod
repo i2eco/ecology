@@ -13,6 +13,7 @@ require (
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.6+incompatible
 	github.com/astaxie/beego v1.12.1
 	github.com/boombuler/barcode v1.0.0
+	github.com/davecgh/go-spew v1.1.1
 	github.com/dchest/captcha v0.0.0-20170622155422-6a29415a8364
 	github.com/disintegration/imaging v1.6.2
 	github.com/gin-contrib/sessions v0.0.3

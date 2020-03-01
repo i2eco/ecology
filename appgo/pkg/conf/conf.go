@@ -40,15 +40,13 @@ type image struct {
 }
 
 type app struct {
-	SitemapHost string
-	Name        string `toml:"name"`
-	Wechat      wechat `toml:"wechat"`
-	WechatPay   wechatPay
-	WechatOpen  wechatOpen
-	CdnName     string
-	File        string `toml:"file"`
-	DbPrefix    string `toml:"dbPrefix"`
-
+	Name               string `toml:"name"`
+	Wechat             wechat `toml:"wechat"`
+	WechatPay          wechatPay
+	WechatOpen         wechatOpen
+	CdnName            string
+	File               string `toml:"file"`
+	DbPrefix           string `toml:"dbPrefix"`
 	AppKey             string `toml:"appKey"`
 	Baidumapkey        string
 	ExportHeader       string

@@ -45,6 +45,9 @@ func webGrp(r *gin.Engine) {
 	r.Static("/static", "static")
 
 	r.GET("/captcha/:captchaId", captcha.CaptchaPng)
+	r.GET("/test", core.Handle(func(c *core.Context) {
+		c.BaseUrl()
+	}))
 
 	r.Use(mus.Session)
 	tplGrp := r.Group("", core.FrontLoginRequired(), core.FrontTplRequired())
@@ -183,6 +186,7 @@ func webGrp(r *gin.Engine) {
 		apiGrp.POST("/bookmark/info/:id", core.Handle(bookmark.Bookmark))
 		apiGrp.POST("/bookmark/list/:book_id", core.Handle(bookmark.List))
 		apiGrp.POST("/account/findPassword", core.Handle(account.FindPasswordApi))
+		apiGrp.POST("/account/validEmail", core.Handle(account.ValidEmail))
 	}
 
 }

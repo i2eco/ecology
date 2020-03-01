@@ -261,9 +261,7 @@ func FindPasswordApi(c *core.Context) {
 		Token:    string(utils.Krand(32, utils.KC_RAND_KIND_ALL)),
 		Email:    email,
 		IsValid:  false,
-		// todo fix
-		ValidTime: time.Date(1970, 1, 1, 0, 0, 01, 0, time.Local),
-		SendTime:  time.Now(),
+		SendTime: time.Now(),
 	}
 
 	if err := dao.MemberToken.InsertOrUpdate(mus.Db, &memberToken); err != nil {
@@ -273,7 +271,7 @@ func FindPasswordApi(c *core.Context) {
 
 	data := map[string]interface{}{
 		"SITE_NAME": dao.Global.GetSiteName(),
-		"url":       c.BaseUrl() + "/find_password?token=" + memberToken.Token + "&mail=" + email,
+		"url":       c.BaseUrl() + "/account/find_password?token=" + memberToken.Token + "&mail=" + email,
 	}
 
 	body, err := c.ExecuteViewPathTemplate("account/mail_template.html", data)
@@ -292,10 +290,10 @@ func FindPasswordApi(c *core.Context) {
 
 //校验邮件并修改密码.
 func ValidEmail(c *core.Context) {
-	password1 := c.GetString("password1")
-	password2 := c.GetString("password2")
-	token := c.GetString("token")
-	mail := c.GetString("mail")
+	password1 := c.PostForm("password1")
+	password2 := c.PostForm("password2")
+	token := c.PostForm("token")
+	mail := c.PostForm("mail")
 
 	if password1 == "" {
 		c.JSONErrStr(6001, "密码不能为空")
@@ -314,9 +312,14 @@ func ValidEmail(c *core.Context) {
 		return
 	}
 
-	//if !cpt.VerifyReq(c.Context.Request) {
-	//	c.JSONErrStr(6001, "验证码不正确")
-	//}
+	captchaId := c.PostForm("captchaId")
+	captchaValue := c.PostForm("captcha")
+
+	// 如果开启了验证码
+	if dao.Global.IsEnabledCaptcha() && !captcha.VerifyString(captchaId, captchaValue) {
+		c.JSONErrStr(6001, "验证码不正确")
+		return
+	}
 
 	memberToken, err := dao.MemberToken.FindByFieldFirst("token", token)
 

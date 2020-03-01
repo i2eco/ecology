@@ -179,14 +179,7 @@ func (c *Context) JSONErrStr(Code int, err string) {
 }
 
 func (c *Context) BaseUrl() string {
-	host := conf.Conf.App.SitemapHost
-	if len(host) > 0 {
-		if strings.HasPrefix(host, "http://") || strings.HasPrefix(host, "https://") {
-			return host
-		}
-		return c.Request.URL.Scheme + "://" + host
-	}
-	return c.Request.URL.Scheme + "://" + c.Request.URL.Host
+	return BaseUrl(c.Context)
 }
 
 // ExecuteViewPathTemplate 执行指定的模板并返回执行结果.

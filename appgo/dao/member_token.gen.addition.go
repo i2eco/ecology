@@ -9,6 +9,7 @@ import (
 )
 
 func (m *memberToken) FindByFieldFirst(field string, value interface{}) (resp *mysql.MemberToken, err error) {
+	resp = &mysql.MemberToken{}
 	err = mus.Db.Where("token = ?", value).Order("token_id desc").Find(resp).Error
 	return
 }

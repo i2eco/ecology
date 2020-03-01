@@ -5,6 +5,7 @@
     osspic = "ecologyoss"
     chromium = "chromium"
     baidutongji= ""
+    scheme = "http"
 
 # 第三方登录配置
 [oauth]

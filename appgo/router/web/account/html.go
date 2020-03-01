@@ -256,8 +256,8 @@ func LoginHtml(c *core.Context) {
 
 //找回密码.
 func FindPasswordHtml(c *core.Context) {
-	token := c.GetString("token")
-	mail := c.GetString("mail")
+	token := c.Query("token")
+	mail := c.Query("mail")
 
 	if token != "" && mail != "" {
 		memberToken, err := dao.MemberToken.FindByFieldFirst("token", token)
@@ -268,11 +268,18 @@ func FindPasswordHtml(c *core.Context) {
 		}
 		subTime := memberToken.SendTime.Sub(time.Now())
 
-		if !strings.EqualFold(memberToken.Email, mail) || subTime.Minutes() > float64(viper.GetInt("email.mailExpired")) || !memberToken.ValidTime.IsZero() {
+		if !strings.EqualFold(memberToken.Email, mail) {
+			c.Tpl().Data["ErrorMessage"] = "邮箱不正确。"
+			c.Html("errors/error")
+			return
+		}
+
+		if subTime.Minutes() > float64(viper.GetInt("email.mailExpired")) || !memberToken.ValidTime.IsZero() {
 			c.Tpl().Data["ErrorMessage"] = "验证码已过期，请重新操作。"
 			c.Html("errors/error")
 			return
 		}
+
 		c.Tpl().Data["Email"] = memberToken.Email
 		c.Tpl().Data["Token"] = memberToken.Token
 		c.Html("account/find_password_setp2")

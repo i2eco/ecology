@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/muses/pkg/system"
 	"github.com/i2eco/muses/pkg/tpl/tplbeego"
@@ -135,12 +134,5 @@ func FrontContextUser(c *gin.Context) *mysql.Member {
 }
 
 func BaseUrl(c *gin.Context) string {
-	host := conf.Conf.App.SitemapHost
-	if len(host) > 0 {
-		if strings.HasPrefix(host, "http://") || strings.HasPrefix(host, "https://") {
-			return host
-		}
-		return c.Request.URL.Scheme + "://" + host
-	}
-	return c.Request.URL.Scheme + "://" + c.Request.URL.Host
+	return viper.GetString("app.scheme") + "://" + c.Request.Host
 }
