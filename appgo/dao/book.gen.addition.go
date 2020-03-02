@@ -2,16 +2,13 @@ package dao
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/model/mysql/store"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
-	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/jinzhu/gorm"
 	"github.com/kataras/iris/core/errors"
 	"go.uber.org/zap"
@@ -353,13 +350,13 @@ func (m *book) ThoroughDeleteBook(id int) (err error) {
 		return err
 	}
 	//删除oss中项目对应的文件夹
-	switch utils.StoreType {
-	case utils.StoreLocal: //删除本地存储，记得加上uploads
-		os.Remove(strings.TrimLeft(one.Cover, "/ ")) //删除封面
-		go store.ModelStoreLocal.DelFromFolder("uploads/projects/" + one.Identify)
-	case utils.StoreOss:
-		go store.ModelStoreOss.DelOssFolder("projects/" + one.Identify)
-	}
+	//switch utils.StoreType {
+	//case utils.StoreLocal: //删除本地存储，记得加上uploads
+	//	os.Remove(strings.TrimLeft(one.Cover, "/ ")) //删除封面
+	//	go store.ModelStoreLocal.DelFromFolder("uploads/projects/" + one.Identify)
+	//case utils.StoreOss:
+	//	go store.ModelStoreOss.DelOssFolder("projects/" + one.Identify)
+	//}
 
 	// 删除历史记录
 	// todo doc history

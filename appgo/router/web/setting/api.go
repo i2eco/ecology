@@ -1,7 +1,6 @@
 package setting
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,9 +12,7 @@ import (
 	"github.com/i2eco/ecology/appgo/pkg/graphics"
 	"go.uber.org/zap"
 
-	"github.com/astaxie/beego"
 	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/model/mysql/store"
 	"github.com/i2eco/ecology/appgo/pkg/code"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
@@ -100,97 +97,6 @@ func PasswordUpdate(c *core.Context) {
 		return
 	}
 	c.JSONOK()
-}
-
-//二维码
-func QrcodeUpdate(c *core.Context) {
-	header, err := c.FormFile("qrcode")
-	if err != nil {
-		c.JSONErr(code.MsgErr, err)
-		return
-	}
-
-	file, err := header.Open()
-	if err != nil {
-		c.JSONErr(code.MsgErr, err)
-		return
-	}
-	defer file.Close()
-
-	payType, _ := c.GetPostForm("paytype")
-
-	alipay := true
-	if payType == "wxpay" {
-		alipay = false
-	}
-
-	ext := filepath.Ext(header.Filename)
-
-	if !strings.EqualFold(ext, ".png") && !strings.EqualFold(ext, ".jpg") && !strings.EqualFold(ext, ".gif") && !strings.EqualFold(ext, ".jpeg") {
-		c.JSONErrStr(500, "不支持的图片格式")
-	}
-
-	savePath := fmt.Sprintf("uploads/qrcode/%v/%v%v", c.Member().MemberId, time.Now().Unix(), ext)
-	err = os.MkdirAll(filepath.Dir(savePath), 0777)
-	if err != nil {
-		c.JSONErr(code.MsgErr, err)
-		return
-	}
-	if err = c.SaveToFile("qrcode", savePath); err != nil {
-		c.JSONErr(code.MsgErr, err)
-		return
-	}
-	url := ""
-	switch utils.StoreType {
-	case utils.StoreOss:
-		if err := store.ModelStoreOss.MoveToOss(savePath, savePath, true, false); err != nil {
-			mus.Logger.Error(err.Error())
-		} else {
-			url = strings.TrimRight(beego.AppConfig.String("oss::Domain"), "/ ") + "/" + savePath
-		}
-	case utils.StoreLocal:
-		if err := store.ModelStoreLocal.MoveToStore(savePath, savePath); err != nil {
-			mus.Logger.Error(err.Error())
-		} else {
-			url = "/" + savePath
-		}
-	}
-
-	var member mysql.Member
-	mus.Db.Where("member_id = ?", c.Member().MemberId).Find(&member)
-
-	if member.MemberId > 0 {
-		dels := []string{}
-
-		if alipay {
-			dels = append(dels, member.Alipay)
-			member.Alipay = savePath
-		} else {
-			dels = append(dels, member.Wxpay)
-			member.Wxpay = savePath
-		}
-
-		err = mus.Db.Where("member_id = ?", member.MemberId).Updates(mysql.Ups{
-			"wxpay":  member.Wxpay,
-			"alipay": member.Alipay,
-		}).Error
-
-		if err == nil {
-			switch utils.StoreType {
-			case utils.StoreOss:
-				go store.ModelStoreOss.DelFromOss(dels...)
-			case utils.StoreLocal:
-				go store.ModelStoreLocal.DelFiles(dels...)
-			}
-		}
-	}
-	//删除旧的二维码，并更新新的二维码
-	data := map[string]interface{}{
-		"url":    url,
-		"alipay": alipay,
-	}
-	c.JSONOK(data)
-
 }
 
 // Upload 上传图片

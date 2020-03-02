@@ -6,8 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/i2eco/ecology/appgo/model/mysql/store"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/i2eco/ecology/appgo/pkg/utils"
@@ -73,21 +71,21 @@ func (this *WechatCode) CreateWechatCode(bookId int) {
 	defer os.Remove(tmpFile) // 删除临时文件
 	ext := filepath.Ext(tmpFile)
 	m.Path = fmt.Sprintf("projects/%v/wxacode%v", book.Identify, ext)
-	switch utils.StoreType {
-	case utils.StoreOss: //oss存储
-		err = store.ModelStoreOss.MoveToOss(tmpFile, m.Path, true, false)
-		if err != nil {
-			beego.Error(err.Error())
-			return
-		}
-	case utils.StoreLocal: //本地存储
-		m.Path = "uploads/" + m.Path
-		err = store.ModelStoreLocal.MoveToStore(tmpFile, m.Path)
-		if err != nil {
-			beego.Error(err.Error())
-			return
-		}
-	}
+	//switch utils.StoreType {
+	//case utils.StoreOss: //oss存储
+	//	err = store.ModelStoreOss.MoveToOss(tmpFile, m.Path, true, false)
+	//	if err != nil {
+	//		beego.Error(err.Error())
+	//		return
+	//	}
+	//case utils.StoreLocal: //本地存储
+	//	m.Path = "uploads/" + m.Path
+	//	err = store.ModelStoreLocal.MoveToStore(tmpFile, m.Path)
+	//	if err != nil {
+	//		beego.Error(err.Error())
+	//		return
+	//	}
+	//}
 	m.Path = "/" + m.Path
 	_, err = o.Update(m)
 	if err != nil {

@@ -10,7 +10,6 @@ import (
 	"github.com/boombuler/barcode/qr"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/model/mysql/store"
 	"github.com/i2eco/ecology/appgo/pkg/code"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
@@ -791,67 +790,7 @@ func ContentPost(c *core.Context) {
 
 }
 
-//导出文件
-func Export(c *core.Context) {
-	if c.Member() == nil || c.Member().MemberId == 0 {
-		if tips := dao.Global.Get("DOWNLOAD_LIMIT"); tips != "" {
-			tips = strings.TrimSpace(tips)
-			if len(tips) > 0 {
-				c.JSONErrStr(1, tips)
-				return
-			}
-		}
-	}
-
-	//this.TplName = "document/export.html"
-	identify := c.Param(":key")
-	ext := strings.ToLower(c.GetString("output"))
-	switch ext {
-	case "pdf", "epub", "mobi":
-		ext = "." + ext
-	default:
-		ext = ".pdf"
-	}
-	if identify == "" {
-		c.JSONErrStr(1, "下载失败，无法识别您要下载的文档")
-		return
-	}
-	book, err := dao.Book.FindByIdentify(identify)
-	if err != nil {
-		mus.Logger.Error(err.Error())
-		c.JSONErrStr(1, "下载失败，您要下载的文档当前并未生成可下载文档。")
-		return
-	}
-	if book.PrivatelyOwned == 1 && c.Member().MemberId != book.MemberId {
-		c.JSONErrStr(1, "私有文档，只有文档创建人可导出")
-		return
-	}
-	//查询文档是否存在
-	obj := fmt.Sprintf("projects/%v/books/%v%v", book.Identify, book.GenerateTime.Unix(), ext)
-	switch utils.StoreType {
-	case utils.StoreOss:
-		if err := store.ModelStoreOss.IsObjectExist(obj); err != nil {
-			mus.Logger.Error(err.Error())
-			c.JSONErrStr(1, "下载失败，您要下载的文档当前并未生成可下载文档。")
-			return
-		}
-		c.JSONOK(map[string]interface{}{"url": viper.GetString("app.OssDomain") + "/" + obj})
-		return
-
-	case utils.StoreLocal:
-		obj = "uploads/" + obj
-		if err := store.ModelStoreLocal.IsObjectExist(obj); err != nil {
-			mus.Logger.Error(err.Error())
-			c.JSONErrStr(1, "下载失败，您要下载的文档当前并未生成可下载文档。")
-			return
-		}
-		c.JSONOK(map[string]interface{}{"url": "/" + obj})
-	}
-	c.JSONErrStr(1, "下载失败，您要下载的文档当前并未生成可下载文档。")
-}
-
 //生成项目访问的二维码.
-
 func QrCode(c *core.Context) {
 	identify := c.GetString(":key")
 
