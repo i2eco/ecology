@@ -1,0 +1,150 @@
+/*
+	Eric Meyer's Reset CSS v2.0
+
+	NOTICE: This copy of the CSS reset has been modified
+	to make main tag "display: block" because the default in
+	even IE 11 is "display: inline", which is not correct.
+*/
+
+code {
+    font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
+    padding: 0 3px;
+}
+
+
+.intro {
+    display: flex;
+}
+
+.intro > div {
+    width: 33.333%;
+}
+
+h1 {
+    font-size: 34px;
+    font-weight: bold;
+    line-height: 1.5em;
+}
+
+h2 {
+    font-size: 24px;
+    line-height: 1.3em;
+}
+
+p {
+    margin-top: 20px;
+    line-height: 1.5em;
+}
+
+p:first-child {
+    margin-top: 0;
+}
+
+#brand {
+    max-width: 400px;
+    max-height: 150px;
+    float: right;
+}
+
+table {
+    margin-top: 100px;
+    width: 100%;
+    table-layout: fixed;
+}
+
+th {
+    padding: 15px;
+    background: #375EAB;
+    text-align: center;
+    color: #FFF;
+    font-size: 20px;
+}
+
+th label {
+    margin-left: 1em;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+td {
+    width: 50%;
+    vertical-align: top;
+}
+
+#input,
+#output {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -o-box-sizing: border-box;
+    box-sizing: border-box;
+
+    white-space: pre;
+    width: 100%;
+    display: block;
+    padding: 3%;
+    font: 14px/1.5em 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
+    outline: none;
+    border: none;
+    resize: vertical;
+    height: 500px;
+    height: 65vh;
+    overflow: scroll;
+    tab-size: 4;
+}
+
+#input {
+    background: #ECF2F5;
+    border-right: 2px solid #AAA;
+    height: 600px;
+}
+
+#output {
+    background: #E0EBF5;
+    height: 600px;
+}
+
+footer {
+    color: #888;
+    text-align: center;
+    padding: 25px 0 50px;
+    line-height: 2em;
+}
+
+.clr-red {
+    color: #CC0000;
+}
+.faulty-line {
+    color: #C00;
+    background: #FDD;
+    font-weight: bold
+}
+.json-go-faulty-char  {
+    border: 1px solid purple;
+}
+
+.copy {
+    font-size: 14px;
+    padding: 5px;
+    background: #80808099;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.copy:hover {
+    background: #808080cf;
+}
+
+@media (max-width: 800px) {
+    .intro {
+        flex-direction: column;
+    }
+
+    .intro > div {
+        width: 100%;
+    }
+
+    #brand {
+        float: none;
+        margin: 20px auto;
+        display: block;
+    }
+}

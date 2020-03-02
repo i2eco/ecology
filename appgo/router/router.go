@@ -6,6 +6,7 @@ import (
 	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"github.com/i2eco/ecology/appgo/router/admin/adminawesome"
 	"github.com/i2eco/ecology/appgo/router/admin/adminseo"
+	"github.com/i2eco/ecology/appgo/router/admin/admintool"
 	"github.com/i2eco/ecology/appgo/router/admin/adminuser"
 	"github.com/i2eco/ecology/appgo/router/admin/auth"
 	"github.com/i2eco/ecology/appgo/router/core"
@@ -98,7 +99,6 @@ func webGrp(r *gin.Engine) {
 		tplGrp.GET("/manager/banner", core.Handle(manager.Banner))
 		//tplGrp.GET("/manager/submit-book", core.Handle(manager.sub))
 		tplGrp.GET("/manager/setting", core.Handle(manager.SettingHtml))
-		tplGrp.GET("/manager/seo", core.Handle(manager.SeoHtml))
 		tplGrp.GET("/manager/category", core.Handle(manager.Category))
 		tplGrp.GET("/manager/ads", core.Handle(manager.Ads))
 		tplGrp.GET("/manager/tags", core.Handle(manager.Tags))
@@ -240,6 +240,16 @@ func adminGrp(r *gin.Engine) {
 		awesomeGrp.POST("/update", core.Handle(adminawesome.Update))
 		awesomeGrp.POST("/upload", core.Handle(adminawesome.Upload))
 	}
+
+	// Seo模块
+	toolGrp := adGrp.Group("/tool")
+	toolGrp.Use(core.AdminLoginRequired())
+	{
+		toolGrp.GET("/list", core.Handle(admintool.List))
+		toolGrp.GET("/info", core.Handle(admintool.Info))
+		toolGrp.POST("/create", core.Handle(admintool.Create))
+		toolGrp.POST("/update", core.Handle(admintool.Update))
+	}
 }
 
 func toolGrp(r *gin.Engine) {
@@ -247,5 +257,6 @@ func toolGrp(r *gin.Engine) {
 	tplGrp := r.Group("", core.FrontLoginRequired(), core.FrontTplRequired())
 	{
 		tplGrp.GET("/tool", core.Handle(tool.Index))
+		tplGrp.GET("/tool/:toolName", core.Handle(tool.Info))
 	}
 }

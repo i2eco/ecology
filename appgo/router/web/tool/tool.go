@@ -12,3 +12,13 @@ func Index(c *core.Context) {
 	c.Tpl().Data["IsTool"] = true
 	c.Html("tool/index")
 }
+
+func Info(c *core.Context) {
+	name := c.Param("toolName")
+	if name != "jsontostruct" && name != "timestamp" {
+		c.Html404()
+		return
+	}
+	c.Tpl().Data["IsTool"] = true
+	c.Html("tool/" + name)
+}

@@ -13,3 +13,7 @@ type Tool struct {
 	DeletedAt *time.Time `gorm:"index"json:"deletedAt"` // 删除时间
 	Uid       int        `gorm:"not null;"json:"uid"`
 }
+
+func (Tool) TableName() string {
+	return "tool"
+}

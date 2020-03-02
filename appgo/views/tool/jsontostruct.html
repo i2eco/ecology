@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {{template "widgets/head.html" .}}
+    <link rel="stylesheet" href="/static/css/highlight.jsontostruct.css">
+    <link rel="stylesheet" href="/static/css/jsontostruct.css">
+</head>
+<body>
+<div class="manual-reader manual-container">
+    {{template "widgets/header.html" .}}
+    <div class="container manual-body">
+        <div class="row">
+            <div class="col-xs-12 mgt-15px" style="line-height: 200%;">
+                <div class="help-block lang-explore" style="margin: 10px 0 15px;">
+                    <span class="text-muted">排序：</span>
+                    <a>Go</a>
+                </div>
+                <div class="help-block lang-explore" style="margin: 10px 0 15px;display: flex">
+                    <span class="text-muted">示例：</span>
+                    <a class="button-main" id="copy-btn-inline">内联示例</a>
+                    <a class="button-main" id="copy-btn-outline">外联示例</a>
+                </div>
+                <div class="help-block lang-explore" style="margin: 10px 0 15px;display: flex">
+                    <span class="text-muted">操作：</span>
+                    <div style=" line-height: 14px">
+                        <input id="inline" type="checkbox"><label  for="inline">是否内联</label>
+                    </div>
+                    <a class="button-main" id="copy-btn">复制到剪贴板</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-md-6">
+                    <div id="input" contenteditable></div>
+            </div>
+            <div class="col-xs-6 col-sm-6 col-md-6">
+                <div id="output"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{{template "widgets/footer.html" .}}
+<script src="/static/highlight/highlight.min.js"></script>
+<script src="/static/js/json-to-go.js"></script>
+<script src="/static/js/jsontostruct.js"></script>
+<script src="/static/js/gofmt.js" async></script>
+</body>
+</html>

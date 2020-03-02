@@ -516,17 +516,6 @@ func AttachDelete(c *core.Context) {
 }
 
 //
-////SEO管理
-func SeoHtml(c *core.Context) {
-	//SEO展示
-	var seos []mysql.Seo
-	mus.Db.Find(&seos)
-	c.Tpl().Data["Lists"] = seos
-	c.Tpl().Data["IsManagerSeo"] = true
-	c.Html("manager/seo")
-}
-
-//
 //func  UpdateAds(c *core.Context)  {
 //	id, _ := this.GetInt("id")
 //	field := this.GetString("field")

@@ -429,7 +429,7 @@ textarea{
 }
 .manual-search-reader .search-empty{
 	margin:150px auto;
-	text-align:center; 
+	text-align:center;
 }
 .manual-search-reader .search-empty .empty-text {
     font-size: 18px;
@@ -904,3 +904,28 @@ a{color: #333}
 #page-rank .panel-body li a:hover{background-color: #EFEFEF;}
 
 .text-red{color: red !important;}
+
+
+.button-main {
+    background: #739ffc;
+    color: #fff;
+    padding: 7px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 12px;
+    line-height: 14px
+}
+.card-container footer .button-main {
+    margin-top: -9px
+}
+#markdown .repo-info-wrapper .view-on .view:hover,.card-container footer .button-main:hover {
+    background: #5b8aef
+}
+
+.button-main:hover {
+    background: #5b8aef;
+    color:#fff;
+    cursor: pointer;
+}
+
