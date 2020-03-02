@@ -4,19 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"html/template"
-	"image/png"
-	"os"
-	"path/filepath"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
-
-	"go.uber.org/zap"
-
 	"github.com/PuerkitoBio/goquery"
-	"github.com/TruthHun/html2md"
 	"github.com/astaxie/beego"
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
@@ -29,6 +17,15 @@ import (
 	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/ecology/appgo/router/core"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+	"html/template"
+	"image/png"
+	"os"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // 解析并提取版本控制的commit内容
@@ -725,53 +722,6 @@ func ContentPost(c *core.Context) {
 		return
 	}
 
-	isSummary := false
-	isAuto := false
-	//替换文档中的url链接
-	if strings.ToLower(doc.Identify) == "summary.md" && (strings.Contains(markdown, "<bookstack-summary></bookstack-summary>") || strings.Contains(doc.Markdown, "<bookstack-summary/>")) {
-		//如果标识是summary.md，并且带有bookstack的标签，则表示更新目录
-		isSummary = true
-		//要清除，避免每次保存的时候都要重新排序
-		replaces := []string{"<bookstack-summary></bookstack-summary>", "<bookstack-summary/>"}
-		for _, r := range replaces {
-			markdown = strings.Replace(markdown, r, "", -1)
-		}
-	}
-
-	//爬虫采集
-	access := currentMember.IsAdministrator()
-	if op, err := dao.Global.FindByKey("SPIDER"); err == nil {
-		access = access && op.OptionValue == "true"
-	}
-	if access && strings.ToLower(doc.Identify) == "summary.md" && (strings.Contains(markdown, "<spider></spider>") || strings.Contains(doc.Markdown, "<spider/>")) {
-		//如果标识是summary.md，并且带有bookstack的标签，则表示更新目录
-		isSummary = true
-		//要清除，避免每次保存的时候都要重新排序
-		replaces := []string{"<spider></spider>", "<spider/>"}
-		for _, r := range replaces {
-			markdown = strings.Replace(markdown, r, "", -1)
-		}
-		content, markdown, _ = dao.Document.BookStackCrawl(content, markdown, bookId, currentMember.MemberId)
-	}
-
-	if strings.Contains(markdown, "<bookstack-auto></bookstack-auto>") || strings.Contains(doc.Markdown, "<bookstack-auto/>") {
-		//自动生成文档内容
-
-		var imd, icont string
-		if strings.ToLower(doc.Identify) == "summary.md" {
-			icont, _ = dao.Document.CreateDocumentTreeForHtml(doc.BookId, doc.DocumentId)
-			imd = html2md.Convert(icont)
-			imd = strings.Replace(imd, "(/read/"+identify+"/", "($", -1)
-		} else {
-			imd, icont = dao.Document.BookStackAuto(bookId, docId)
-		}
-
-		markdown = strings.Replace(markdown, "<bookstack-auto></bookstack-auto>", imd, -1)
-		content = strings.Replace(content, "<bookstack-auto></bookstack-auto>", icont, -1)
-		isAuto = true
-	}
-	content = c.ReplaceLinks(identify, content, isSummary)
-
 	var ds = mysql.DocumentStore{}
 	var actionName string
 
@@ -787,8 +737,6 @@ func ContentPost(c *core.Context) {
 
 	if actionName == "" {
 		actionName = "--"
-	} else {
-		isAuto = true
 	}
 
 	doc.ModifyAt = c.Member().MemberId
@@ -837,13 +785,6 @@ func ContentPost(c *core.Context) {
 		}
 
 	}
-
-	if isAuto {
-		errMsg = code.DocumentContentAuto
-	} else if isSummary {
-		errMsg = code.DocumentContentTrue
-	}
-
 	doc.Release = ""
 	//注意：如果errMsg的值是true，则表示更新了目录排序，需要刷新，否则不刷新
 	c.JSONCode(errMsg, doc)

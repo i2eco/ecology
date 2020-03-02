@@ -8,7 +8,7 @@ require (
 	github.com/TruthHun/gotil v0.0.0-20191003091818-17b80aad8a45
 	github.com/TruthHun/html2article v0.0.0-20180202140721-67d6ff09647b
 	github.com/TruthHun/html2md v0.0.0-20200118073047-05dfc15f146f
-	github.com/adamzy/cedar-go v0.0.0-20170805034717-80a9c64b256d // indirect
+	github.com/adamzy/cedar-go v0.0.0-20170805034717-80a9c64b256d
 	github.com/alexcesaro/mail v0.0.0-20141015155039-29068ce49a17
 	github.com/aliyun/aliyun-oss-go-sdk v2.0.6+incompatible
 	github.com/astaxie/beego v1.12.1

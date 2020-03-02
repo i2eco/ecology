@@ -41,7 +41,7 @@ func Index(c *core.Context) {
 	}
 	//处理封面图片
 	for idx, book := range books {
-		book.Cover = utils.ShowImg(book.Cover, "cover")
+		book.Cover = mus.Oss.ShowImg(book.Cover)
 		books[idx] = book
 	}
 	b, err := json.Marshal(books)

@@ -608,7 +608,7 @@ func Category(c *core.Context) {
 		if strings.TrimSpace(item.Icon) == "" { //赋值为默认图片
 			item.Icon = "/static/images/icon.png"
 		} else {
-			item.Icon = utils.ShowImg(item.Icon)
+			item.Icon = mus.Oss.ShowImg(item.Icon)
 		}
 		if item.Pid == 0 {
 			parents = append(parents, item)

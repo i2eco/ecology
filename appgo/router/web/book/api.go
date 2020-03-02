@@ -3,6 +3,21 @@ package book
 import (
 	"encoding/json"
 	"errors"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/filetil"
+	"github.com/i2eco/ecology/appgo/pkg/html2md"
+	"github.com/i2eco/ecology/appgo/pkg/mdtil"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
+	"github.com/i2eco/ecology/appgo/pkg/ziptil"
+	"github.com/i2eco/ecology/appgo/router/core"
+	"github.com/jinzhu/gorm"
+	"github.com/russross/blackfriday"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"net/url"
 	"os"
@@ -10,23 +25,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/PuerkitoBio/goquery"
-	"github.com/TruthHun/gotil/filetil"
-	"github.com/TruthHun/gotil/mdtil"
-	"github.com/TruthHun/gotil/util"
-	"github.com/TruthHun/gotil/ziptil"
-	"github.com/TruthHun/html2md"
-	"github.com/i2eco/ecology/appgo/dao"
-	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/pkg/code"
-	"github.com/i2eco/ecology/appgo/pkg/conf"
-	"github.com/i2eco/ecology/appgo/pkg/mus"
-	"github.com/i2eco/ecology/appgo/pkg/utils"
-	"github.com/i2eco/ecology/appgo/router/core"
-	"github.com/jinzhu/gorm"
-	"github.com/russross/blackfriday"
-	"go.uber.org/zap"
 )
 
 // 替换字符串
@@ -217,13 +215,13 @@ func DownloadProject(c *core.Context) {
 		c.JSONErrStr(1, "只支持拉取zip压缩的markdown项目")
 		return
 	}
-	go func() {
-		if file, err := util.CrawlFile(link, "store", 60); err != nil {
-			mus.Logger.Error("crawl file", zap.Error(err))
-		} else {
-			unzipToData(book.BookId, member.MemberId, identify, file, filepath.Base(file))
-		}
-	}()
+	//go func() {
+	//	if file, err := util.CrawlFile(link, "store", 60); err != nil {
+	//		mus.Logger.Error("crawl file", zap.Error(err))
+	//	} else {
+	//		unzipToData(book.BookId, member.MemberId, identify, file, filepath.Base(file))
+	//	}
+	//}()
 
 	c.JSONOK("提交成功。下载任务已交由后台执行")
 }

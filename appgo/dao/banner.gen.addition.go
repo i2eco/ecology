@@ -3,7 +3,6 @@ package dao
 import (
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
-	"github.com/i2eco/ecology/appgo/pkg/utils"
 )
 
 func (m *banner) Lists(t string) (banners []mysql.Banner, err error) {
@@ -27,7 +26,8 @@ func (m *banner) DeleteXX(id int) (err error) {
 	if banner.Id > 0 {
 		err = mus.Db.Delete(&banner).Error
 		if err == nil {
-			utils.DeleteFile(banner.Image)
+			// todo delete file
+			//utils.DeleteFile(banner.Image)
 		}
 	}
 	return

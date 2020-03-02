@@ -42,7 +42,7 @@ func Index(c *core.Context) {
 		return
 	}
 	if totalCount > 0 {
-		html := utils.NewPaginations(conf.RollPage, totalCount, pageSize, pageIndex, "/awesome", "")
+		html := utils.NewPaginations2(conf.RollPage, totalCount, pageSize, pageIndex, "/awesome", "")
 		c.Tpl().Data["PageHtml"] = html
 	} else {
 		c.Tpl().Data["PageHtml"] = ""

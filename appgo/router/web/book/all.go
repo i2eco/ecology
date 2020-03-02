@@ -264,9 +264,6 @@ func UploadCover(c *core.Context) {
 
 	oldCover := book.Cover
 	book.Cover = dstPath
-	if utils.StoreType == utils.StoreLocal {
-		book.Cover = dstPath
-	}
 
 	if err := mus.Db.Model(book).Where("book_id = ?", book.BookId).Update(map[string]interface{}{
 		"cover": book.Cover,

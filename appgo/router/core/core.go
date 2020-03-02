@@ -4,6 +4,17 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model/constx"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/code"
+	"github.com/i2eco/ecology/appgo/pkg/conf"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/muses/pkg/tpl/tplbeego"
+	"go.uber.org/zap"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -13,20 +24,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/PuerkitoBio/goquery"
-	"github.com/i2eco/ecology/appgo/dao"
-
-	"github.com/gin-contrib/sessions"
-
-	"github.com/gin-gonic/gin"
-	"github.com/i2eco/ecology/appgo/model/constx"
-	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/pkg/code"
-	"github.com/i2eco/ecology/appgo/pkg/conf"
-	"github.com/i2eco/ecology/appgo/pkg/mus"
-	"github.com/i2eco/muses/pkg/tpl/tplbeego"
-	"go.uber.org/zap"
 )
 
 type HandlerFunc func(c *Context)

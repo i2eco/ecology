@@ -102,11 +102,11 @@
                                 <div class="body">
                                     <p>{{$item.Desc}}</p>
                                 </div>
-                                <div class="book-author">
-                                    <div class="author-info">
-                                        <span>协议：{{$item.LicenseName}}<span class="dot"> · </span>语言：{{$item.Language}}<span class="dot"> · </span>最近更新时间：{{$item.GitUpdatedAt}}</span>
-                                    </div>
-                                </div>
+{{/*                                <div class="book-author">*/}}
+{{/*                                    <div class="author-info">*/}}
+{{/*                                        <span>协议：{{$item.LicenseName}}<span class="dot"> · </span>语言：{{$item.Language}}<span class="dot"> · </span>最近更新时间：{{$item.GitUpdatedAt}}</span>*/}}
+{{/*                                    </div>*/}}
+{{/*                                </div>*/}}
                                 <footer>
                                     <ul>
                                         <li>
@@ -129,13 +129,14 @@
                         {{end}}
                     </div>
                 </div>
-
-                <nav class="pagination-container">
-                    {{if gt .TotalPages 1}}
-                    {{.PageHtml}}
-                    {{end}}
-                    <div class="clearfix"></div>
-                </nav>
+                <div class="row">
+                    <div class="pagination-wrapper">
+                        {{if gt .TotalPages 1}}
+                        {{.PageHtml}}
+                        {{end}}
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
 
 {{/*                <div class="row">*/}}
 {{/*                    <div class="pagination-wrapper">*/}}

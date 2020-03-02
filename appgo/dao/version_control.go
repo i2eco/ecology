@@ -2,13 +2,11 @@ package dao
 
 import (
 	"fmt"
+	"github.com/i2eco/ecology/appgo/pkg/constx"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
 	"os"
 	"strings"
 	"time"
-
-	"github.com/TruthHun/BookStack/utils"
-	"github.com/i2eco/ecology/appgo/pkg/constx"
-	"github.com/i2eco/ecology/appgo/pkg/mus"
 )
 
 // 版本控制，文件存储于获取
@@ -22,9 +20,7 @@ type versionControl struct {
 func NewVersionControl(docId int, version int64) *versionControl {
 	t := time.Unix(version, 0).Format("2006/01/02/%v/15/04/05")
 	folder := "./version_control/" + fmt.Sprintf(t, docId)
-	if utils.StoreType == utils.StoreLocal {
-		os.MkdirAll(folder, os.ModePerm)
-	}
+	os.MkdirAll(folder, os.ModePerm)
 	return &versionControl{
 		DocId:    docId,
 		Version:  version,

@@ -4,22 +4,18 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/PuerkitoBio/goquery"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/httplib"
+	"github.com/astaxie/beego/orm"
+	"github.com/i2eco/ecology/appgo/model/mysql"
+	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/astaxie/beego/orm"
-
-	"github.com/TruthHun/gotil/util"
-	"github.com/astaxie/beego/httplib"
-	"github.com/i2eco/ecology/appgo/model/mysql"
-	"github.com/i2eco/ecology/appgo/pkg/mus"
-	"github.com/i2eco/ecology/appgo/pkg/utils"
-
-	"github.com/PuerkitoBio/goquery"
-	"github.com/astaxie/beego"
 )
 
 // 是否正在创建全量索引
@@ -577,7 +573,7 @@ func (this *elasticSearchClient) BuildIndexByBuck(data []ElasticSearchData) (err
 			}
 			action := fmt.Sprintf(`{"index":{"_index":"%v","_type":"%v","_id":"%v"}}`, this.Index, this.Type, _id)
 			bodySlice = append(bodySlice, action)
-			bodySlice = append(bodySlice, util.InterfaceToJson(item))
+			bodySlice = append(bodySlice, InterfaceToJson(item))
 		}
 		api := this.Host + "_bulk"
 		body := strings.Join(bodySlice, "\n") + "\n"
@@ -634,4 +630,12 @@ func (this *elasticSearchClient) delete(api string) (req *httplib.BeegoHTTPReque
 //get请求
 func (this *elasticSearchClient) get(api string) (req *httplib.BeegoHTTPRequest) {
 	return httplib.Get(api).Header("Content-Type", "application/json").SetTimeout(this.Timeout, this.Timeout)
+}
+
+//将interface数据转json
+//@param			itf				将数据转成json
+//@return							返回json字符串
+func InterfaceToJson(itf interface{}) string {
+	b, _ := json.Marshal(&itf)
+	return string(b)
 }
