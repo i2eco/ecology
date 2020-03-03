@@ -8,6 +8,7 @@ import (
 	"github.com/i2eco/muses/pkg/cache/mixcache"
 	mmysql "github.com/i2eco/muses/pkg/database/mysql"
 	"github.com/i2eco/muses/pkg/logger"
+	"github.com/i2eco/muses/pkg/open/github"
 	"github.com/i2eco/muses/pkg/oss"
 	musgin "github.com/i2eco/muses/pkg/server/gin"
 	"github.com/i2eco/muses/pkg/session/ginsession"
@@ -22,6 +23,7 @@ var (
 	Session         gin.HandlerFunc
 	Oss             *oss.Client
 	Mixcache        *mixcache.Client
+	GithubClient    *github.Client
 	JsonRestyClient *resty.Client
 	FormRestyClient *resty.Client
 )
@@ -38,6 +40,7 @@ func Init() error {
 
 	FormRestyClient = resty.New().SetDebug(true).SetTimeout(3*time.Second).SetHeader("Content-Type", "multipart/form-data")
 	JsonRestyClient = resty.New().SetDebug(true).SetTimeout(10*time.Second).SetHeader("Content-Type", "application/json;charset=utf-8")
+	GithubClient = github.Caller()
 
 	return nil
 

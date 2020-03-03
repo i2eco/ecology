@@ -11,6 +11,7 @@ import (
 	"github.com/i2eco/muses/pkg/cache/mixcache"
 	"github.com/i2eco/muses/pkg/cmd"
 	"github.com/i2eco/muses/pkg/database/mysql"
+	"github.com/i2eco/muses/pkg/open/github"
 	"github.com/i2eco/muses/pkg/oss"
 	musgin "github.com/i2eco/muses/pkg/server/gin"
 	"github.com/i2eco/muses/pkg/server/stat"
@@ -29,6 +30,7 @@ func main() {
 		tplbeego.Register,
 		oss.Register,
 		ginsession.Register,
+		github.Register,
 	)
 	app.SetRootCommand(func(cobraCommand *cobra.Command) {
 		cobraCommand.AddCommand(command.InstallCmd)

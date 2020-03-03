@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"bytes"
 	"fmt"
 	"io"
 	"math"
@@ -110,15 +109,4 @@ func ParseTitleFromMdHtml(html string) (title string) {
 		beego.Error(err.Error())
 	}
 	return "空标题文档"
-}
-
-// ExecuteViewPathTemplate 执行指定的模板并返回执行结果.
-//@param			tplName				模板文件路径
-func ExecuteViewPathTemplate(tplName string, data interface{}) (string, error) {
-	var buf bytes.Buffer
-	viewPath := beego.BConfig.WebConfig.ViewsPath
-	if err := beego.ExecuteViewPathTemplate(&buf, tplName, viewPath, data); err != nil {
-		return "", err
-	}
-	return buf.String(), nil
 }

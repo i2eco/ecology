@@ -68,11 +68,11 @@
 {{/*                                        <img src="/static/images/qq.png" alt="QQ">*/}}
 {{/*                                    </a>*/}}
 {{/*                                    {{end}}*/}}
-{{/*                                    {{if $.LoginGitHub}}*/}}
-{{/*                                        <a class="tooltips" href="https://github.com/login/oauth/authorize?client_id={{.GithubClientId}}&redirect_uri={{.GithubCallback}}" rel="nofollow" title="使用GitHub一键登录">*/}}
-{{/*                                            <img src="/static/images/github.png" alt="GitHub">*/}}
-{{/*                                        </a>*/}}
-{{/*                                    {{end}}*/}}
+                                    {{if $.LoginGitHub}}
+                                        <a class="tooltips" href="/oauth/github" rel="nofollow" title="使用GitHub一键登录">
+                                            <img src="/static/images/github.png" alt="GitHub">
+                                        </a>
+                                    {{end}}
 {{/*                                    {{if $.LoginGitee}}*/}}
 {{/*                                        <a class="tooltips" rel="nofollow" title="使用码云(Gitee)一键登录" href="https://gitee.com/oauth/authorize?client_id={{.GiteeClientId}}&redirect_uri={{.GiteeCallback}}&response_type=code">*/}}
 {{/*                                            <img src="/static/images/gitee.png" alt="码云(Gitee)">*/}}

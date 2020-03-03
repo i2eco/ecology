@@ -67,7 +67,8 @@ func webGrp(r *gin.Engine) {
 		tplGrp.GET("/login", core.Handle(account.LoginHtml))
 		tplGrp.GET("/logout", core.Handle(account.Logout))
 		tplGrp.GET("/note", core.Handle(account.Note))
-		tplGrp.GET("/login/:oauth", core.Handle(account.OauthHtml))
+		tplGrp.GET("/oauth/:oauth", core.Handle(account.OauthInfo))
+		tplGrp.GET("/login/:oauth", core.Handle(account.LoginCallback))
 		tplGrp.GET("/account/find_password", core.Handle(account.FindPasswordHtml))
 
 		tplGrp.GET("/book", core.Handle(book.Index))

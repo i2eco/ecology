@@ -139,3 +139,9 @@ qqUserInfo="https://graph.qq.com/user/get_user_info"
         isDeleteSrcPath = true
         cdnName = "http://127.0.0.1:9011/ecologyoss/"
         fileBucket = "ecologyoss"
+    [muses.openGithub]
+        debug = true
+        clientId= "Iv1.afef899ad0a04dac"
+        clientSecret= "cf24527583d761941c11048e43d477ac7f98682c"
+        redirectUrl = "http://127.0.0.1:9011/login/github"
+

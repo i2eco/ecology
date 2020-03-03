@@ -2,17 +2,22 @@ package core
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha1"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/i2eco/ecology/appgo/dao"
+	"github.com/i2eco/ecology/appgo/model"
 	"github.com/i2eco/ecology/appgo/model/constx"
 	"github.com/i2eco/ecology/appgo/model/mysql"
 	"github.com/i2eco/ecology/appgo/pkg/code"
 	"github.com/i2eco/ecology/appgo/pkg/conf"
 	"github.com/i2eco/ecology/appgo/pkg/mus"
+	"github.com/i2eco/ecology/appgo/pkg/utils"
 	"github.com/i2eco/muses/pkg/tpl/tplbeego"
 	"go.uber.org/zap"
 	"io"
@@ -525,4 +530,48 @@ func (c *Context) JSONList(data interface{}, current, pageSize, total int) {
 	}
 	c.JSON(http.StatusOK, j)
 	return
+}
+
+func (c *Context) LoginByMemberId(memberId int) (err error) {
+	member, err := dao.Member.Find(memberId)
+	if err != nil {
+		return
+	}
+
+	err = dao.Member.UpdateX(c.Context, mus.Db, mysql.Conds{
+		"member_id": member.MemberId,
+	}, mysql.Ups{
+		"last_login_time": time.Now(),
+	})
+
+	err = c.UpdateUser(member)
+	if err != nil {
+		c.JSONErr(code.MsgErr, err)
+		return
+	}
+	var remember model.CookieRemember
+
+	remember.MemberId = member.MemberId
+	remember.Account = member.Account
+	remember.Time = time.Now()
+	var v string
+	v, err = utils.Encode(remember)
+	if err != nil {
+		return
+	}
+	c.SetSecureCookie(conf.Conf.App.AppKey, "login", v, 24*3600*365)
+	return
+}
+
+// SetSecureCookie Set Secure cookie for response.
+func (c *Context) SetSecureCookie(Secret, name, value string, others ...interface{}) {
+	vs := base64.URLEncoding.EncodeToString([]byte(value))
+	timestamp := strconv.FormatInt(time.Now().UnixNano(), 10)
+	h := hmac.New(sha1.New, []byte(Secret))
+	//fmt.Fprintf(h, "%s%s", vs, timestamp)
+	sig := fmt.Sprintf("%02x", h.Sum(nil))
+	cookie := strings.Join([]string{vs, timestamp, sig}, "|")
+	//context.SetCookie("name", "Shimin Li", 10, "/", "localhost", false, true)
+
+	c.SetCookie(name, cookie, 10, "/", "", false, true)
 }

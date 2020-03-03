@@ -6,7 +6,6 @@ var (
 	Comments        *comments
 	BookCounter     *bookCounter
 	Seo             *seo
-	Github          *github
 	Wechat          *wechat
 	BookCategory    *bookCategory
 	Fans            *fans

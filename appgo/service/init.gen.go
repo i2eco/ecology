@@ -33,7 +33,6 @@ func InitGen() {
 	dao.Comments = dao.InitComments(mus.Logger, mus.Db)
 	dao.ReadingTime = dao.InitReadingTime(mus.Logger, mus.Db)
 	dao.DocumentStore = dao.InitDocumentStore(mus.Logger, mus.Db)
-	dao.Github = dao.InitGithub(mus.Logger, mus.Db)
 	dao.BookCounter = dao.InitBookCounter(mus.Logger, mus.Db)
 	dao.Seo = dao.InitSeo(mus.Logger, mus.Db)
 	dao.Fans = dao.InitFans(mus.Logger, mus.Db)

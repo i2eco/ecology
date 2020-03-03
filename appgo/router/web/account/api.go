@@ -1,17 +1,12 @@
 package account
 
 import (
-	"crypto/hmac"
-	"crypto/sha1"
-	"encoding/base64"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/dchest/captcha"
-	"github.com/gin-gonic/gin"
 	"github.com/i2eco/ecology/appgo/dao"
 	"github.com/i2eco/ecology/appgo/model"
 	"github.com/i2eco/ecology/appgo/model/mysql"
@@ -80,7 +75,7 @@ func LoginApi(c *core.Context) {
 		c.JSONErrTips("系统错误3", err)
 		return
 	}
-	SetSecureCookie(c.Context, conf.Conf.App.AppKey, "login", v, 24*3600*365)
+	c.SetSecureCookie(conf.Conf.App.AppKey, "login", v, 24*3600*365)
 	c.JSONOK()
 }
 
@@ -101,7 +96,9 @@ func BindApi(c *core.Context) {
 		case "gitee":
 			//err = mysql.ModelGitee.Bind(oauthId, memberId)
 		case "github":
-			//err = mysql.ModelGithub.Bind(oauthId, memberId)
+			mus.Db.Model(mysql.GithubUser{}).Where("id = ?", oauthId).Updates(mysql.Ups{
+				"member_id": memberId,
+			})
 		case "qq":
 			err = mysql.ModelQQ.Bind(oauthId, memberId)
 		}
@@ -169,7 +166,7 @@ func BindApi(c *core.Context) {
 			return
 		}
 	}
-	if err = loginByMemberId(c, member.MemberId); err != nil {
+	if err = c.LoginByMemberId(member.MemberId); err != nil {
 		c.JSONErr(code.AccountBindErr9, err)
 		return
 	}
@@ -184,37 +181,6 @@ func BindApi(c *core.Context) {
 		return
 	}
 	c.JSONOK("登录成功")
-}
-
-func loginByMemberId(c *core.Context, memberId int) (err error) {
-	member, err := dao.Member.Find(memberId)
-	if err != nil {
-		return
-	}
-
-	err = dao.Member.UpdateX(c.Context, mus.Db, mysql.Conds{
-		"member_id": member.MemberId,
-	}, mysql.Ups{
-		"last_login_time": time.Now(),
-	})
-
-	err = c.UpdateUser(member)
-	if err != nil {
-		c.JSONErr(code.MsgErr, err)
-		return
-	}
-	var remember model.CookieRemember
-
-	remember.MemberId = member.MemberId
-	remember.Account = member.Account
-	remember.Time = time.Now()
-	var v string
-	v, err = utils.Encode(remember)
-	if err != nil {
-		return
-	}
-	SetSecureCookie(c.Context, conf.Conf.App.AppKey, "login", v, 24*3600*365)
-	return
 }
 
 func FindPasswordApi(c *core.Context) {
@@ -380,7 +346,7 @@ func Logout(c *core.Context) {
 		c.JSONErr(code.MsgErr, err)
 		return
 	}
-	SetSecureCookie(c.Context, conf.Conf.App.AppKey, "login", "", -3600)
+	c.SetSecureCookie(conf.Conf.App.AppKey, "login", "", -3600)
 	c.Redirect(302, "/login")
 }
 
@@ -394,17 +360,4 @@ func Note(c *core.Context) {
 		c.Tpl().Data["SeoTitle"] = "笔记"
 		c.Html("account/note")
 	}
-}
-
-// SetSecureCookie Set Secure cookie for response.
-func SetSecureCookie(c *gin.Context, Secret, name, value string, others ...interface{}) {
-	vs := base64.URLEncoding.EncodeToString([]byte(value))
-	timestamp := strconv.FormatInt(time.Now().UnixNano(), 10)
-	h := hmac.New(sha1.New, []byte(Secret))
-	//fmt.Fprintf(h, "%s%s", vs, timestamp)
-	sig := fmt.Sprintf("%02x", h.Sum(nil))
-	cookie := strings.Join([]string{vs, timestamp, sig}, "|")
-	//context.SetCookie("name", "Shimin Li", 10, "/", "localhost", false, true)
-
-	c.SetCookie(name, cookie, 10, "/", "", false, true)
 }
