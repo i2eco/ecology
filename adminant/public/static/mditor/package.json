@@ -81,7 +81,7 @@
     "cify": "^2.1.11",
     "clean-webpack-plugin": "^0.1.14",
     "css-loader": "^0.26.1",
-    "eslint": "^3.13.0",
+    "eslint": "^6.8.0",
     "exorcist": "^0.4.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.10.0",
