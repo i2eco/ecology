@@ -13,7 +13,7 @@ require (
 	github.com/coreos/etcd v3.3.18+incompatible // indirect
 	github.com/dchest/captcha v0.0.0-20170622155422-6a29415a8364
 	github.com/gin-contrib/sessions v0.0.3
-	github.com/gin-gonic/gin v1.5.0
+	github.com/gin-gonic/gin v1.7.0
 	github.com/go-resty/resty/v2 v2.2.0
 	github.com/gocarina/gocsv v0.0.0-20200302151839-87c60d755c58
 	github.com/gomodule/redigo v2.0.0+incompatible
